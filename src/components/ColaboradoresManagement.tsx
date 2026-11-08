@@ -1,3 +1,4 @@
+import { BRAND } from '@/config/brand';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Plus, UserMinus, UserCheck } from 'lucide-react';
@@ -256,8 +257,8 @@ export function ColaboradoresManagement() {
               <Select value={novoDivisao} onValueChange={(v) => setNovoDivisao(v as Divisao)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="advogados">Advogados</SelectItem>
-                  <SelectItem value="educacao">Educação</SelectItem>
+                  <SelectItem value="advogados">{BRAND.divisionLabels.advogados}</SelectItem>
+                  <SelectItem value="educacao">{BRAND.divisionLabels.educacao}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

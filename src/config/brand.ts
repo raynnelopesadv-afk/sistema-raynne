@@ -12,8 +12,8 @@ export const BRAND = {
   // Rótulos das duas divisões de negócio (os valores no banco continuam
   // 'advogados' e 'educacao'; aqui é só o texto exibido).
   divisionLabels: {
-    advogados: 'Advogados',
-    educacao: 'Educação',
+    advogados: 'Previdenciário',
+    educacao: 'Aéreo/Consumidor',
   },
   logoUrl: '/logo-quadrado.jpg',
   emblemaUrl: '/emblema-rl.png',

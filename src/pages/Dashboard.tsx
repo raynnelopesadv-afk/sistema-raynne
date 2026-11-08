@@ -494,7 +494,7 @@ const Dashboard = () => {
         <>
           {!hasData && (
             <div className="rounded-2xl bg-card border border-border p-4 text-center text-sm text-muted-foreground">
-              Sem registros ainda para {divisao === 'advogados' ? 'Advogados' : 'Educação'} neste período — os painéis abaixo serão preenchidos conforme as vendas forem cadastradas.
+              Sem registros ainda para {BRAND.divisionLabels[divisao]} neste período — os painéis abaixo serão preenchidos conforme as vendas forem cadastradas.
             </div>
           )}
 

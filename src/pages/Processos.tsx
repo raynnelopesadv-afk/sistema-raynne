@@ -1,3 +1,4 @@
+import { BRAND } from '@/config/brand';
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2, ScrollText, XCircle, Trophy, ChevronDown, ChevronRight, LayoutGrid, List, History, Pencil, UserMinus } from 'lucide-react';
@@ -298,7 +299,7 @@ export default function Processos() {
       <div className="space-y-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Processos · {divisao === 'advogados' ? 'Advogados' : 'Educação'}</h1>
+            <h1 className="text-3xl font-bold text-foreground">Processos · {BRAND.divisionLabels[divisao]}</h1>
             <p className="text-base text-muted-foreground mt-1">Visão em tempo real — protocolos e ranking de closers</p>
           </div>
         </div>

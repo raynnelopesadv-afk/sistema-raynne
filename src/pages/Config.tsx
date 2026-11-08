@@ -1,3 +1,4 @@
+import { BRAND } from '@/config/brand';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Save, UserPlus, Shield, ShieldOff, Plus, Pencil, Trash2, Flag, KeyRound } from 'lucide-react';
@@ -508,8 +509,8 @@ function SquadsManagement() {
               <Select value={form.divisao} onValueChange={v => setForm(f => ({ ...f, divisao: v as Divisao }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="advogados">Advogados</SelectItem>
-                  <SelectItem value="educacao">Educação</SelectItem>
+                  <SelectItem value="advogados">{BRAND.divisionLabels.advogados}</SelectItem>
+                  <SelectItem value="educacao">{BRAND.divisionLabels.educacao}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1135,7 +1136,7 @@ function DivisionMetasCard({ divisao, mesRef }: { divisao: Divisao; mesRef: stri
   return (
     <div className="glass-card p-5 space-y-5">
       <div>
-        <h3 className="font-semibold text-foreground">Metas da Divisão — {divisao === 'advogados' ? 'Advogados' : 'Educação'} · {mesRef}</h3>
+        <h3 className="font-semibold text-foreground">Metas da Divisão — {BRAND.divisionLabels[divisao]} · {mesRef}</h3>
         <p className="text-xs text-muted-foreground mt-1">
           Defina meta por número de contratos, por faturamento e por tipo de produto.
           {usandoBase && ' Valores atuais herdados da meta base — salve para criar override deste mês.'}
