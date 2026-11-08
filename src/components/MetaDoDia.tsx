@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Pencil, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/juridico-db';
 import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +49,16 @@ export function MetaDoDia({ divisao }: { divisao: Divisao }) {
     },
   });
 
+  const zap = useQuery({
+    queryKey: ['meta-dia-zapsign', hoje],
+    refetchInterval: 300_000,
+    queryFn: async () => {
+      const { count } = await db.from('zapsign_documentos').select('token', { count: 'exact', head: true })
+        .eq('status', 'signed').gte('assinado_em', `${hoje}T00:00:00-03:00`);
+      return count ?? 0;
+    },
+  });
+
   const salvar = useMutation({
     mutationFn: async (nova: number) => {
       if (meta.data?.id) {
@@ -78,6 +89,9 @@ export function MetaDoDia({ divisao }: { divisao: Divisao }) {
           <p className={cn('text-sm mt-1', batida ? 'text-emerald-700 font-medium' : 'text-muted-foreground')}>
             {batida ? (total > m ? `Meta batida, ${total - m} acima.` : 'Meta batida.') : `Faltam ${falta} para bater a meta de hoje.`}
           </p>
+          {(zap.data ?? 0) > 0 && (
+            <p className="text-xs text-muted-foreground mt-1">ZapSign: {zap.data} {zap.data === 1 ? 'contrato assinado' : 'contratos assinados'} hoje</p>
+          )}
         </div>
         <div className="flex items-center gap-2" aria-label={`${total} de ${m}`}>
           {Array.from({ length: Math.max(m, total) }).map((_, i) => (

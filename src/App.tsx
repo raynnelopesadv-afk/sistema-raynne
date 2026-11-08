@@ -29,6 +29,7 @@ import AgendaJuridica from "./pages/AgendaJuridica";
 import Publicacoes from "./pages/Publicacoes";
 import Inss from "./pages/Inss";
 import Equipe from "./pages/Equipe";
+import ContratosZapsign from "./pages/ContratosZapsign";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,7 @@ function AuthGate() {
         <Route path="/publicacoes" element={<Publicacoes />} />
         <Route path="/inss" element={<Inss />} />
         <Route path="/equipe" element={<Equipe />} />
+        <Route path="/contratos" element={<ContratosZapsign />} />
         <Route path="/comercial" element={<Index />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/faturamento" element={<Faturamento />} />

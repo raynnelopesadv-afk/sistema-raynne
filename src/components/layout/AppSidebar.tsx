@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, DollarSign, Calendar, CheckCircle2, Users,
   Search, Megaphone, GitBranch, Package, Scale, Settings, LogOut, Wallet, FileCheck2, Percent,
-  Gavel, CalendarClock, Newspaper, Landmark, UsersRound
+  Gavel, CalendarClock, Newspaper, Landmark, UsersRound, FileSignature
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,6 +23,7 @@ const navItems: Item[] = [
   { title: 'INSS', url: '/inss', icon: Landmark, grupo: 'Jurídico' },
   { title: 'Equipe', url: '/equipe', icon: UsersRound, grupo: 'Escritório' },
   { title: 'Painel Comercial', url: '/comercial', icon: LayoutDashboard, grupo: 'Comercial' },
+  { title: 'Contratos (ZapSign)', url: '/contratos', icon: FileSignature, grupo: 'Comercial' },
   { title: 'Faturamento', url: '/faturamento', icon: DollarSign, grupo: 'Comercial' },
   { title: 'Fechamento', url: '/fechamento', icon: CheckCircle2, grupo: 'Comercial' },
   { title: 'Comissões', url: '/comissoes', icon: Wallet, grupo: 'Comercial' },

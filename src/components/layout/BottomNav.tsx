@@ -10,7 +10,7 @@ const bottomItems = [
   { title: 'Prazos', url: '/agenda-juridica', icon: CalendarClock },
   { title: 'Publicações', url: '/publicacoes', icon: Newspaper },
   { title: 'INSS', url: '/inss', icon: Landmark },
-  { title: 'Contratos', url: '/fechamento', icon: CheckCircle2 },
+  { title: 'Contratos', url: '/contratos', icon: CheckCircle2 },
   { title: 'Config', url: '/config', icon: Settings },
 ];
 

@@ -54,3 +54,26 @@ describe('urgência', () => {
     expect(urgencia('2026-11-08', true, hoje)).toBe('feito');
   });
 });
+
+import { paraLinha, telefone } from '../../scripts/lib/zapsign.mjs';
+describe('ZapSign', () => {
+  const doc = {
+    token: 'd1', name: 'Contrato BPC - Maria', status: 'pending', created_at: '2026-11-03T12:00:00Z', last_update_at: '2026-11-04T12:00:00Z',
+    signers: [
+      { name: 'Raynne Lopes de Souza', email: 'raynnelopes.adv@gmail.com', status: 'signed', signed_at: '2026-11-03T13:00:00Z', phone_country: '55', phone_number: '31999990000', sign_url: 'x' },
+      { name: 'Maria da Silva', email: '', status: 'new', phone_country: '55', phone_number: '(31) 98888-7777', times_viewed: 2, last_view_at: '2026-11-04T10:00:00Z', sign_url: 'https://app.zapsign.com.br/verificar/abc' },
+    ],
+  };
+  it('pega o cliente, não o escritório', () => {
+    const l = paraLinha(doc);
+    expect(l.cliente_nome).toBe('Maria da Silva');
+    expect(l.cliente_telefone).toBe('+5531988887777');
+    expect(l.link_assinatura).toContain('verificar');
+    expect(l.assinado_em).toBeNull();
+  });
+  it('data de assinatura quando assinado', () => {
+    const l = paraLinha({ ...doc, status: 'signed', signers: [doc.signers[0], { ...doc.signers[1], status: 'signed', signed_at: '2026-11-05T09:00:00Z' }] });
+    expect(l.assinado_em).toBe('2026-11-05T09:00:00Z');
+  });
+  it('telefone vazio', () => { expect(telefone({ phone_number: '' })).toBeNull(); });
+});
