@@ -22,7 +22,7 @@ export function HighlightMatch({ text, query, field, className }: Props) {
   if (!text) return <>—</>;
   if (!q) return <span className={className}>{text}</span>;
 
-  const accent = 'font-semibold text-[#F5C518]';
+  const accent = 'font-semibold text-primary';
 
   if (field === 'cpf') {
     if (!isNumericQuery(q)) return <span className={className}>{text}</span>;

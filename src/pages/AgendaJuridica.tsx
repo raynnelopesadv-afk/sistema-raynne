@@ -102,7 +102,7 @@ export default function AgendaJuridica() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Prazos e Audiências</h1>
+          <h1 className="titulo-pagina text-3xl">Prazos e Audiências</h1>
           <p className="text-sm text-muted-foreground">Tramitação Inteligente, Google Agenda, INSS e lançamentos manuais</p>
         </div>
         <Button onClick={() => setNovo(true)}><Plus className="w-4 h-4 mr-1" /> Novo</Button>

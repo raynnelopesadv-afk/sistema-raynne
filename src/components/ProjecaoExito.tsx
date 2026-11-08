@@ -129,7 +129,7 @@ export function ProjecaoExito({ divisao }: { divisao: Divisao }) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.18em] flex items-center gap-2">
+      <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.18em] flex items-center gap-2">
         <TrendingUp className="w-3.5 h-3.5" /> Projeção de êxito · contratos em andamento
       </h2>
 
@@ -175,7 +175,7 @@ export function ProjecaoExito({ divisao }: { divisao: Divisao }) {
               ))}
             </TableBody>
           </Table>
-          <p className="text-[11px] text-muted-foreground px-5 py-2 border-t border-[#1F2937]">
+          <p className="text-[11px] text-muted-foreground px-5 py-2 border-t border-border">
             Regras por produto (aba Produtos): êxito fixo ou % do contrato × probabilidade. Sem configuração, o sistema usa o histórico do produto.
             Contratos desqualificados/desistência e com resultado já registrado ficam de fora.
           </p>

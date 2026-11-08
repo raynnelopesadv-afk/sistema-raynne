@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { BottomNav } from './BottomNav';
 import { TvModeButton } from '@/components/TvModeButton';
@@ -10,6 +10,12 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { BRAND } from '@/config/brand';
 
+function MarcaDagua() {
+  const { state, isMobile } = useSidebar();
+  const left = isMobile ? '0' : state === 'collapsed' ? 'var(--sidebar-width-icon)' : 'var(--sidebar-width)';
+  return <div aria-hidden className="marca-dagua" style={{ left }} />;
+}
+
 export function AppLayout({ children }: { children: ReactNode }) {
   const { isTvMode } = useTvMode();
   const pendencias = usePendenciasEspelhamento();
@@ -17,6 +23,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <CelebracaoVenda />
       <div className="min-h-screen flex w-full">
+        {!isTvMode && <MarcaDagua />}
         {!isTvMode && (
           <div className="hidden md:block">
             <AppSidebar />
@@ -25,16 +32,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
         <div className="flex-1 flex flex-col min-w-0">
           {!isTvMode && (
-            <header className="h-14 flex items-center gap-3 border-b border-border px-4 bg-card/50 backdrop-blur-xl sticky top-0 z-40">
+            <header className="h-14 flex items-center gap-3 border-b border-border px-4 bg-card/80 backdrop-blur-xl sticky top-0 z-40">
               <SidebarTrigger className="hidden md:flex text-muted-foreground hover:text-foreground" />
-              <h2 className="text-sm font-semibold text-foreground md:hidden">{BRAND.appName}</h2>
+              <div className="flex items-center gap-2 md:hidden">
+                <img src={BRAND.emblemaUrl} alt="" className="h-7 w-auto" />
+                <span className="marca-rl text-sm font-semibold text-foreground">{BRAND.appName}</span>
+              </div>
               <div className="ml-auto flex items-center gap-2">
                 <TvModeButton />
               </div>
             </header>
           )}
 
-          <main className={`flex-1 overflow-auto ${isTvMode ? 'p-8' : 'p-4 md:p-6 pb-20 md:pb-6'}`}>
+          <main className={`relative z-10 flex-1 overflow-auto ${isTvMode ? 'p-8' : 'p-4 md:p-6 pb-20 md:pb-6'}`}>
             {isTvMode && (
               <div className="fixed top-4 right-4 z-50">
                 <TvModeButton />
@@ -48,7 +58,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             {!isTvMode && pendencias > 0 && (
               <Link
                 to="/fechamento"
-                className="mb-4 flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300 hover:bg-red-500/15 transition-colors"
+                className="mb-4 flex items-center gap-2 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 hover:bg-red-100 transition-colors"
               >
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>

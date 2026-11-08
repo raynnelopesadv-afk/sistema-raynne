@@ -125,13 +125,13 @@ export function urgencia(data: string | null | undefined, feito = false, hoje: D
 }
 
 export const URGENCIA_STYLE: Record<Urgencia, { label: string; cls: string }> = {
-  atrasado: { label: 'Atrasado', cls: 'bg-destructive/15 text-destructive border-destructive/40' },
-  hoje: { label: 'Hoje', cls: 'bg-orange-500/15 text-orange-400 border-orange-500/40' },
-  amanha: { label: 'Amanhã', cls: 'bg-amber-500/15 text-amber-400 border-amber-500/40' },
-  semana: { label: 'Esta semana', cls: 'bg-primary/10 text-primary border-primary/30' },
-  futuro: { label: 'Futuro', cls: 'bg-muted text-muted-foreground border-border' },
-  sem_data: { label: 'Sem data', cls: 'bg-muted text-muted-foreground border-border' },
-  feito: { label: 'Concluído', cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40' },
+  atrasado: { label: 'Atrasado', cls: 'bg-red-50 text-red-700 border-red-200' },
+  hoje: { label: 'Hoje', cls: 'bg-orange-50 text-orange-700 border-orange-200' },
+  amanha: { label: 'Amanhã', cls: 'bg-amber-50 text-amber-800 border-amber-200' },
+  semana: { label: 'Esta semana', cls: 'bg-[hsl(41_60%_95%)] text-[hsl(41_69%_30%)] border-[hsl(41_45%_80%)]' },
+  futuro: { label: 'Futuro', cls: 'bg-secondary text-muted-foreground border-border' },
+  sem_data: { label: 'Sem data', cls: 'bg-secondary text-muted-foreground border-border' },
+  feito: { label: 'Concluído', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
 };
 
 export function fmtData(d: string | null | undefined, padrao = 'dd/MM/yyyy'): string {

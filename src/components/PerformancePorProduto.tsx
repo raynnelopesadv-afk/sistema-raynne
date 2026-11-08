@@ -55,9 +55,9 @@ function brl(v: number) {
 }
 function num(v: number) { return v.toLocaleString('pt-BR'); }
 
-const PALETTE = ['#F5C518', '#00BCD4', '#8B5CF6', '#22C55E', '#F59E0B', '#EC4899', '#10B981', '#6366F1', '#EAB308', '#06B6D4'];
-const GRID = '#1F2937';
-const AXIS = '#9CA3AF';
+const PALETTE = ['#B8892B', '#0E7490', '#8B5CF6', '#15803D', '#F59E0B', '#EC4899', '#10B981', '#6366F1', '#EAB308', '#06B6D4'];
+const GRID = '#E3E5E1';
+const AXIS = '#6B7076';
 
 interface Props {
   rows: Row[];
@@ -67,13 +67,13 @@ interface Props {
 
 type BarMetric = 'total' | 'protocolados' | 'pctProt' | 'exitos' | 'taxaExito' | 'fatEsperado' | 'fatReal' | 'tempoMedio';
 const BAR_METRICS: { v: BarMetric; label: string; color: string; fmt: (n: number) => string }[] = [
-  { v: 'total', label: 'Total de contratos', color: '#00BCD4', fmt: num },
-  { v: 'protocolados', label: 'Protocolados', color: '#00BCD4', fmt: num },
-  { v: 'pctProt', label: '% protocolação', color: '#00BCD4', fmt: (n) => `${n.toFixed(1)}%` },
-  { v: 'exitos', label: 'Êxitos', color: '#22C55E', fmt: num },
-  { v: 'taxaExito', label: 'Taxa de êxito (%)', color: '#22C55E', fmt: (n) => `${n.toFixed(1)}%` },
-  { v: 'fatEsperado', label: 'Faturamento esperado', color: '#F5C518', fmt: brl },
-  { v: 'fatReal', label: 'Faturamento real', color: '#F5C518', fmt: brl },
+  { v: 'total', label: 'Total de contratos', color: '#0E7490', fmt: num },
+  { v: 'protocolados', label: 'Protocolados', color: '#0E7490', fmt: num },
+  { v: 'pctProt', label: '% protocolação', color: '#0E7490', fmt: (n) => `${n.toFixed(1)}%` },
+  { v: 'exitos', label: 'Êxitos', color: '#15803D', fmt: num },
+  { v: 'taxaExito', label: 'Taxa de êxito (%)', color: '#15803D', fmt: (n) => `${n.toFixed(1)}%` },
+  { v: 'fatEsperado', label: 'Faturamento esperado', color: '#B8892B', fmt: brl },
+  { v: 'fatReal', label: 'Faturamento real', color: '#B8892B', fmt: brl },
   { v: 'tempoMedio', label: 'Tempo médio (dias)', color: '#EF4444', fmt: (n) => `${n.toFixed(0)} d` },
 ];
 
@@ -257,8 +257,8 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
 
   function tooltipStyle() {
     return {
-      contentStyle: { background: '#111827', border: `1px solid ${GRID}`, borderRadius: 8, color: '#F9FAFB' },
-      labelStyle: { color: '#F5C518', fontWeight: 600 },
+      contentStyle: { background: '#FFFFFF', border: `1px solid ${GRID}`, borderRadius: 8, color: '#1A1D21' },
+      labelStyle: { color: '#B8892B', fontWeight: 600 },
     };
   }
 
@@ -274,8 +274,8 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-medium transition border',
                 barMetric === m.v
-                  ? 'bg-[#F5C518] text-black border-[#F5C518]'
-                  : 'bg-transparent text-muted-foreground border-[#1F2937] hover:border-[#F5C518]/40'
+                  ? 'bg-primary text-black border-primary'
+                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/40'
               )}>
               {m.label}
             </button>
@@ -319,8 +319,8 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-medium transition border',
                 pieMetric === m.v
-                  ? 'bg-[#F5C518] text-black border-[#F5C518]'
-                  : 'bg-transparent text-muted-foreground border-[#1F2937] hover:border-[#F5C518]/40'
+                  ? 'bg-primary text-black border-primary'
+                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/40'
               )}>
               {m.label}
             </button>
@@ -342,7 +342,7 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <div className="text-3xl font-bold text-[#F5C518]">{meta.fmt(total)}</div>
+              <div className="text-3xl font-bold text-primary">{meta.fmt(total)}</div>
               <div className="text-xs text-muted-foreground mt-1">{meta.label}</div>
             </div>
           </div>
@@ -355,7 +355,7 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
                   <span className="w-3 h-3 rounded-sm shrink-0" style={{ background: PALETTE[i % PALETTE.length] }} />
                   <span className="flex-1 text-xs text-foreground truncate">{d.name}</span>
                   <span className="text-xs tabular-nums text-muted-foreground">{meta.fmt(d.value)}</span>
-                  <span className="text-[10px] tabular-nums text-[#F5C518] w-10 text-right">{pct.toFixed(1)}%</span>
+                  <span className="text-[10px] tabular-nums text-primary w-10 text-right">{pct.toFixed(1)}%</span>
                 </button>
               );
             })}
@@ -376,8 +376,8 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-medium transition border',
                 compareMode === m
-                  ? 'bg-[#F5C518] text-black border-[#F5C518]'
-                  : 'bg-transparent text-muted-foreground border-[#1F2937] hover:border-[#F5C518]/40'
+                  ? 'bg-primary text-black border-primary'
+                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/40'
               )}>
               {m === 'volume' ? 'Volume (contratos)' : 'Financeiro'}
             </button>
@@ -394,14 +394,14 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
                 <Legend wrapperStyle={{ paddingTop: 8 }} />
                 {isVolume ? (
                   <>
-                    <Bar dataKey="total" name="Total" fill="#9CA3AF" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="total" name="Total" fill="#6B7076" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="protocolados" name="Protocolados" fill="#00BCD4" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="exitos" name="Êxitos" fill="#22C55E" radius={[4, 4, 0, 0]} />
                   </>
                 ) : (
                   <>
-                    <Bar dataKey="fatEsperado" name="Fat. esperado" fill="#FCD34D" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="fatReal" name="Fat. real" fill="#F5C518" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="fatEsperado" name="Fat. esperado" fill="#C9A54A" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="fatReal" name="Fat. real" fill="#B8892B" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="valorExito" name="Valor êxito" fill="#22C55E" radius={[4, 4, 0, 0]} />
                   </>
                 )}
@@ -550,7 +550,7 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
   }
 
   const InsightCard = ({ icon: Icon, label, name, value, color }: { icon: React.ElementType; label: string; name: string; value: string; color: string }) => (
-    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#111827] border border-[#1F2937]">
+    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-card border border-border">
       <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${color}20`, color }}>
         <Icon className="w-4 h-4" />
       </div>
@@ -566,7 +566,7 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
     <>
       {insights && view !== 'table' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
-          <InsightCard icon={Trophy} color="#F5C518" label="Líder em faturamento" name={insights.lider.nome} value={brl(insights.lider.fatReal)} />
+          <InsightCard icon={Trophy} color="#B8892B" label="Líder em faturamento" name={insights.lider.nome} value={brl(insights.lider.fatReal)} />
           {insights.maiorTaxa && <InsightCard icon={Zap} color="#22C55E" label="Maior taxa de êxito" name={insights.maiorTaxa.nome} value={`${insights.maiorTaxa.taxaExito.toFixed(1)}%`} />}
           <InsightCard icon={Boxes} color="#00BCD4" label="Maior volume" name={insights.volume.nome} value={`${insights.volume.total} contratos`} />
           {insights.rapido && <InsightCard icon={Timer} color="#8B5CF6" label="Mais rápido p/ recebimento" name={insights.rapido.nome} value={`${insights.rapido.tempoMedio.toFixed(0)} dias`} />}
@@ -586,7 +586,7 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
             <h3 className="font-semibold text-foreground">Performance por Produto</h3>
             <p className="text-xs text-muted-foreground">Clique em um produto para filtrar a lista abaixo</p>
           </div>
-          <div className="flex items-center gap-1 rounded-lg border border-[#1F2937] p-0.5 bg-[#0A0B0F]/40">
+          <div className="flex items-center gap-1 rounded-lg border border-border p-0.5 bg-card/40">
             {VIEWS.map(v => {
               const Icon = v.icon;
               const active = view === v.v;
@@ -595,7 +595,7 @@ export function PerformancePorProduto({ rows, products, onSelectProduct }: Props
                   title={v.label}
                   className={cn(
                     'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition',
-                    active ? 'bg-[#F5C518] text-black' : 'text-muted-foreground hover:text-foreground'
+                    active ? 'bg-primary text-black' : 'text-muted-foreground hover:text-foreground'
                   )}>
                   <Icon className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">{v.label}</span>

@@ -99,7 +99,7 @@ export function PeriodSelector({ value, onChange, className, triggerClassName }:
 
   return (
     <div className={cn('flex items-center gap-2 flex-wrap', className)}>
-      <div className="inline-flex rounded-full border border-[#1F2937] bg-[#111827] p-0.5">
+      <div className="inline-flex rounded-full border border-border bg-card p-0.5">
         {([
           { k: 'month' as const, lbl: 'Mês' },
           { k: 'year' as const, lbl: 'Ano' },
@@ -112,8 +112,8 @@ export function PeriodSelector({ value, onChange, className, triggerClassName }:
             className={cn(
               'px-3 py-1 rounded-full text-[11px] font-medium transition-colors',
               kind === opt.k
-                ? 'bg-[#F5C518]/15 text-[#F5C518]'
-                : 'text-[#9CA3AF] hover:text-[#F9FAFB]',
+                ? 'bg-primary/15 text-primary'
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             {opt.lbl}
@@ -123,7 +123,7 @@ export function PeriodSelector({ value, onChange, className, triggerClassName }:
 
       {kind === 'month' && (
         <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className={cn('w-[200px] capitalize bg-[#111827] border-[#1F2937]', triggerClassName)}>
+          <SelectTrigger className={cn('w-[200px] capitalize bg-card border-border', triggerClassName)}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="max-h-80">
@@ -134,7 +134,7 @@ export function PeriodSelector({ value, onChange, className, triggerClassName }:
 
       {kind === 'year' && (
         <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className={cn('w-[120px] bg-[#111827] border-[#1F2937]', triggerClassName)}>
+          <SelectTrigger className={cn('w-[120px] bg-card border-border', triggerClassName)}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -150,8 +150,8 @@ export function PeriodSelector({ value, onChange, className, triggerClassName }:
               <Button
                 variant="outline"
                 className={cn(
-                  'h-9 px-3 text-xs font-normal bg-[#111827] border-[#1F2937] text-[#F9FAFB] hover:bg-[#131b2c]',
-                  !fromDate && 'text-[#9CA3AF]',
+                  'h-9 px-3 text-xs font-normal bg-card border-border text-foreground hover:bg-card',
+                  !fromDate && 'text-muted-foreground',
                 )}
               >
                 <CalendarIcon className="w-3.5 h-3.5 mr-1.5" />
@@ -168,14 +168,14 @@ export function PeriodSelector({ value, onChange, className, triggerClassName }:
               />
             </PopoverContent>
           </Popover>
-          <span className="text-[#9CA3AF] text-xs">até</span>
+          <span className="text-muted-foreground text-xs">até</span>
           <Popover open={openTo} onOpenChange={setOpenTo}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  'h-9 px-3 text-xs font-normal bg-[#111827] border-[#1F2937] text-[#F9FAFB] hover:bg-[#131b2c]',
-                  !toDate && 'text-[#9CA3AF]',
+                  'h-9 px-3 text-xs font-normal bg-card border-border text-foreground hover:bg-card',
+                  !toDate && 'text-muted-foreground',
                 )}
               >
                 <CalendarIcon className="w-3.5 h-3.5 mr-1.5" />

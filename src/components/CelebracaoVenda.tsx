@@ -123,17 +123,17 @@ export function CelebracaoVenda() {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-500">
       <div className="text-center space-y-6 px-8 animate-in zoom-in-95 duration-700">
-        <p className="text-2xl md:text-3xl font-bold tracking-[0.3em] text-[#F5C518] uppercase">🎉 Parabéns! 🎉</p>
+        <p className="text-2xl md:text-3xl font-bold tracking-[0.3em] text-primary uppercase">🎉 Parabéns! 🎉</p>
 
         <div
           className="mx-auto w-44 h-44 md:w-60 md:h-60 rounded-full p-2 animate-[spin_12s_linear_infinite]"
-          style={tier ? anelStyleDoTier(tier) : { background: '#F5C518', boxShadow: '0 0 60px rgba(245,197,24,0.45)' }}
+          style={tier ? anelStyleDoTier(tier) : { background: '#B8892B', boxShadow: '0 0 60px rgba(245,197,24,0.45)' }}
         >
-          <div className="w-full h-full rounded-full overflow-hidden bg-[#111827] flex items-center justify-center animate-[spin_12s_linear_infinite_reverse] border-4 border-black/40">
+          <div className="w-full h-full rounded-full overflow-hidden bg-card flex items-center justify-center animate-[spin_12s_linear_infinite_reverse] border-4 border-black/40">
             {atual.fotoUrl ? (
               <img src={atual.fotoUrl} alt={atual.closerNome} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-6xl md:text-7xl font-bold" style={{ color: tier?.cor ?? '#F5C518' }}>{iniciais(atual.closerNome)}</span>
+              <span className="text-6xl md:text-7xl font-bold" style={{ color: tier?.cor ?? '#B8892B' }}>{iniciais(atual.closerNome)}</span>
             )}
           </div>
         </div>
@@ -144,7 +144,7 @@ export function CelebracaoVenda() {
             {atual.nivel && (
               <span
                 className="px-4 py-1.5 rounded-full text-sm md:text-base font-semibold"
-                style={tier ? badgeStyleDoTier(tier) : { background: 'rgba(245,197,24,0.15)', color: '#F5C518', border: '1px solid rgba(245,197,24,0.4)' }}
+                style={tier ? badgeStyleDoTier(tier) : { background: 'rgba(245,197,24,0.15)', color: '#B8892B', border: '1px solid rgba(245,197,24,0.4)' }}
               >
                 {tier ? `${tier.nome} · ` : ''}{atual.nivel}
               </span>
@@ -158,8 +158,8 @@ export function CelebracaoVenda() {
         </div>
 
         <div className="space-y-1">
-          <p className="text-xl md:text-2xl text-gray-300">fechou <span className="font-semibold text-white">{atual.produto}</span></p>
-          <p className="text-5xl md:text-7xl font-bold text-[#F5C518] tabular-nums">{brl(atual.valor)}</p>
+          <p className="text-xl md:text-2xl text-muted-foreground">fechou <span className="font-semibold text-white">{atual.produto}</span></p>
+          <p className="text-5xl md:text-7xl font-bold text-primary tabular-nums">{brl(atual.valor)}</p>
         </div>
       </div>
     </div>

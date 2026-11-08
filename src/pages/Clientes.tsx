@@ -258,25 +258,25 @@ export default function Clientes() {
                           </li>
                           {(eff === 'qualificado' || eff === 'exito' || eff === 'sem_exito') && (
                             <li className="text-muted-foreground">
-                              <span className="text-[#00BCD4] font-medium">Qualificado</span> — {fmtDate(ct.data_protocolo)}
+                              <span className="text-cyan-700 font-medium">Qualificado</span> — {fmtDate(ct.data_protocolo)}
                               {ct.tipo_processo && <span className="capitalize"> · {ct.tipo_processo}</span>}
                             </li>
                           )}
                           {eff === 'desqualificado' && (
                             <li className="text-muted-foreground">
-                              <span className="text-[#EF4444] font-medium">Desqualificado</span>
+                              <span className="text-red-600 font-medium">Desqualificado</span>
                               {ct.motivo_desqualificacao && <> — {ct.motivo_desqualificacao}</>}
                             </li>
                           )}
                           {eff === 'exito' && (
                             <li className="text-muted-foreground">
-                              <span className="text-[#22C55E] font-medium">Êxito</span> — {fmtDate(ct.data_recebimento)}
+                              <span className="text-emerald-600 font-medium">Êxito</span> — {fmtDate(ct.data_recebimento)}
                               {' · '}{formatCurrency(Number(ct.valor_honorarios_recebidos) || 0)} recebido
                             </li>
                           )}
                           {eff === 'sem_exito' && (
                             <li className="text-muted-foreground">
-                              <span className="text-[#6B7280] font-medium">Sem êxito</span>
+                              <span className="text-muted-foreground font-medium">Sem êxito</span>
                             </li>
                           )}
                           <li className="text-[10px] text-muted-foreground/70 italic mt-1">Status atual: {STATUS_LABEL[eff]}</li>

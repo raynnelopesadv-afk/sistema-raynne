@@ -73,7 +73,7 @@ function formatCurrency(v: number) {
 
 function SummaryCard({ label, value, sub, accent, info }: { label: string; value: string; sub?: string; accent: string; info?: string }) {
   return (
-    <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-6 shadow-sm">
+    <div className="rounded-2xl bg-card border border-border p-6 shadow-sm">
       <div className="flex items-center gap-1.5">
         <p className="text-xs text-muted-foreground uppercase tracking-wide">{label}</p>
         {info && (
@@ -459,8 +459,8 @@ export default function Fechamento() {
     return (
       <span
         title={`Closer: ${nome.replace(/\[.*?\]\s*/g, '')}`}
-        className="inline-flex items-center justify-center rounded-full overflow-hidden shrink-0 bg-[#111827] font-semibold"
-        style={{ width: size, height: size, border: `2px solid ${ring}`, fontSize: size * 0.38, color: tier?.cor ?? '#9CA3AF' }}
+        className="inline-flex items-center justify-center rounded-full overflow-hidden shrink-0 bg-card font-semibold"
+        style={{ width: size, height: size, border: `2px solid ${ring}`, fontSize: size * 0.38, color: tier?.cor ?? '#6B7076' }}
       >
         {meta?.fotoUrl
           ? <img src={meta.fotoUrl} alt={nome} className="w-full h-full object-cover" />
@@ -485,7 +485,7 @@ export default function Fechamento() {
             <Button
               onClick={() => setRetroOpen(true)}
               variant="outline"
-              className="gap-2 border-[#F5C518]/60 text-[#F5C518] hover:bg-[#F5C518]/10 hover:text-[#F5C518]"
+              className="gap-2 border-primary/60 text-primary hover:bg-primary/10 hover:text-primary"
             >
               <History className="w-4 h-4" /> Cadastrar Fechamento Retroativo
             </Button>
@@ -500,14 +500,14 @@ export default function Fechamento() {
       <DivisaoSelector value={divisao} onChange={setDivisao} />
 
       {/* Barra consolidada de filtros */}
-      <div className="rounded-xl bg-[#111827] border border-[#1F2937] p-4 space-y-3">
+      <div className="rounded-xl bg-card border border-border p-4 space-y-3">
         {/* Linha 1: busca (larga, ocupa a linha em telas pequenas) + visão à direita */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex-1 min-w-[240px]"><ClienteSearchInput value={search} onChange={setSearch} /></div>
           <div className="flex items-center gap-3 shrink-0">
             <ViewToggle value={view} onChange={setView} />
             {view === 'kanban' && (
-              <label className="flex items-center gap-2 rounded-lg border border-[#1F2937] px-3 py-1.5 text-xs text-muted-foreground cursor-pointer">
+              <label className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground cursor-pointer">
                 <input type="checkbox" checked={hideEmptyCols} onChange={(e) => setHideEmptyCols(e.target.checked)} className="accent-[#F5C518]" />
                 Ocultar vazias
               </label>
@@ -561,7 +561,7 @@ export default function Fechamento() {
       {/* Cards de resumo */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard label="Fechamentos" value={String(totals.total)} accent="#00BCD4" info="Contratos fechados no período e filtros selecionados." />
-        <SummaryCard label="Valor total" value={formatCurrency(totals.valor)} accent="#D4AF37" info="Soma do valor dos contratos listados." />
+        <SummaryCard label="Valor total" value={formatCurrency(totals.valor)} accent="#B8892B" info="Soma do valor dos contratos listados." />
         <SummaryCard label="Pendentes de protocolo" value={String(totals.pendentes)} accent="#F59E0B" info="Contratos fechados que ainda não foram protocolados pelo time técnico." />
         <SummaryCard label="Protocolados" value={String(totals.qualificados)} sub={`Taxa ${totals.taxaQual.toFixed(1)}%`} accent="#00BCD4" info="Contratos que avançaram do pendente (protocolados ou com resultado). A taxa é sobre o total listado." />
       </div>
@@ -569,7 +569,7 @@ export default function Fechamento() {
       {isLoading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-12 text-center space-y-3">
+        <div className="rounded-2xl bg-card border border-border p-12 text-center space-y-3">
           <FileText className="w-12 h-12 mx-auto text-muted-foreground/50" />
           <p className="text-foreground text-lg font-medium">
             {debouncedSearch ? `Nenhum processo encontrado para "${debouncedSearch}"` : 'Nenhum fechamento encontrado'}
@@ -598,7 +598,7 @@ export default function Fechamento() {
             const nome = closerMap[closerId] ?? 'Sem closer';
             const pct = rows.length ? (qual / rows.length) * 100 : 0;
             return (
-              <div key={closerId} className="rounded-2xl bg-[#111827] border border-[#1F2937] overflow-hidden">
+              <div key={closerId} className="rounded-2xl bg-card border border-border overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setCollapsed(s => ({ ...s, [closerId]: !s[closerId] }))}
@@ -638,7 +638,7 @@ export default function Fechamento() {
                         {rows.map(c => (
                           <TableRow
                             key={c.id}
-                            className={`border-b border-gray-800 hover:bg-gray-900/50 cursor-pointer ${c.incompleto ? 'bg-red-500/[0.07]' : ''}`}
+                            className={`border-b border-gray-800 hover:bg-secondary/50 cursor-pointer ${c.incompleto ? 'bg-red-500/[0.07]' : ''}`}
                             onClick={(e) => {
                               if ((e.target as HTMLElement).closest('button')) return;
                               setDetail(c);
@@ -669,7 +669,7 @@ export default function Fechamento() {
                                 )}
                               </div>
                             </TableCell>
-                            <TableCell className="py-4 font-mono text-sm text-gray-400 whitespace-nowrap">
+                            <TableCell className="py-4 font-mono text-sm text-muted-foreground whitespace-nowrap">
                               {c.cpf ? <><HighlightMatch text={formatCPFDisplay(c.cpf)} query={debouncedSearch} field="cpf" />{!cpfValido(c.cpf) && <span className="ml-1 text-warning" title="CPF com quantidade de dígitos inválida ou dígito verificador incorreto — confira na origem">⚠</span>}<CopyBtn value={formatCPFDisplay(c.cpf)} label="CPF copiado" /></> : '—'}
                             </TableCell>
                             <TableCell className="py-4 text-muted-foreground whitespace-nowrap">{c.telefone ? <>{c.telefone}{(c.uf || ufFromTelefone(c.telefone)) && <span className="ml-1.5 text-[10px] px-1 py-0.5 rounded bg-primary/10 text-primary align-middle">{c.uf || ufFromTelefone(c.telefone)}</span>}<CopyBtn value={c.telefone} label="Telefone copiado" /></> : '—'}</TableCell>
@@ -724,7 +724,7 @@ export default function Fechamento() {
                 {!isCollapsed && (
                   <div className="md:hidden divide-y divide-gray-800">
                     {rows.map(c => (
-                      <div key={c.id} className={`p-4 space-y-2 active:bg-gray-900/50 ${c.incompleto ? 'border-l-2 border-l-red-500 bg-red-500/[0.05]' : ''}`} onClick={() => setDetail(c)}>
+                      <div key={c.id} className={`p-4 space-y-2 active:bg-secondary/50 ${c.incompleto ? 'border-l-2 border-l-red-500 bg-red-500/[0.05]' : ''}`} onClick={() => setDetail(c)}>
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="font-medium text-foreground truncate inline-flex items-center gap-1.5">
@@ -733,7 +733,7 @@ export default function Fechamento() {
                                 {c.fechado_por_ia && <span className="inline-flex px-1.5 py-0.5 rounded-full text-[10px] bg-purple-500/15 text-purple-400" title="Fechamento por IA — comissão do fechamento sai junto com o protocolo">🤖 IA</span>}
                               <HighlightMatch text={c.nome_cliente} query={debouncedSearch} field="name" />
                             </p>
-                            {c.cpf && <p className="text-[11px] font-mono text-gray-400"><HighlightMatch text={formatCPFDisplay(c.cpf)} query={debouncedSearch} field="cpf" />{!cpfValido(c.cpf) && <span className="ml-1 text-warning" title="CPF inválido — confira na origem">⚠</span>}<CopyBtn value={formatCPFDisplay(c.cpf)} label="CPF copiado" /></p>}
+                            {c.cpf && <p className="text-[11px] font-mono text-muted-foreground"><HighlightMatch text={formatCPFDisplay(c.cpf)} query={debouncedSearch} field="cpf" />{!cpfValido(c.cpf) && <span className="ml-1 text-warning" title="CPF inválido — confira na origem">⚠</span>}<CopyBtn value={formatCPFDisplay(c.cpf)} label="CPF copiado" /></p>}
                             <p className="text-[11px] text-muted-foreground mt-0.5">{productMap[c.product_id ?? ''] ?? '—'} · {fmtDateCompact(c.fechado_em ?? c.data_fechamento)} · {origemLabel(c.origem_lead)}</p>
                             {c.incompleto && <p className="text-[10px] text-red-400 mt-0.5">⚠ Falta: {camposFaltando(c).join(', ')}</p>}
                           </div>

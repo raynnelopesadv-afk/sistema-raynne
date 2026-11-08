@@ -14,25 +14,27 @@ import {
 } from '@/components/ui/sidebar';
 import { BRAND } from '@/config/brand';
 
-const navItems = [
-  { title: 'Painel Jurídico', url: '/', icon: Gavel },
-  { title: 'Prazos e Audiências', url: '/agenda-juridica', icon: CalendarClock },
-  { title: 'Publicações', url: '/publicacoes', icon: Newspaper },
-  { title: 'INSS', url: '/inss', icon: Landmark },
-  { title: 'Equipe', url: '/equipe', icon: UsersRound },
-  { title: 'Painel Comercial', url: '/comercial', icon: LayoutDashboard },
-  { title: 'Faturamento', url: '/faturamento', icon: DollarSign },
-  { title: 'Fechamento', url: '/fechamento', icon: CheckCircle2 },
-  { title: 'Comissões', url: '/comissoes', icon: Wallet },
-  { title: 'Clientes', url: '/clientes', icon: Users },
-  { title: 'Consulta', url: '/consulta', icon: Search },
-  { title: 'Meta Ads', url: '/meta-ads', icon: Megaphone },
-  { title: 'Funis', url: '/funis', icon: GitBranch },
-  { title: 'Produtos', url: '/produtos', icon: Package },
-  { title: 'Processos', url: '/processos', icon: Scale },
-  { title: 'Protocolos', url: '/protocolos', icon: FileCheck2 },
-  { title: 'Aproveitamento', url: '/qualificacao', icon: Percent },
-  { title: 'Config', url: '/config', icon: Settings },
+type Item = { title: string; url: string; icon: typeof Gavel; grupo: 'Jurídico' | 'Comercial' | 'Escritório' };
+
+const navItems: Item[] = [
+  { title: 'Painel Jurídico', url: '/', icon: Gavel, grupo: 'Jurídico' },
+  { title: 'Prazos e Audiências', url: '/agenda-juridica', icon: CalendarClock, grupo: 'Jurídico' },
+  { title: 'Publicações', url: '/publicacoes', icon: Newspaper, grupo: 'Jurídico' },
+  { title: 'INSS', url: '/inss', icon: Landmark, grupo: 'Jurídico' },
+  { title: 'Equipe', url: '/equipe', icon: UsersRound, grupo: 'Escritório' },
+  { title: 'Painel Comercial', url: '/comercial', icon: LayoutDashboard, grupo: 'Comercial' },
+  { title: 'Faturamento', url: '/faturamento', icon: DollarSign, grupo: 'Comercial' },
+  { title: 'Fechamento', url: '/fechamento', icon: CheckCircle2, grupo: 'Comercial' },
+  { title: 'Comissões', url: '/comissoes', icon: Wallet, grupo: 'Comercial' },
+  { title: 'Clientes', url: '/clientes', icon: Users, grupo: 'Comercial' },
+  { title: 'Consulta', url: '/consulta', icon: Search, grupo: 'Comercial' },
+  { title: 'Meta Ads', url: '/meta-ads', icon: Megaphone, grupo: 'Comercial' },
+  { title: 'Funis', url: '/funis', icon: GitBranch, grupo: 'Comercial' },
+  { title: 'Produtos', url: '/produtos', icon: Package, grupo: 'Comercial' },
+  { title: 'Processos', url: '/processos', icon: Scale, grupo: 'Jurídico' },
+  { title: 'Protocolos', url: '/protocolos', icon: FileCheck2, grupo: 'Jurídico' },
+  { title: 'Aproveitamento', url: '/qualificacao', icon: Percent, grupo: 'Comercial' },
+  { title: 'Config', url: '/config', icon: Settings, grupo: 'Escritório' },
 ];
 
 export function AppSidebar() {
@@ -42,37 +44,46 @@ export function AppSidebar() {
   const { isAgencia } = useUserRole();
   const { can } = usePermissions();
   const pendentes = useSolicitacoesPendentes();
-  const items = (isAgencia ? navItems.filter(i => i.url === '/meta-ads') : navItems).filter(i => {
+  const ordem = { 'Jurídico': 0, 'Comercial': 1, 'Escritório': 2 } as const;
+  const itemsFiltrados = (isAgencia ? navItems.filter(i => i.url === '/meta-ads') : navItems).filter(i => {
     if (i.url === '/faturamento') return can('ver_faturamento');
     if (i.url === '/comissoes') return can('ver_comissoes');
     if (i.url === '/meta-ads') return can('ver_meta_ads');
     return true;
   });
+  const grupos = (['Jurídico', 'Comercial', 'Escritório'] as const)
+    .map(g => ({ nome: g, itens: itemsFiltrados.filter(i => i.grupo === g) }))
+    .filter(g => g.itens.length > 0)
+    .sort((a, b) => ordem[a.nome] - ordem[b.nome]);
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <div className="p-4 flex items-center gap-3 border-b border-sidebar-border">
-        <img src={BRAND.logoUrl} alt={BRAND.appName} className="w-10 h-10 rounded-full object-cover shrink-0 ring-1 ring-primary/40" />
+        <img src={BRAND.emblemaUrl} alt={BRAND.appName} className={collapsed ? 'h-8 w-auto shrink-0' : 'h-11 w-auto shrink-0'} />
         {!collapsed && (
           <div>
-            <p className="font-semibold text-sm text-sidebar-accent-foreground">{BRAND.appName}</p>
-            <p className="text-xs text-sidebar-foreground">{BRAND.companyName}</p>
+            <p className="marca-rl font-semibold text-[14px] whitespace-nowrap text-[hsl(41_55%_62%)] leading-tight">{BRAND.appName}</p>
+            <p className="text-[11px] text-sidebar-foreground leading-snug mt-0.5 whitespace-nowrap">{BRAND.sidebarSubtitle}</p>
           </div>
         )}
       </div>
 
       <SidebarContent className="py-1 gap-0">
-        <SidebarGroup>
+        {grupos.map(grupo => (
+        <SidebarGroup key={grupo.nome} className="py-1">
+          {!collapsed && (
+            <p className="px-3 pt-2 pb-1 text-[11px] font-medium text-sidebar-foreground/60">{grupo.nome}</p>
+          )}
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {items.map((item) => (
+              {grupo.itens.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
                       end={item.url === '/'}
                       className="flex items-center gap-2.5 px-3 py-1 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      activeClassName="bg-sidebar-accent text-[hsl(41_55%_62%)] font-medium"
                     >
                       <span className="relative shrink-0">
                         <item.icon className="w-5 h-5" />
@@ -97,6 +108,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        ))}
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">

@@ -7,6 +7,8 @@ import {
   type ItemAgenda, type RequerimentoInss,
 } from '@/lib/juridico';
 import { UrgenciaBadge, KpiJuridico } from '@/components/juridico/UrgenciaBadge';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 const FONTE_SYNC: Record<string, string> = {
   'tramitacao publicacoes': 'Tramitação',
@@ -18,7 +20,20 @@ const FONTE_SYNC: Record<string, string> = {
 
 export default function PainelJuridico() {
   const nav = useNavigate();
+  const { user } = useAuth();
   const hoje = hojeISO();
+
+  const nome = useQuery({
+    queryKey: ['meu-nome', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user!.id).maybeSingle();
+      const n = data?.display_name || user?.email?.split('@')[0] || '';
+      return n.split(/[\s.]/)[0].replace(/^./, c => c.toUpperCase());
+    },
+  });
+  const hora = new Date().getHours();
+  const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
   const em7 = somaDias(hoje, 7);
   const em15 = somaDias(hoje, 15);
 
@@ -78,8 +93,13 @@ export default function PainelJuridico() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Painel Jurídico</h1>
-          <p className="text-sm text-muted-foreground">Prazos, audiências, publicações e INSS — {fmtData(hoje, "EEEE, dd 'de' MMMM")}</p>
+          <p className="text-sm text-muted-foreground first-letter:uppercase">{fmtData(hoje, "EEEE, dd 'de' MMMM 'de' yyyy")}</p>
+          <h1 className="titulo-pagina text-3xl md:text-4xl mt-1">{saudacao}{nome.data ? `, ${nome.data}` : ''}.</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {atrasados.length + deHoje.length === 0
+              ? 'Nada vencido nem vencendo hoje. Escritório em dia.'
+              : `${atrasados.length + deHoje.length} ${atrasados.length + deHoje.length === 1 ? 'prazo pede' : 'prazos pedem'} atenção hoje.`}
+          </p>
         </div>
         <div className="hidden md:flex flex-wrap gap-2 text-[11px] text-muted-foreground" title="Última atualização automática de cada fonte">
           {Object.entries(sync.data ?? {}).map(([fonte, s]) => (

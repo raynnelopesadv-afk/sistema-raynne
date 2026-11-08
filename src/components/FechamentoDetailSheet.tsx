@@ -113,8 +113,8 @@ export function FechamentoDetailSheet({ open, onClose, contrato, closerNome, pro
             </div>
 
             {isRetro && (
-              <div className="rounded-2xl border border-[#4B5563]/40 bg-[#1F2937]/40 p-4 space-y-2">
-                <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#9CA3AF]">
+              <div className="rounded-2xl border border-border/40 bg-secondary/40 p-4 space-y-2">
+                <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                   <History className="w-3.5 h-3.5" />
                   Cadastro retroativo
                 </div>

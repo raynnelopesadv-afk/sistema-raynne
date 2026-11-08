@@ -214,7 +214,7 @@ export default function Processos() {
       return (
         <TableRow
           key={c.id}
-          className={`${c.cadastro_retroativo ? 'border-l-2 border-l-[#6B7280] ' : ''}${canWrite ? 'cursor-pointer hover:bg-[#0F1117]' : ''}`}
+          className={`${c.cadastro_retroativo ? 'border-l-2 border-l-[#6B7280] ' : ''}${canWrite ? 'cursor-pointer hover:bg-card' : ''}`}
           onClick={canWrite ? (e) => {
             const target = e.target as HTMLElement;
             if (target.closest('button') || target.closest('a')) return;
@@ -241,8 +241,8 @@ export default function Processos() {
           <TableCell>{formatCurrency(Number(c.valor) || 0)}</TableCell>
           <TableCell className="text-xs">{c.data_protocolo ? new Date(c.data_protocolo + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</TableCell>
           <TableCell className="text-xs">
-            {c.teve_exito === true && <span className="text-[#22C55E]">Sim · {formatCurrency(Number(c.valor_exito) || 0)}</span>}
-            {c.teve_exito === false && <span className="text-[#6B7280]">Não</span>}
+            {c.teve_exito === true && <span className="text-emerald-600">Sim · {formatCurrency(Number(c.valor_exito) || 0)}</span>}
+            {c.teve_exito === false && <span className="text-muted-foreground">Não</span>}
             {c.teve_exito === null && <span className="text-muted-foreground">—</span>}
           </TableCell>
           <TableCell className="text-right">
@@ -276,7 +276,7 @@ export default function Processos() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 text-xs gap-1 border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37]/10 hover:text-[#D4AF37]"
+                  className="h-7 text-xs gap-1 border-primary/40 text-primary hover:bg-primary/10 hover:text-primary"
                   onClick={() => setEditOf(c)}
                   title="Editar informações do contrato"
                 >
@@ -344,7 +344,7 @@ export default function Processos() {
           <Button
             onClick={() => setRetroOpen(true)}
             variant="outline"
-            className="gap-2 border-[#F5C518]/60 text-[#F5C518] hover:bg-[#F5C518]/10 hover:text-[#F5C518]"
+            className="gap-2 border-primary/60 text-primary hover:bg-primary/10 hover:text-primary"
           >
             <History className="w-4 h-4" /> Cadastrar Fechamento Retroativo
           </Button>
@@ -710,7 +710,7 @@ function DesistenciaDialog({ contrato, onClose, onSuccess }: { contrato: Contrat
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button className="bg-[#F97316] hover:bg-[#F97316]/90 text-white" onClick={() => mut.mutate()} disabled={mut.isPending}>
+          <Button className="bg-orange-600 hover:bg-orange-600/90 text-white" onClick={() => mut.mutate()} disabled={mut.isPending}>
             {mut.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Marcar desistência'}
           </Button>
         </DialogFooter>

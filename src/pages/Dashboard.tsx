@@ -17,6 +17,7 @@ import { PeriodSelector, detectPeriodKind } from '@/components/PeriodSelector';
 import { getEffectiveStatus } from '@/lib/contrato-status';
 import { ProjecaoExito } from '@/components/ProjecaoExito';
 import { BRAND } from '@/config/brand';
+import { MetaDoDia } from '@/components/MetaDoDia';
 import { cn } from '@/lib/utils';
 
 type Divisao = 'advogados' | 'educacao';
@@ -67,37 +68,37 @@ interface PremiumKpiProps {
 function PremiumKpi({ label, value, hint, icon: Icon, tone = 'gold', compact, info }: PremiumKpiProps) {
   const toneMap: Record<Tone, { num: string; chip: string; ring: string }> = {
     cyan: {
-      num: 'text-[#00BCD4]',
-      chip: 'bg-[#00BCD4]/10 text-[#00BCD4] border border-[#00BCD4]/20',
-      ring: 'hover:border-[#00BCD4]/40',
+      num: 'text-cyan-700',
+      chip: 'bg-cyan-700/10 text-cyan-700 border border-cyan-700/20',
+      ring: 'hover:border-cyan-700/40',
     },
     gold: {
-      num: 'text-[#F5C518]',
-      chip: 'bg-[#F5C518]/10 text-[#F5C518] border border-[#F5C518]/20',
-      ring: 'hover:border-[#F5C518]/40',
+      num: 'text-primary',
+      chip: 'bg-primary/10 text-primary border border-primary/20',
+      ring: 'hover:border-primary/40',
     },
     'gold-strong': {
-      num: 'text-[#F5C518]',
-      chip: 'bg-[#F5C518]/15 text-[#F5C518] border border-[#F5C518]/30',
-      ring: 'border-[#F5C518]/30 hover:border-[#F5C518]/60 shadow-[0_0_0_1px_hsl(46_91%_53%/0.15)]',
+      num: 'text-primary',
+      chip: 'bg-primary/15 text-primary border border-primary/30',
+      ring: 'border-primary/30 hover:border-primary/60 shadow-[0_0_0_1px_hsl(46_91%_53%/0.15)]',
     },
   };
   const t = toneMap[tone];
   return (
     <div
       className={cn(
-        'group rounded-2xl bg-[#111827] border border-[#1F2937] p-5 shadow-lg transition-all duration-300 min-w-0 overflow-hidden',
-        'hover:bg-[#131b2c]',
+        'group rounded-2xl bg-card border border-border p-5 shadow-lg transition-all duration-300 min-w-0 overflow-hidden',
+        'hover:bg-card',
         t.ring,
       )}
     >
       <div className="flex items-center justify-between mb-4 gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9CA3AF] leading-tight">{label}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground leading-tight">{label}</p>
           {info && (
             <Tooltip delayDuration={150}>
               <TooltipTrigger asChild>
-                <span className="cursor-help text-[#9CA3AF]/60 hover:text-[#9CA3AF] shrink-0" aria-label={`O que é ${label}?`}>
+                <span className="cursor-help text-muted-foreground/60 hover:text-muted-foreground shrink-0" aria-label={`O que é ${label}?`}>
                   <InfoIcon className="w-3 h-3" />
                 </span>
               </TooltipTrigger>
@@ -123,7 +124,7 @@ function PremiumKpi({ label, value, hint, icon: Icon, tone = 'gold', compact, in
       >
         {value}
       </p>
-      {hint && <p className="text-[11px] text-[#9CA3AF] mt-3 truncate">{hint}</p>}
+      {hint && <p className="text-[11px] text-muted-foreground mt-3 truncate">{hint}</p>}
     </div>
   );
 }
@@ -401,16 +402,16 @@ const Dashboard = () => {
       {/* === HEADER === */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[#F9FAFB]">Painel</h1>
-          <p className="text-sm text-[#9CA3AF] mt-1.5">Visão geral · {BRAND.companyName}</p>
+          <h1 className="titulo-pagina text-3xl text-foreground">Painel Comercial</h1>
+          <p className="text-sm text-muted-foreground mt-1.5">Fechamentos, metas e equipe de vendas</p>
           <div className="flex gap-2 mt-4">
             <button
               onClick={() => setDivisao('advogados')}
               className={cn(
                 'px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all',
                 divisao === 'advogados'
-                  ? 'bg-[#F5C518]/10 text-[#F5C518] border-[#F5C518]/30'
-                  : 'bg-[#111827] text-[#9CA3AF] border-[#1F2937] hover:text-[#F9FAFB] hover:border-gray-600',
+                  ? 'bg-primary/10 text-primary border-primary/30'
+                  : 'bg-card text-muted-foreground border-border hover:text-foreground hover:border-border-strong',
               )}
             >
               {BRAND.divisionLabels.advogados}
@@ -421,7 +422,7 @@ const Dashboard = () => {
                 'px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all',
                 divisao === 'educacao'
                   ? 'bg-accent/10 text-accent border-accent/30'
-                  : 'bg-[#111827] text-[#9CA3AF] border-[#1F2937] hover:text-[#F9FAFB] hover:border-gray-600',
+                  : 'bg-card text-muted-foreground border-border hover:text-foreground hover:border-border-strong',
               )}
             >
               {BRAND.divisionLabels.educacao}
@@ -433,8 +434,8 @@ const Dashboard = () => {
             className={cn(
               'flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-medium border cursor-pointer transition-all select-none',
               incluirRetro
-                ? 'bg-[#F5C518]/10 text-[#F5C518] border-[#F5C518]/30'
-                : 'bg-[#111827] text-[#9CA3AF] border-[#1F2937] hover:text-[#F9FAFB] hover:border-gray-600',
+                ? 'bg-primary/10 text-primary border-primary/30'
+                : 'bg-card text-muted-foreground border-border hover:text-foreground hover:border-border-strong',
             )}
             title="Quando ativo, contratos retroativos entram nas metas, rankings e gráficos."
           >
@@ -447,15 +448,15 @@ const Dashboard = () => {
             <span
               className={cn(
                 'w-3.5 h-3.5 rounded-sm border flex items-center justify-center transition-colors',
-                incluirRetro ? 'bg-[#F5C518] border-[#F5C518]' : 'border-[#4B5563]',
+                incluirRetro ? 'bg-primary border-primary' : 'border-border',
               )}
             >
-              {incluirRetro && <span className="w-2 h-2 bg-[#0A0B0F] rounded-[1px]" />}
+              {incluirRetro && <span className="w-2 h-2 bg-card rounded-[1px]" />}
             </span>
             Incluir retroativos
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-[#9CA3AF] uppercase tracking-[0.18em]">Período</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-[0.18em]">Período</span>
             <PeriodSelector value={metaMonth} onChange={setMetaMonth} />
           </div>
         </div>
@@ -487,17 +488,19 @@ const Dashboard = () => {
 
       {isLoading || !data ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#F5C518]" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : (
         <>
           {!hasData && (
-            <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-4 text-center text-sm text-[#9CA3AF]">
+            <div className="rounded-2xl bg-card border border-border p-4 text-center text-sm text-muted-foreground">
               Sem registros ainda para {divisao === 'advogados' ? 'Advogados' : 'Educação'} neste período — os painéis abaixo serão preenchidos conforme as vendas forem cadastradas.
             </div>
           )}
 
-          {/* === ROW DE KPIs PRINCIPAIS === */}
+          <MetaDoDia divisao={divisao} />
+
+      {/* === ROW DE KPIs PRINCIPAIS === */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <PremiumKpi label={periodKind === 'year' ? 'Fechamentos · Ano' : periodKind === 'all' ? 'Fechamentos · Total' : periodKind === 'range' ? 'Fechamentos · Período' : 'Fechamentos · Mês'} value={data.contagens.mes} icon={CalendarIcon} tone="cyan" info="Contratos fechados no período selecionado, considerando os filtros ativos." />
             <PremiumKpi label="Fechamentos · Semana" value={data.contagens.semana} icon={CalendarDays} tone="cyan" info="Contratos fechados na semana atual (segunda a domingo)." />
@@ -511,7 +514,7 @@ const Dashboard = () => {
 
           {/* === PROTOCOLOS === */}
           <div className="space-y-3">
-            <h2 className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.18em]">Protocolos</h2>
+            <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.18em]">Protocolos</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <PremiumKpi
                 label={periodKind === 'year' ? 'Taxa de Protocolo · Ano' : periodKind === 'all' ? 'Taxa de Protocolo · Total' : periodKind === 'range' ? 'Taxa de Protocolo · Período' : 'Taxa de Protocolo · Mês'}
@@ -550,7 +553,7 @@ const Dashboard = () => {
 
           {/* === QUALIFICAÇÃO === */}
           <div className="space-y-3">
-            <h2 className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.18em]">Qualificação</h2>
+            <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.18em]">Qualificação</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <PremiumKpi
                 label="Contratos Qualificados" info="Percentual de contratos qualificados entre os que já tiveram decisão (qualificado ou desqualificado) no período."
@@ -589,17 +592,17 @@ const Dashboard = () => {
           {/* === TENDÊNCIA DE FECHAMENTO + barra de progresso === */}
           <div className="space-y-3">
             <div className="flex items-baseline justify-between">
-              <h2 className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-[0.18em]">Tendência de fechamento</h2>
-              <span className="text-[11px] text-[#9CA3AF] tabular-nums">{Math.round(metaPct)}% da meta {periodKind === 'year' ? 'anual' : periodKind === 'all' ? 'total' : periodKind === 'range' ? 'do período' : 'mensal'}</span>
+              <h2 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.18em]">Tendência de fechamento</h2>
+              <span className="text-[11px] text-muted-foreground tabular-nums">{Math.round(metaPct)}% da meta {periodKind === 'year' ? 'anual' : periodKind === 'all' ? 'total' : periodKind === 'range' ? 'do período' : 'mensal'}</span>
             </div>
             <MonthCountdown
               contratosFechados={data.contagens.mes}
               contratosMeta={data.metaContratos || META_CONTRATOS[divisao]}
               refDate={metaMonthRef}
             />
-            <div className="h-1.5 w-full rounded-full bg-[#1F2937] overflow-hidden">
+            <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
               <div
-                className="h-full rounded-full bg-[#F5C518] transition-all duration-700"
+                className="h-full rounded-full bg-primary transition-all duration-700"
                 style={{ width: `${metaPct}%` }}
               />
             </div>
@@ -621,18 +624,18 @@ const Dashboard = () => {
           <SquadsSection squads={data.squadsData.squads} stats={data.squadsData.stats} closersBySquad={data.squadsData.closersBySquad} />
 
           {/* === VENDAS POR PRODUTO === */}
-          <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-6 shadow-lg">
+          <div className="rounded-2xl bg-card border border-border p-6 shadow-lg">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#F5C518]" />
-                <h3 className="text-sm font-semibold text-[#F9FAFB]">Vendas por Produto</h3>
+                <Sparkles className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">Vendas por Produto</h3>
               </div>
-              <span className="text-[11px] text-[#9CA3AF] tabular-nums">
+              <span className="text-[11px] text-muted-foreground tabular-nums">
                 {(vendasProduto ?? []).reduce((s, r) => s + r.total, 0)} contratos · {formatCurrency((vendasProduto ?? []).reduce((s, r) => s + r.valor, 0))}
               </span>
             </div>
             {(!vendasProduto || vendasProduto.length === 0) ? (
-              <p className="text-[#9CA3AF] text-sm py-6 text-center">Sem vendas no período</p>
+              <p className="text-muted-foreground text-sm py-6 text-center">Sem vendas no período</p>
             ) : (
               <div className="space-y-2">
                 {(() => {
@@ -640,15 +643,15 @@ const Dashboard = () => {
                   return vendasProduto.map((p, i) => {
                     const pct = (p.valor / max) * 100;
                     return (
-                      <div key={p.nome + i} className="px-3 py-2.5 rounded-xl hover:bg-[#1F2937]/60 transition-colors">
+                      <div key={p.nome + i} className="px-3 py-2.5 rounded-xl hover:bg-secondary/60 transition-colors">
                         <div className="flex items-center gap-3 mb-1.5">
-                          <p className="flex-1 min-w-0 text-sm font-medium text-[#F9FAFB] truncate">{p.nome}</p>
-                          <span className="text-xs text-[#9CA3AF] tabular-nums whitespace-nowrap">{p.total} {p.total === 1 ? 'venda' : 'vendas'}</span>
-                          <span className="text-sm font-semibold text-[#F5C518] tabular-nums whitespace-nowrap w-28 text-right">{formatCurrency(p.valor)}</span>
-                          <span className="text-xs text-[#22C55E] tabular-nums whitespace-nowrap w-28 text-right hidden sm:inline" title="Recebido">{formatCurrency(p.recebido)}</span>
+                          <p className="flex-1 min-w-0 text-sm font-medium text-foreground truncate">{p.nome}</p>
+                          <span className="text-xs text-muted-foreground tabular-nums whitespace-nowrap">{p.total} {p.total === 1 ? 'venda' : 'vendas'}</span>
+                          <span className="text-sm font-semibold text-primary tabular-nums whitespace-nowrap w-28 text-right">{formatCurrency(p.valor)}</span>
+                          <span className="text-xs text-emerald-600 tabular-nums whitespace-nowrap w-28 text-right hidden sm:inline" title="Recebido">{formatCurrency(p.recebido)}</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-[#1F2937] overflow-hidden">
-                          <div className="h-full rounded-full bg-[#F5C518] transition-all duration-700" style={{ width: `${pct}%` }} />
+                        <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                          <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
                     );
@@ -668,27 +671,27 @@ const Dashboard = () => {
               hoje={data.contagens.hoje}
               variant={divisao === 'advogados' ? 'gold' : 'purple'}
             />
-            <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-6 shadow-lg flex flex-col items-center justify-center transition-all hover:border-gray-600">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">Contagem Regressiva</p>
-              <p className="text-6xl font-bold text-[#00BCD4] tabular-nums leading-none mt-3">{regressiva}</p>
-              <p className="text-[11px] text-[#9CA3AF] mt-2 uppercase tracking-wider">dias úteis</p>
+            <div className="rounded-2xl bg-card border border-border p-6 shadow-lg flex flex-col items-center justify-center transition-all hover:border-border-strong">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Contagem Regressiva</p>
+              <p className="text-6xl font-bold text-cyan-700 tabular-nums leading-none mt-3">{regressiva}</p>
+              <p className="text-[11px] text-muted-foreground mt-2 uppercase tracking-wider">dias úteis</p>
             </div>
           </div>
 
           {/* === Bloco inferior: Ranking + Fechamento da Semana === */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="rounded-2xl bg-[#111827] border border-[#1F2937] p-6 shadow-lg transition-all hover:border-gray-600">
+            <div className="rounded-2xl bg-card border border-border p-6 shadow-lg transition-all hover:border-border-strong">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-[#F5C518]" />
-                  <h3 className="text-sm font-semibold text-[#F9FAFB]">Ranking de Vendas</h3>
+                  <Trophy className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-foreground">Ranking de Vendas</h3>
                 </div>
-                <button className="text-[11px] text-[#9CA3AF] hover:text-[#F9FAFB] flex items-center gap-1 transition-colors">
+                <button className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
                   Ver todos <ArrowUpRight className="w-3 h-3" />
                 </button>
               </div>
               {data.ranking.length === 0 ? (
-                <p className="text-[#9CA3AF] text-sm py-6 text-center">Sem dados ainda</p>
+                <p className="text-muted-foreground text-sm py-6 text-center">Sem dados ainda</p>
               ) : (
                 <div className="space-y-2">
                   {(() => {
@@ -697,23 +700,23 @@ const Dashboard = () => {
                       const esperado = Number(item.esperado ?? 0);
                       const pct = (esperado / max) * 100;
                       return (
-                        <div key={item.name} className="px-3 py-2.5 rounded-xl hover:bg-[#1F2937]/60 transition-colors">
+                        <div key={item.name} className="px-3 py-2.5 rounded-xl hover:bg-secondary/60 transition-colors">
                           <div className="flex items-center gap-3 mb-1.5">
                             <span className={cn(
                               'text-xs font-bold w-5 text-center tabular-nums',
-                              i === 0 && 'text-[#F5C518]',
-                              i === 1 && 'text-gray-300',
+                              i === 0 && 'text-primary',
+                              i === 1 && 'text-muted-foreground',
                               i === 2 && 'text-amber-700',
-                              i > 2 && 'text-[#9CA3AF]',
+                              i > 2 && 'text-muted-foreground',
                             )}>
                               {i + 1}
                             </span>
-                            <p className="flex-1 min-w-0 text-sm font-medium text-[#F9FAFB] truncate">{item.name}</p>
-                            <span className="text-sm font-semibold text-[#F5C518] tabular-nums whitespace-nowrap">{formatCurrency(esperado)}</span>
+                            <p className="flex-1 min-w-0 text-sm font-medium text-foreground truncate">{item.name}</p>
+                            <span className="text-sm font-semibold text-primary tabular-nums whitespace-nowrap">{formatCurrency(esperado)}</span>
                           </div>
-                          <div className="h-1.5 rounded-full bg-[#1F2937] overflow-hidden ml-8">
+                          <div className="h-1.5 rounded-full bg-secondary overflow-hidden ml-8">
                             <div
-                              className="h-full rounded-full bg-[#F5C518] transition-all duration-700"
+                              className="h-full rounded-full bg-primary transition-all duration-700"
                               style={{ width: `${pct}%` }}
                             />
                           </div>

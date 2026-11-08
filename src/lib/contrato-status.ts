@@ -35,12 +35,12 @@ export const STATUS_LABEL: Record<EffectiveStatus, string> = {
 
 // Cores conforme spec (#F59E0B, #00BCD4, #EF4444, #22C55E, #6B7280)
 export const STATUS_BADGE_CLASS: Record<EffectiveStatus, string> = {
-  pendente: 'bg-[#F59E0B]/15 text-[#F59E0B] border border-[#F59E0B]/30',
-  qualificado: 'bg-[#00BCD4]/15 text-[#00BCD4] border border-[#00BCD4]/30',
-  desqualificado: 'bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30',
-  desistencia: 'bg-[#F97316]/15 text-[#F97316] border border-[#F97316]/30',
-  exito: 'bg-[#22C55E]/15 text-[#22C55E] border border-[#22C55E]/30',
-  sem_exito: 'bg-[#6B7280]/15 text-[#9CA3AF] border border-[#6B7280]/30',
+  pendente: 'bg-amber-600/15 text-amber-600 border border-amber-600/30',
+  qualificado: 'bg-cyan-700/15 text-cyan-700 border border-cyan-700/30',
+  desqualificado: 'bg-red-600/15 text-red-600 border border-red-600/30',
+  desistencia: 'bg-orange-600/15 text-orange-600 border border-orange-600/30',
+  exito: 'bg-emerald-600/15 text-emerald-600 border border-emerald-600/30',
+  sem_exito: 'bg-muted-foreground/15 text-muted-foreground border border-[#6B7280]/30',
 };
 
 export function StatusBadgeClass(c: ContratoLike) {

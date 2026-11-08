@@ -219,8 +219,8 @@ export function ProcessoEditSheet({
   const transitions = useMemo<{ to: EffectiveStatus; label: string; color: string; icon: React.ElementType }[]>(() => {
     if (!eff) return [];
     return [
-      { to: 'qualificado' as const, label: 'Qualificar', color: '#00BCD4', icon: ScrollText },
-      { to: 'exito' as const, label: 'Marcar Êxito', color: '#22C55E', icon: CheckCircle2 },
+      { to: 'qualificado' as const, label: 'Qualificar', color: '#0E7490', icon: ScrollText },
+      { to: 'exito' as const, label: 'Marcar Êxito', color: '#15803D', icon: CheckCircle2 },
       { to: 'sem_exito' as const, label: 'Sem Êxito', color: '#6B7280', icon: MinusCircle },
       { to: 'desqualificado' as const, label: 'Desqualificar', color: '#EF4444', icon: XCircle },
     ];
@@ -230,7 +230,7 @@ export function ProcessoEditSheet({
     <Sheet open={!!contrato} onOpenChange={(v) => { if (!v) handleClose(); }}>
       <SheetContent
         side="right"
-        className="bg-[#0A0B0F] border-l border-[#1F2937] w-full sm:max-w-[520px] p-0 overflow-hidden flex flex-col"
+        className="bg-card border-l border-border w-full sm:max-w-[520px] p-0 overflow-hidden flex flex-col"
         onKeyDown={(e) => {
           if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
             e.preventDefault();
@@ -241,7 +241,7 @@ export function ProcessoEditSheet({
         {contrato && eff && (
           <>
             {/* Header */}
-            <div className="px-6 pt-6 pb-4 border-b border-[#1F2937] bg-[#0F1117]">
+            <div className="px-6 pt-6 pb-4 border-b border-border bg-card">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="text-2xl font-bold text-white truncate">{contrato.nome_cliente}</h2>
@@ -404,8 +404,8 @@ export function ProcessoEditSheet({
                           title={valid ? `Mover para ${STATUS_LABEL[t.to]}` : 'Transição não permitida a partir do status atual'}
                           className={`flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-medium transition-all border ${
                             valid
-                              ? 'border-[#1F2937] hover:scale-[1.02] hover:shadow-lg cursor-pointer'
-                              : 'border-[#1F2937]/50 opacity-40 cursor-not-allowed'
+                              ? 'border-border hover:scale-[1.02] hover:shadow-lg cursor-pointer'
+                              : 'border-border/50 opacity-40 cursor-not-allowed'
                           }`}
                           style={valid ? { background: `${t.color}15`, color: t.color, borderColor: `${t.color}40` } : undefined}
                         >
@@ -420,8 +420,8 @@ export function ProcessoEditSheet({
 
               {/* Seção 5 — Timeline */}
               <Section title="Linha do tempo">
-                <ol className="relative pl-4 border-l border-[#1F2937] space-y-3 text-xs">
-                  <Step active title="Contrato criado" color="#9CA3AF" date={fmtDateTime(contrato.created_at ?? contrato.fechado_em ?? contrato.data_fechamento)} />
+                <ol className="relative pl-4 border-l border-border space-y-3 text-xs">
+                  <Step active title="Contrato criado" color="#6B7076" date={fmtDateTime(contrato.created_at ?? contrato.fechado_em ?? contrato.data_fechamento)} />
                   <Step active title="Pendente" color="#F59E0B" date={fmtDateTime(contrato.fechado_em ?? contrato.data_fechamento)} />
                   {(eff === 'qualificado' || eff === 'exito' || eff === 'sem_exito') && (
                     <Step active title="Qualificado" color="#00BCD4" date={fmtDateTime(contrato.qualificado_em ?? contrato.data_protocolo)} />
@@ -447,12 +447,12 @@ export function ProcessoEditSheet({
 
             {/* Footer */}
             {!readOnly && (
-              <div className="border-t border-[#1F2937] px-6 py-4 bg-[#0F1117] flex items-center justify-between gap-3">
+              <div className="border-t border-border px-6 py-4 bg-card flex items-center justify-between gap-3">
                 <Button variant="ghost" onClick={handleClose} className="text-muted-foreground">Cancelar</Button>
                 <Button
                   onClick={() => save.mutate()}
                   disabled={save.isPending || !dirty}
-                  className="bg-[#D4AF37] text-black hover:bg-[#D4AF37]/90 gap-2 min-w-[180px]"
+                  className="bg-primary text-black hover:bg-primary/90 gap-2 min-w-[180px]"
                 >
                   {save.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                   Salvar alterações

@@ -68,20 +68,29 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-secondary/20" />
-      <div className="absolute top-1/4 -left-32 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute bottom-1/4 -right-32 h-96 w-96 rounded-full bg-accent/5 blur-3xl" />
+    <div className="min-h-screen grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+      <aside className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[hsl(216_13%_10%)] p-12 text-[hsl(40_20%_92%)]">
+        <img src={BRAND.logoTransparenteUrl} alt="" aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 w-[130%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.045]" />
+        <img src={BRAND.emblemaUrl} alt="" className="relative h-14 w-auto self-start" />
+        <div className="relative max-w-md">
+          <p className="titulo-pagina text-5xl leading-[1.1] text-[hsl(41_55%_64%)]">{BRAND.loginSubtitle}</p>
+          <p className="mt-5 text-[15px] leading-relaxed text-[hsl(40_8%_70%)]">
+            Prazos, audiências, publicações dos tribunais e exigências do INSS do escritório, num lugar só.
+          </p>
+        </div>
+        <p className="relative marca-rl text-sm text-[hsl(40_8%_60%)]">Raynne Lopes · Advocacia Especializada · OAB/MG 160.914</p>
+      </aside>
 
+      <div className="flex items-center justify-center px-4 py-10 relative">
       <div className="relative w-full max-w-md">
         <div className="text-center mb-10">
-          <img src={BRAND.logoUrl} alt={BRAND.appName} className="mx-auto w-32 h-32 rounded-full object-cover ring-1 ring-primary/40 mb-5" />
-          <h1 className="text-3xl font-bold tracking-tight">
-            <span className="text-primary">{BRAND.appName}</span>
-          </h1>
+          <img src={BRAND.emblemaUrl} alt="" className="mx-auto h-24 w-auto mb-5 lg:hidden" />
+          <h1 className="marca-rl text-3xl font-semibold text-foreground">{BRAND.appName}</h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            {mode === 'forgot' ? 'Recuperar acesso' : `${BRAND.companyName} · ${BRAND.loginSubtitle}`}
+            {mode === 'forgot' ? 'Recuperar acesso' : BRAND.companyName}
           </p>
+          {mode !== 'forgot' && <p className="lg:hidden titulo-pagina text-lg text-primary mt-3">{BRAND.loginSubtitle}</p>}
         </div>
 
         <div className="glass-card p-8">
@@ -94,7 +103,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
-                className="bg-secondary/50 border-border/50 focus:border-primary/50 rounded-xl h-12"
+                className="bg-card border-border focus:border-primary rounded-lg h-12"
                 required
               />
             </div>
@@ -119,7 +128,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="bg-secondary/50 border-border/50 focus:border-primary/50 rounded-xl h-12"
+                  className="bg-card border-border focus:border-primary rounded-lg h-12"
                   required
                   minLength={6}
                 />
@@ -170,6 +179,7 @@ const Login = () => {
         <p className="text-center text-muted-foreground/50 text-xs mt-8">
           © {new Date().getFullYear()} {BRAND.companyName}. Todos os direitos reservados.
         </p>
+      </div>
       </div>
     </div>
   );

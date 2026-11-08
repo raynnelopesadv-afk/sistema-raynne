@@ -112,7 +112,7 @@ export function PaceFechamentos({ divisao, ym, meta, incluirRetro, closerId, pro
               labelFormatter={(l) => `Dia ${l}`}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />
-            {meta > 0 && meta >= projecaoFinal * 0.3 && <ReferenceLine y={meta} stroke="#F5C518" strokeDasharray="4 4" label={{ value: `meta ${meta}`, position: 'right', fill: '#F5C518', fontSize: 10 }} />}
+            {meta > 0 && meta >= projecaoFinal * 0.3 && <ReferenceLine y={meta} stroke="#B8892B" strokeDasharray="4 4" label={{ value: `meta ${meta}`, position: 'right', fill: '#B8892B', fontSize: 10 }} />}
             <Line name="Realizado" type="monotone" dataKey="real" stroke="#22C55E" strokeWidth={2.5} dot={false} connectNulls={false} />
             <Line name="Projeção do mês (dia a dia)" type="monotone" dataKey="projecao" stroke="#A855F7" strokeWidth={2} strokeDasharray="5 4" dot={false} connectNulls={false} />
           </LineChart>

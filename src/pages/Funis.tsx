@@ -34,8 +34,8 @@ function brl(v: number) {
   return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 });
 }
 
-const PALETA = ['#A855C7', '#0E7490', '#DC2626', '#F5C518', '#84CC16', '#22C55E', '#111827'];
-const COR_METRICA: Record<Metrica, string> = { novos: '#3B82F6', ganho: '#22C55E', perdido: '#DC2626' };
+const PALETA = ['#A855C7', '#0E7490', '#DC2626', '#B8892B', '#84CC16', '#15803D', '#FFFFFF'];
+const COR_METRICA: Record<Metrica, string> = { novos: '#3B82F6', ganho: '#15803D', perdido: '#DC2626' };
 const DIAS = ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB', 'DOM'];
 
 function ymd(d: Date) {
@@ -240,7 +240,7 @@ export default function Funis() {
                 const larguraMin = 26;
                 const w = larguraMin + (larguraMax - larguraMin) * (i === 0 ? 1 : (etapas.length - i) / etapas.length);
                 const tipo = classMap.get(e.id);
-                const cor = tipo === 'ganho' ? '#22C55E' : tipo === 'perdido' ? '#DC2626' : (e.cor || PALETA[i % PALETA.length]);
+                const cor = tipo === 'ganho' ? '#15803D' : tipo === 'perdido' ? '#DC2626' : (e.cor || PALETA[i % PALETA.length]);
                 const conv = i > 0 && etapas[i - 1].count > 0 ? (e.count / etapas[i - 1].count) * 100 : null;
                 return (
                   <div key={e.id} className="flex items-center gap-4">

@@ -133,7 +133,7 @@ export function ColaboradoresManagement() {
     s === 'ativo'
       ? 'bg-success/15 text-success border-success/30'
       : s === 'desligado'
-      ? 'bg-[#6B7280]/15 text-[#9CA3AF] border-[#6B7280]/30'
+      ? 'bg-muted-foreground/15 text-muted-foreground border-[#6B7280]/30'
       : 'bg-warning/15 text-warning border-warning/30';
 
   return (

@@ -22,18 +22,18 @@ export function KpiJuridico({
 }: { label: string; value: number | string; tone?: 'default' | 'danger' | 'warning' | 'gold'; hint?: string; onClick?: () => void }) {
   const toneCls = {
     default: 'text-foreground',
-    danger: 'text-destructive',
-    warning: 'text-orange-400',
+    danger: 'text-red-700',
+    warning: 'text-orange-700',
     gold: 'text-primary',
   }[tone];
   return (
     <button
       type="button"
       onClick={onClick}
-      className={cn('glass-card p-4 text-left transition-colors', onClick ? 'hover:border-primary/40 cursor-pointer' : 'cursor-default')}
+      className={cn('glass-card p-4 text-left transition-colors', onClick ? 'hover:border-[hsl(41_45%_70%)] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary' : 'cursor-default')}
     >
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
-      <p className={cn('text-3xl font-bold mt-1 tabular-nums', toneCls)}>{value}</p>
+      <p className="text-[13px] text-muted-foreground font-medium">{label}</p>
+      <p className={cn('titulo-pagina text-4xl mt-1 tabular-nums', toneCls)}>{value}</p>
       {hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
     </button>
   );

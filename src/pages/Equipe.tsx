@@ -72,7 +72,7 @@ export default function Equipe() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Equipe</h1>
+          <h1 className="titulo-pagina text-3xl">Equipe</h1>
           <p className="text-sm text-muted-foreground">O que cada colaborador fez e os contratos fechados por pessoa</p>
         </div>
         <div className="flex gap-2">

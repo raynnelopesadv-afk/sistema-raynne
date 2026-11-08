@@ -275,7 +275,7 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
     <Dialog open={open} onOpenChange={(v) => { if (!v) resetForm(); onOpenChange(v); }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#F5C518]">
+          <DialogTitle className="flex items-center gap-2 text-primary">
             <History className="w-5 h-5" /> Cadastro Retroativo de Contrato
           </DialogTitle>
           <DialogDescription>
@@ -302,7 +302,7 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
               </div>
             </div>
             {duplicate && (
-              <div className="flex items-start gap-2 rounded-lg bg-[#F59E0B]/10 border border-[#F59E0B]/30 p-2 text-xs text-[#F59E0B]">
+              <div className="flex items-start gap-2 rounded-lg bg-amber-600/10 border border-amber-600/30 p-2 text-xs text-amber-600">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                 <p>Já existe um contrato com este CPF e produto na mesma data ({duplicate.nome_cliente}). Verifique se não é duplicidade.</p>
               </div>
@@ -400,7 +400,7 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
                     <Plus className="w-3 h-3" /> Cadastrar colaborador desligado
                   </Button>
                 ) : (
-                  <div className="rounded-lg border border-[#1F2937] p-3 space-y-2">
+                  <div className="rounded-lg border border-border p-3 space-y-2">
                     <div>
                       <Label className="text-xs">Nome do colaborador *</Label>
                       <Input value={novoDesligadoNome} onChange={(e) => setNovoDesligadoNome(e.target.value)} />
@@ -436,7 +436,7 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
                 { v: 'sem_exito', l: 'Sem Êxito' },
                 { v: 'desqualificado', l: 'Desqualificado' },
               ] as const).map(o => (
-                <label key={o.v} className="flex items-center gap-2 text-sm cursor-pointer rounded-lg border border-[#1F2937] px-3 py-2 hover:bg-white/[0.02]">
+                <label key={o.v} className="flex items-center gap-2 text-sm cursor-pointer rounded-lg border border-border px-3 py-2 hover:bg-white/[0.02]">
                   <RadioGroupItem value={o.v} /> {o.l}
                 </label>
               ))}
@@ -466,7 +466,7 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
 
           {status === 'exito' && (
             <section className="space-y-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-[#22C55E]">Dados do êxito</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Dados do êxito</h3>
               <div className="grid sm:grid-cols-3 gap-3">
                 <div>
                   <Label>Valor do êxito (R$) *</Label>
@@ -517,8 +517,8 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
           )}
 
           {/* Seção 6: Retroativo */}
-          <section className="space-y-3 rounded-xl border border-[#F5C518]/30 bg-[#F5C518]/5 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-[#F5C518] flex items-center gap-2">
+          <section className="space-y-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-primary flex items-center gap-2">
               <History className="w-3 h-3" /> 6. Identificação retroativa
             </h3>
             <p className="text-xs text-muted-foreground">
@@ -544,7 +544,7 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={() => save.mutate()} disabled={save.isPending} className="bg-[#F5C518] text-black hover:bg-[#F5C518]/90">
+          <Button onClick={() => save.mutate()} disabled={save.isPending} className="bg-primary text-black hover:bg-primary/90">
             {save.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar cadastro retroativo'}
           </Button>
         </DialogFooter>

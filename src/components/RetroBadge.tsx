@@ -16,7 +16,7 @@ export function RetroBadge({ registradoEm, registradoPor, className = '' }: Prop
       <Tooltip>
         <TooltipTrigger asChild>
           <span
-            className={`inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#6B7280]/15 border border-[#6B7280]/40 text-[#9CA3AF] ${className}`}
+            className={`inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted-foreground/15 border border-[#6B7280]/40 text-muted-foreground ${className}`}
             aria-label="Cadastro retroativo"
           >
             <History className="w-2.5 h-2.5" />

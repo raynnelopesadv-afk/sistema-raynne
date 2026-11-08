@@ -30,8 +30,8 @@ export interface KanbanRow {
 
 const COLUMNS: { key: EffectiveStatus; label: string; color: string }[] = [
   { key: 'pendente', label: 'Pendente', color: '#F59E0B' },
-  { key: 'qualificado', label: 'Protocolo', color: '#00BCD4' },
-  { key: 'exito', label: 'Êxito', color: '#22C55E' },
+  { key: 'qualificado', label: 'Protocolo', color: '#0E7490' },
+  { key: 'exito', label: 'Êxito', color: '#15803D' },
   { key: 'sem_exito', label: 'Sem Êxito', color: '#6B7280' },
   { key: 'desqualificado', label: 'Desqualificado', color: '#EF4444' },
   { key: 'desistencia', label: 'Desistência', color: '#F97316' },
@@ -187,16 +187,16 @@ export function KanbanBoard<T extends KanbanRow>({
         onDragStart={(e) => handleDragStart(e, row)}
         onDragEnd={handleDragEnd}
         onClick={() => onCardClick?.(row)}
-        className={`group relative rounded-xl bg-[#111827] border border-[#1F2937] p-4 transition-all hover:border-[#374151] hover:shadow-lg ${canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} ${dragging ? 'opacity-60 rotate-1 shadow-2xl' : ''}`}
+        className={`group relative rounded-xl bg-card border border-border p-4 transition-all hover:border-border hover:shadow-lg ${canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} ${dragging ? 'opacity-60 rotate-1 shadow-2xl' : ''}`}
       >
         {row.cadastro_retroativo && (
-          <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-[#6B7280]" aria-hidden />
+          <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-muted-foreground" aria-hidden />
         )}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-white truncate flex items-center gap-1.5">
               {row.cadastro_retroativo && (
-                <span title="Cadastro retroativo" className="inline-flex items-center text-[#9CA3AF]">
+                <span title="Cadastro retroativo" className="inline-flex items-center text-muted-foreground">
                   <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
                 </span>
               )}
@@ -214,19 +214,19 @@ export function KanbanBoard<T extends KanbanRow>({
         {(productNome || (variant === 'processos' && row.tipo_processo)) && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {productNome && (
-              <span className="text-[10px] px-2 py-0.5 rounded-md border border-[#1F2937] text-muted-foreground">
+              <span className="text-[10px] px-2 py-0.5 rounded-md border border-border text-muted-foreground">
                 {productNome}
               </span>
             )}
             {variant === 'processos' && row.tipo_processo && (
-              <span className="text-[10px] px-2 py-0.5 rounded-md border border-[#1F2937] capitalize text-muted-foreground">
+              <span className="text-[10px] px-2 py-0.5 rounded-md border border-border capitalize text-muted-foreground">
                 {row.tipo_processo}
               </span>
             )}
           </div>
         )}
 
-        <p className="text-lg font-bold text-[#D4AF37] mt-3">{formatCurrency(Number(row.valor) || 0)}</p>
+        <p className="text-lg font-bold text-primary mt-3">{formatCurrency(Number(row.valor) || 0)}</p>
 
         {(() => {
           const defs = camposPorProduto.get(row.product_id ?? '') ?? [];
@@ -261,7 +261,7 @@ export function KanbanBoard<T extends KanbanRow>({
           </p>
         )}
         {variant === 'processos' && eff === 'exito' && (
-          <div className="text-[11px] text-[#22C55E] mt-1 space-y-0.5">
+          <div className="text-[11px] text-emerald-600 mt-1 space-y-0.5">
             <p>Êxito: {formatCurrency(Number(row.valor_exito) || 0)}</p>
             {(Number(row.valor_honorarios_recebidos) || 0) > 0 && (
               <p>Recebido: {formatCurrency(Number(row.valor_honorarios_recebidos) || 0)}</p>
@@ -273,7 +273,7 @@ export function KanbanBoard<T extends KanbanRow>({
           <p className="text-[11px] text-muted-foreground mt-1 italic line-clamp-2">"{row.motivo_desqualificacao}"</p>
         )}
 
-        <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#1F2937]">
+        <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
           <p className="text-[10px] text-muted-foreground">
             {fmtDate(row.fechado_em ?? row.data_fechamento)} · {timeAgo(row.fechado_em ?? row.data_fechamento)}
           </p>
@@ -300,9 +300,9 @@ export function KanbanBoard<T extends KanbanRow>({
     const isHover = hoverCol === col.key;
     const ringClass = isHover
       ? hoverValid
-        ? 'border-[#F5C518] shadow-[0_0_0_2px_rgba(245,197,24,0.25)]'
-        : 'border-[#EF4444] cursor-not-allowed'
-      : 'border-[#1F2937]';
+        ? 'border-primary shadow-[0_0_0_2px_rgba(245,197,24,0.25)]'
+        : 'border-red-600 cursor-not-allowed'
+      : 'border-border';
 
     return (
       <div
@@ -310,7 +310,7 @@ export function KanbanBoard<T extends KanbanRow>({
         onDragOver={(e) => handleDragOver(e, col.key)}
         onDragLeave={() => setHoverCol(prev => (prev === col.key ? null : prev))}
         onDrop={(e) => handleDrop(e, col.key)}
-        className={`flex flex-col rounded-2xl bg-[#0D0D0D] border ${ringClass} transition-all min-w-[300px] max-w-[360px] flex-1`}
+        className={`flex flex-col rounded-2xl bg-card border ${ringClass} transition-all min-w-[300px] max-w-[360px] flex-1`}
       >
         <div className="px-4 pt-4 pb-3">
           <div className="flex items-center justify-between">
@@ -318,7 +318,7 @@ export function KanbanBoard<T extends KanbanRow>({
               <span className="text-sm font-semibold" style={{ color: col.color }}>{col.label}</span>
               <span className="text-[11px] text-muted-foreground">({items.length})</span>
             </div>
-            <span className="text-sm font-bold text-[#D4AF37]">{formatCurrency(valor)}</span>
+            <span className="text-sm font-bold text-primary">{formatCurrency(valor)}</span>
           </div>
           {variant === 'processos' && (
             <div className="mt-2 h-1 rounded-full bg-white/[0.04] overflow-hidden">
@@ -350,7 +350,7 @@ export function KanbanBoard<T extends KanbanRow>({
             className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap font-medium transition-all border ${
               activeColMobile === col.key
                 ? 'border-transparent text-black'
-                : 'border-[#1F2937] text-muted-foreground'
+                : 'border-border text-muted-foreground'
             }`}
             style={activeColMobile === col.key ? { background: col.color } : undefined}
           >

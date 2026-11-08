@@ -3,11 +3,12 @@
 // Veja o README, seção "Como trocar identidade visual".
 export const BRAND = {
   // Nome curto exibido no topo e na barra lateral.
-  appName: 'Raynne Lopes',
+  appName: 'RL Advocacia',
   // Nome da organização (rodapé, subtítulos, tela de login).
-  companyName: 'Advocacia Especializada · OAB/MG 160.914',
+  companyName: 'Raynne Lopes · OAB/MG 160.914',
+  sidebarSubtitle: 'OAB/MG 160.914',
   // Subtítulo da tela de login.
-  loginSubtitle: 'Sistema interno do escritório',
+  loginSubtitle: 'Aqui só tem os melhores.',
   // Rótulos das duas divisões de negócio (os valores no banco continuam
   // 'advogados' e 'educacao'; aqui é só o texto exibido).
   divisionLabels: {
@@ -15,4 +16,6 @@ export const BRAND = {
     educacao: 'Educação',
   },
   logoUrl: '/logo-quadrado.jpg',
+  emblemaUrl: '/emblema-rl.png',
+  logoTransparenteUrl: '/logo-transparente.png',
 } as const;

@@ -74,7 +74,7 @@ export default function Inss() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">INSS — Requerimentos e exigências</h1>
+        <h1 className="titulo-pagina text-3xl">INSS — Requerimentos e exigências</h1>
         <p className="text-sm text-muted-foreground">
           Lido dos e-mails do INSS (noreply@inss.gov.br). Prazo estimado: 30 dias corridos a partir do aviso — confirme no Meu INSS / GERID.
         </p>
@@ -108,7 +108,7 @@ export default function Inss() {
                       <UrgenciaBadge data={r.prazo_exigencia} feito={r.cumprido} />
                     )}
                     <span className="text-[11px] rounded bg-secondary px-1.5 py-0.5">{r.status ?? '—'}</span>
-                    {r.exigencia_automatica && <span className="text-[11px] text-emerald-400">perícia agendada · cumprida automaticamente</span>}
+                    {r.exigencia_automatica && <span className="text-[11px] text-emerald-700">perícia agendada · cumprida automaticamente</span>}
                   </div>
                   <p className="font-medium mt-1">{r.cliente ?? '—'} <span className="text-muted-foreground font-normal">· {r.servico}</span></p>
                   <p className="text-xs text-muted-foreground">

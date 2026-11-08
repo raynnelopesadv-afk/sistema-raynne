@@ -141,7 +141,7 @@ export function FechamentoCalendarioMes({ divisao, ym, incluirRetro, closerId, p
       <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
         <h3 className="font-semibold text-foreground text-base tracking-wide">Fechamentos do Mês · dia a dia</h3>
         <div className="flex items-center gap-2 text-xs">
-          <span className="px-2 py-1 rounded-lg bg-[#F5C518]/10 text-[#F5C518] font-semibold tabular-nums">
+          <span className="px-2 py-1 rounded-lg bg-primary/10 text-primary font-semibold tabular-nums">
             {nomeMes}: {calc.totalMes}
           </span>
           <span className="px-2 py-1 rounded-lg bg-secondary/40 text-muted-foreground tabular-nums">
@@ -169,7 +169,7 @@ export function FechamentoCalendarioMes({ divisao, ym, incluirRetro, closerId, p
             <tr className="text-cyan-400/80 text-[10px] uppercase tracking-wider">
               <th className="text-left font-medium w-20"></th>
               {DIAS.map(d => <th key={d} className="font-medium text-center min-w-[52px]">{d}</th>)}
-              <th className="font-medium text-center text-[#F5C518]">TOTAL</th>
+              <th className="font-medium text-center text-primary">TOTAL</th>
             </tr>
           </thead>
           <tbody>
@@ -182,13 +182,13 @@ export function FechamentoCalendarioMes({ divisao, ym, incluirRetro, closerId, p
                   return (
                     <td key={j}>
                       <div
-                        className="relative rounded-lg h-12 flex items-center justify-center border border-[#1F2937]"
+                        className="relative rounded-lg h-12 flex items-center justify-center border border-border"
                         style={{ background: cel.qtd > 0 ? `rgba(245, 197, 24, ${0.12 + intensidade * 0.55})` : 'rgba(255,255,255,0.02)' }}
                         title={`Dia ${cel.dia}: ${cel.qtd} fechamento${cel.qtd === 1 ? '' : 's'}${cel.ciclo !== null ? ` · ciclo médio ${formatDuracao(cel.ciclo)}` : ''}`}
                       >
                         <span className="absolute top-0.5 left-1.5 text-[9px] text-muted-foreground">{cel.dia}</span>
                         <div className="flex flex-col items-center leading-none">
-                          <span className={`text-base font-bold tabular-nums ${cel.qtd > 0 ? (intensidade > 0.6 ? 'text-black' : 'text-[#F5C518]') : 'text-muted-foreground/40'}`}>
+                          <span className={`text-base font-bold tabular-nums ${cel.qtd > 0 ? (intensidade > 0.6 ? 'text-black' : 'text-primary') : 'text-muted-foreground/40'}`}>
                             {cel.qtd > 0 ? cel.qtd : '·'}
                           </span>
                           {cel.ciclo !== null && (
@@ -209,7 +209,7 @@ export function FechamentoCalendarioMes({ divisao, ym, incluirRetro, closerId, p
               {calc.totalPorDow.map((t, i) => (
                 <td key={i} className="text-center font-semibold text-foreground tabular-nums pt-1">{t}</td>
               ))}
-              <td className="text-center font-bold text-[#F5C518] tabular-nums pt-1">{calc.totalMes}</td>
+              <td className="text-center font-bold text-primary tabular-nums pt-1">{calc.totalMes}</td>
             </tr>
             <tr className="text-[11px]">
               <td className="text-muted-foreground pr-1" title="Média histórica de fechamentos nesse dia da semana, considerando toda a base">Média hist.</td>

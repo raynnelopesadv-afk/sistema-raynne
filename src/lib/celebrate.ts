@@ -4,7 +4,7 @@ export function celebrateSale() {
   // 🎉 confete por 5 segundos
   const duration = 5000;
   const end = Date.now() + duration;
-  const colors = ['#D4AF37', '#8B5CF6', '#ffffff', '#FFD700'];
+  const colors = ['#B8892B', '#8B5CF6', '#ffffff', '#FFD700'];
 
   (function frame() {
     confetti({

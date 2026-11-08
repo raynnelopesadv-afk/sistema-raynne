@@ -12,7 +12,7 @@ export interface NivelTier {
 const TIERS: NivelTier[] = [
   { nome: 'Bronze',   cor: '#CD7F32', corClara: '#E8A868', corEscura: '#8B5A2B' },
   { nome: 'Prata',    cor: '#B8C2CC', corClara: '#E6EBF0', corEscura: '#7E8A96' },
-  { nome: 'Ouro',     cor: '#F5C518', corClara: '#FFE066', corEscura: '#B8860B' },
+  { nome: 'Ouro',     cor: '#B8892B', corClara: '#FFE066', corEscura: '#B8860B' },
   { nome: 'Platina',  cor: '#4FD1C5', corClara: '#9DECE4', corEscura: '#2C7A73' },
   { nome: 'Diamante', cor: '#38BDF8', corClara: '#BAE6FD', corEscura: '#0369A1' },
 ];

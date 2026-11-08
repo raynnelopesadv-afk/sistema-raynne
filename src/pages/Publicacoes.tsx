@@ -77,7 +77,7 @@ export default function Publicacoes() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Publicações</h1>
+        <h1 className="titulo-pagina text-3xl">Publicações</h1>
         <p className="text-sm text-muted-foreground">Intimações do DJEN (todos os tribunais, OAB/MG 160.914) e da Tramitação Inteligente</p>
       </div>
 
