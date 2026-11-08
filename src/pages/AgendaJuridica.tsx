@@ -26,7 +26,7 @@ const FILTROS: { v: Filtro; l: string }[] = [
 ];
 
 const FONTE_LABEL: Record<string, string> = {
-  tramitacao: 'Tramitação', google_agenda: 'Agenda', inss: 'INSS', manual: 'Manual',
+  tramitacao: 'Tramitação', google_agenda: 'Google Agenda', inss: 'INSS', manual: 'Lançado à mão',
 };
 
 const VAZIO = { tipo: 'prazo' as TipoAgenda, titulo: '', data: '', hora: '', numero_processo: '', cliente: '', responsavel_nome: '', observacao: '' };
@@ -103,9 +103,9 @@ export default function AgendaJuridica() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="titulo-pagina text-3xl">Prazos e Audiências</h1>
-          <p className="text-sm text-muted-foreground">Tramitação Inteligente, Google Agenda, INSS e lançamentos manuais</p>
+          <p className="text-sm text-muted-foreground">Atualizado sozinho todo dia pela Tramitação Inteligente e pelo Google Agenda</p>
         </div>
-        <Button onClick={() => setNovo(true)}><Plus className="w-4 h-4 mr-1" /> Novo</Button>
+        <Button onClick={() => setNovo(true)}><Plus className="w-4 h-4 mr-1" /> Lançar à mão</Button>
       </div>
 
       <div className="flex flex-wrap gap-2">

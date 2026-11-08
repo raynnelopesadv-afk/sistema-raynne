@@ -56,6 +56,16 @@ async function gravarPublicacoes(fonte, itens) {
       novos += inserir.length;
     }
   }
+  // A mesma intimação chega pelo DJEN e pela Tramitação: o que foi tratado lá
+  // também sai da lista de não lidas aqui.
+  if (fonte === 'tramitacao') {
+    for (const p of itens.filter(i => i.status === 'tratada' && i.numero_processo && i.data_disponibilizacao)) {
+      const dig = p.numero_processo.replace(/\D/g, '');
+      await sb.from('publicacoes').update({ status: 'tratada' })
+        .eq('fonte', 'djen').eq('status', 'nao_lida')
+        .eq('numero_processo_digitos', dig).eq('data_disponibilizacao', p.data_disponibilizacao);
+    }
+  }
   return { novos, atual };
 }
 

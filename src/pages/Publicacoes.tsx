@@ -38,15 +38,25 @@ export default function Publicacoes() {
   // A mesma intimação pode chegar pelo DJEN e pela Tramitação: mostra uma vez só
   // (mesmo processo + mesma data), preferindo a que tem o texto completo.
   const lista = useMemo(() => {
-    const vistos = new Map<string, Publicacao>();
+    // DJEN traz o texto; a Tramitação traz o início do prazo. Junta os dois.
+    const vistos = new Map<string, Publicacao & { ids: string[]; fontes: string[] }>();
+    const semNumero: (Publicacao & { ids: string[]; fontes: string[] })[] = [];
     for (const p of data ?? []) {
-      const chave = `${(p.numero_processo ?? '').replace(/\D/g, '')}|${p.data_disponibilizacao}|${p.tipo_documento ?? ''}`;
+      const dig = (p.numero_processo ?? '').replace(/\D/g, '');
+      const item = { ...p, ids: [p.id], fontes: [p.fonte] };
+      if (!dig) { semNumero.push(item); continue; }
+      const chave = `${dig}|${p.data_disponibilizacao}`;
       const atual = vistos.get(chave);
-      if (!atual || (!atual.texto && p.texto)) vistos.set(chave, p);
+      if (!atual) { vistos.set(chave, item); continue; }
+      const base = (!atual.texto && p.texto) ? { ...item, ids: [...atual.ids, p.id], fontes: [...atual.fontes, p.fonte] }
+                                             : { ...atual, ids: [...atual.ids, p.id], fontes: [...atual.fontes, p.fonte] };
+      base.inicio_prazo = atual.inicio_prazo ?? p.inicio_prazo;
+      base.link = base.link ?? atual.link ?? p.link;
+      vistos.set(chave, base);
     }
     const t = busca.trim().toLowerCase();
     const td = t.replace(/\D/g, '');
-    return [...vistos.values()].filter(p => {
+    return [...vistos.values(), ...semNumero].filter(p => {
       if (uf !== 'todas' && p.uf !== uf) return false;
       if (!t) return true;
       if (td.length >= 6 && (p.numero_processo ?? '').replace(/\D/g, '').includes(td)) return true;
@@ -78,7 +88,7 @@ export default function Publicacoes() {
     <div className="space-y-4">
       <div>
         <h1 className="titulo-pagina text-3xl">Publicações</h1>
-        <p className="text-sm text-muted-foreground">Intimações do DJEN (todos os tribunais, OAB/MG 160.914) e da Tramitação Inteligente</p>
+        <p className="text-sm text-muted-foreground">Todos os tribunais do país pela OAB/MG 160.914 — DJEN (CNJ) às 7h, 12h e 18h e Tramitação Inteligente toda manhã, automático</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -105,7 +115,7 @@ export default function Publicacoes() {
         <Input placeholder="Buscar nº do processo, texto, órgão..." value={busca} onChange={e => setBusca(e.target.value)} className="max-w-sm" />
         {status === 'nao_lida' && lista.length > 0 && (
           <Button variant="outline" onClick={() => {
-            if (confirm(`Marcar as ${lista.length} publicações listadas como tratadas?`)) mudar.mutate({ ids: lista.map(p => p.id), novo: 'tratada' });
+            if (confirm(`Marcar as ${lista.length} publicações listadas como tratadas?`)) mudar.mutate({ ids: lista.flatMap(p => p.ids), novo: 'tratada' });
           }}>
             <Check className="w-4 h-4 mr-1" /> Tratar as {lista.length} listadas
           </Button>
@@ -140,7 +150,7 @@ export default function Publicacoes() {
                       <span className="text-muted-foreground">Disp. {fmtData(p.data_disponibilizacao)}</span>
                       {p.inicio_prazo && <span className="text-muted-foreground">· início do prazo {fmtData(p.inicio_prazo)}</span>}
                       {p.status === 'nao_lida' && p.inicio_prazo && <UrgenciaBadge data={p.inicio_prazo} />}
-                      <span className="text-muted-foreground">· {p.fonte === 'djen' ? 'DJEN' : p.fonte === 'tramitacao' ? 'Tramitação' : 'Manual'}</span>
+                      <span className="text-muted-foreground">· {[...new Set(p.fontes)].map(f => f === 'djen' ? 'DJEN' : f === 'tramitacao' ? 'Tramitação' : 'Lançada à mão').join(' + ')}</span>
                     </div>
                     <p className="font-medium mt-1">{p.numero_processo ?? 'Sem número'} {p.classe ? <span className="text-muted-foreground font-normal">— {p.classe}</span> : null}</p>
                     <p className="text-xs text-muted-foreground">{p.orgao}{p.tipo_documento ? ` · ${p.tipo_documento}` : ''}</p>
@@ -150,9 +160,9 @@ export default function Publicacoes() {
                   </div>
                   <div className="flex flex-col gap-1 shrink-0">
                     {p.status === 'nao_lida' ? (
-                      <Button size="sm" onClick={() => mudar.mutate({ ids: [p.id], novo: 'tratada' })}><Check className="w-4 h-4 mr-1" />Tratada</Button>
+                      <Button size="sm" onClick={() => mudar.mutate({ ids: p.ids, novo: 'tratada' })}><Check className="w-4 h-4 mr-1" />Tratada</Button>
                     ) : (
-                      <Button size="sm" variant="outline" onClick={() => mudar.mutate({ ids: [p.id], novo: 'nao_lida' })}><Undo2 className="w-4 h-4 mr-1" />Reabrir</Button>
+                      <Button size="sm" variant="outline" onClick={() => mudar.mutate({ ids: p.ids, novo: 'nao_lida' })}><Undo2 className="w-4 h-4 mr-1" />Reabrir</Button>
                     )}
                     {p.link && <a href={p.link} target="_blank" rel="noreferrer" className="text-xs text-primary inline-flex items-center gap-1 justify-center"><ExternalLink className="w-3 h-3" />abrir</a>}
                     {p.texto && (

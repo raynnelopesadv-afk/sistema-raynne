@@ -1,8 +1,8 @@
 name: DJEN — publicações diárias
+# O CNJ bloqueia IPs fora do Brasil (os robôs do GitHub ficam nos EUA).
+# A busca diária roda DENTRO do banco (São Paulo) via pg_cron — ver
+# supabase/migrations/20261108100000_djen_no_banco.sql. Este workflow fica só manual.
 on:
-  schedule:
-    - cron: '10 10 * * 1-5'   # 07:10 em Brasília, dias úteis
-    - cron: '10 16 * * 1-5'   # 13:10 em Brasília, dias úteis
   workflow_dispatch:
     inputs:
       dias:
