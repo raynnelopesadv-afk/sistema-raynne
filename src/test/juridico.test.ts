@@ -77,3 +77,6 @@ describe('ZapSign', () => {
   });
   it('telefone vazio', () => { expect(telefone({ phone_number: '' })).toBeNull(); });
 });
+describe('telefone ZapSign', () => {
+  it('remove 55 duplicado', () => { expect(telefone({ phone_country: '55', phone_number: '553199307083' })).toBe('+553199307083'); });
+});

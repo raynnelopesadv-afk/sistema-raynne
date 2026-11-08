@@ -4,9 +4,11 @@ export function ehDoEscritorio(s, ignorar = ['raynne']) {
   return ignorar.some(x => x && alvo.includes(x));
 }
 export function telefone(s) {
-  const n = String(s?.phone_number ?? '').replace(/\D/g, '');
+  let n = String(s?.phone_number ?? '').replace(/\D/g, '');
   if (!n) return null;
   const pais = String(s?.phone_country ?? '55').replace(/\D/g, '') || '55';
+  // cliente digitou o 55 junto do número: tira a duplicação
+  if (pais === '55' && n.length > 11 && n.startsWith('55')) n = n.slice(2);
   return `+${pais}${n}`;
 }
 
