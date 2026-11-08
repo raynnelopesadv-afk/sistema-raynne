@@ -60,10 +60,13 @@ async function main() {
     if (ex && ex.status === 'signed' && d.status === 'signed') continue;
     if (ex && ex.status === d.status && d.last_update_at && ex.atualizado_zapsign_em && new Date(ex.atualizado_zapsign_em) >= new Date(d.last_update_at) && d.status !== 'pending') continue;
     const det = await api(`/docs/${d.token}/`);
+    // anexos de envelope (ex.: procuração junto do contrato) não têm status nem signatários
+    if (!det?.status || !Array.isArray(det.signers) || det.signers.length === 0) continue;
     linhas.push(paraLinha(det, IGNORAR));
     await sleep(250);
   }
 
+  await sb.from('zapsign_documentos').delete().is('status', null);
   for (let k = 0; k < linhas.length; k += 100) {
     const { error } = await sb.from('zapsign_documentos').upsert(linhas.slice(k, k + 100), { onConflict: 'token' });
     if (error) throw error;
