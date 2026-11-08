@@ -1,0 +1,33 @@
+name: Importar lote (Tramitação, Agenda, INSS)
+on:
+  push:
+    branches: [main]
+    paths: ['dados/importar/*.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: importar-lote, cancel-in-progress: false }
+jobs:
+  importar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - name: Importar
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          shopt -s nullglob
+          arquivos=(dados/importar/*.json)
+          if [ ${#arquivos[@]} -eq 0 ]; then echo "Nenhum lote."; exit 0; fi
+          node scripts/importar.mjs lote "${arquivos[@]}"
+      - name: Apagar os lotes já importados (dados de clientes não ficam no repositório)
+        if: success()
+        run: |
+          git config user.name "importador"
+          git config user.email "importador@users.noreply.github.com"
+          git rm -q dados/importar/*.json
+          git commit -m "Lotes importados [skip ci]" && git push || echo "nada a apagar"

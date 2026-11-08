@@ -1,0 +1,1 @@
+CREATE POLICY "closers insert auth" ON public.closers FOR INSERT TO authenticated WITH CHECK (true);

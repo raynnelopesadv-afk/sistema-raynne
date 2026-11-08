@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS meta_mes integer NOT NULL DEFAULT 0;

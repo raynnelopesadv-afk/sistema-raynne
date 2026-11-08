@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 15% 5%;
+    --foreground: 220 20% 92%;
+
+    --card: 230 12% 8%;
+    --card-foreground: 220 20% 92%;
+
+    --popover: 230 12% 8%;
+    --popover-foreground: 220 20% 92%;
+
+    --primary: 43 69% 52%;
+    --primary-foreground: 230 15% 5%;
+
+    --secondary: 230 12% 12%;
+    --secondary-foreground: 220 20% 85%;
+
+    --muted: 230 10% 14%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 36 55% 40%;
+    --accent-foreground: 220 20% 95%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 220 20% 95%;
+
+    --border: 230 10% 16%;
+    --input: 230 10% 16%;
+    --ring: 43 69% 52%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 230 12% 6%;
+    --sidebar-foreground: 220 10% 70%;
+    --sidebar-primary: 43 69% 52%;
+    --sidebar-primary-foreground: 230 15% 5%;
+    --sidebar-accent: 230 12% 10%;
+    --sidebar-accent-foreground: 220 20% 92%;
+    --sidebar-border: 230 10% 14%;
+    --sidebar-ring: 43 69% 52%;
+
+    --gold: 43 69% 52%;
+    --gold-foreground: 230 15% 5%;
+    --purple: 263 70% 58%;
+    --purple-foreground: 220 20% 95%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+
+    /* Premium BI accents (HSL) */
+    --bi-gold: 47 89% 62%;
+    --bi-purple: 258 90% 66%;
+    --bi-green: 160 84% 39%;
+    --bi-red: 0 84% 60%;
+    --bi-blue: 217 91% 60%;
+    --bi-orange: 25 95% 53%;
+    --bi-teal: 168 100% 42%;
+
+    --surface-1: 230 14% 7%;
+    --surface-2: 230 14% 10%;
+    --surface-3: 230 14% 13%;
+    --border-strong: 230 12% 24%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl;
+  }
+  .glow-gold {
+    box-shadow: 0 0 20px hsl(43 69% 52% / 0.15);
+  }
+  .glow-purple {
+    box-shadow: 0 0 20px hsl(263 70% 58% / 0.15);
+  }
+  .premium-card {
+    @apply rounded-xl border border-border/60 bg-card/70 backdrop-blur-xl transition-all duration-200;
+    box-shadow: 0 0 0 1px hsl(0 0% 100% / 0.03), 0 4px 24px hsl(0 0% 0% / 0.4);
+  }
+  .premium-card:hover {
+    @apply border-border;
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px hsl(0 0% 100% / 0.06), 0 8px 32px hsl(0 0% 0% / 0.5);
+  }
+  .label-eyebrow {
+    @apply text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-medium;
+  }
+  .animate-fade-up {
+    animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .stagger > * { animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 50ms; }
+  .stagger > *:nth-child(3) { animation-delay: 100ms; }
+  .stagger > *:nth-child(4) { animation-delay: 150ms; }
+  .stagger > *:nth-child(5) { animation-delay: 200ms; }
+  .stagger > *:nth-child(6) { animation-delay: 250ms; }
+  .stagger > *:nth-child(7) { animation-delay: 300ms; }
+  .stagger > *:nth-child(8) { animation-delay: 350ms; }
+  .stagger > *:nth-child(9) { animation-delay: 400ms; }
+  .stagger > *:nth-child(10) { animation-delay: 450ms; }
+}
+
+/* TV / Smart TV Mirror Mode — amplia tipografia e espaçamentos */
+body.tv-mode {
+  font-size: 18px;
+}
+body.tv-mode .text-xs { font-size: 0.95rem; }
+body.tv-mode .text-sm { font-size: 1.05rem; }
+body.tv-mode .text-base { font-size: 1.2rem; }
+body.tv-mode .text-lg { font-size: 1.4rem; }
+body.tv-mode .text-xl { font-size: 1.7rem; }
+body.tv-mode .text-2xl { font-size: 2.2rem; }
+body.tv-mode .text-3xl { font-size: 2.8rem; }
+body.tv-mode .text-4xl { font-size: 3.5rem; }
+body.tv-mode .glass-card { padding: 1.75rem; border-radius: 1.5rem; }
+body.tv-mode { cursor: none; }
+body.tv-mode .fixed.top-4.right-4 { cursor: auto; }
+
+/* Recharts tooltip + labels: garantir contraste no tema dark */
+.recharts-default-tooltip {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.75rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label,
+.recharts-default-tooltip .recharts-tooltip-item,
+.recharts-default-tooltip .recharts-tooltip-item-name,
+.recharts-default-tooltip .recharts-tooltip-item-value,
+.recharts-default-tooltip .recharts-tooltip-item-separator,
+.recharts-default-tooltip .recharts-tooltip-item-unit {
+  color: hsl(var(--foreground)) !important;
+}
+.recharts-tooltip-wrapper { outline: none; }
+.recharts-pie-label-text,
+.recharts-cartesian-axis-tick-value,
+.recharts-label,
+.recharts-text {
+  fill: hsl(var(--foreground));
+}
+.recharts-legend-item-text {
+  color: hsl(var(--foreground)) !important;
+}

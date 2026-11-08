@@ -1,0 +1,23 @@
+name: DJEN — publicações diárias
+on:
+  schedule:
+    - cron: '10 10 * * 1-5'   # 07:10 em Brasília, dias úteis
+    - cron: '10 16 * * 1-5'   # 13:10 em Brasília, dias úteis
+  workflow_dispatch:
+    inputs:
+      dias:
+        description: 'Quantos dias para trás buscar'
+        default: '5'
+jobs:
+  djen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - run: node scripts/importar.mjs djen --dias ${{ github.event.inputs.dias || '5' }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OABS: ${{ vars.OABS || '160914/MG' }}
