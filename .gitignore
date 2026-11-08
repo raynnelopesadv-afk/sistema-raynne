@@ -33,3 +33,5 @@ dist-ssr
 # Supabase CLI (estado local vinculado ao projeto)
 supabase/.temp
 supabase/.branches
+
+!.env.production
