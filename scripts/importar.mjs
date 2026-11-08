@@ -164,6 +164,36 @@ async function gravarEmailsInss(emails) {
   return { novos, atual };
 }
 
+// ---------------------------------------------------------------- INSS → tarefas na agenda
+// Toda exigência pendente vira um item "Exigência INSS" em Prazos e Audiências,
+// com o prazo estimado. Quando deixa de ser pendente (ou a equipe cumpre), sai da lista.
+async function sincronizarAgendaInss() {
+  const { data: reqs, error } = await sb.from('inss_requerimentos')
+    .select('protocolo, cliente, servico, status, despacho, prazo_exigencia, exigencia_automatica, cumprido, ultimo_aviso_em');
+  if (error) throw error;
+  const itens = [];
+  for (const r of reqs ?? []) {
+    const pendente = (r.status ?? '').toUpperCase().startsWith('PENDENTE') && !r.exigencia_automatica;
+    const data = r.prazo_exigencia ?? (r.ultimo_aviso_em ? r.ultimo_aviso_em.slice(0, 10) : null);
+    if (!data) continue;
+    itens.push({
+      fonte: 'inss',
+      id_externo: r.protocolo,
+      tipo: 'exigencia_inss',
+      titulo: `Exigência INSS — ${r.cliente ?? 'cliente'}${r.servico ? ` (${r.servico})` : ''}`,
+      data,
+      numero_processo: `Prot. ${r.protocolo}`,
+      cliente: r.cliente,
+      observacao: r.despacho ? r.despacho.slice(0, 400) : null,
+      concluido: !pendente || r.cumprido,
+    });
+  }
+  // só cria item para exigência em aberto; os já existentes são atualizados
+  const { data: existentes } = await sb.from('agenda_juridica').select('id_externo').eq('fonte', 'inss');
+  const ja = new Set((existentes ?? []).map(e => e.id_externo));
+  return gravarAgenda(itens.filter(i => !i.concluido || ja.has(i.id_externo)));
+}
+
 // ---------------------------------------------------------------- ações (Tramitação)
 async function gravarAcoes(acoes) {
   const linhas = acoes.filter(a => a.chave).map(a => ({ ...a, fonte: a.fonte ?? 'tramitacao' }));
@@ -207,6 +237,7 @@ async function cmdLote(arquivos) {
       ['agenda', () => gravarAgenda(lote.agenda ?? [])],
       ['inss e-mails', () => gravarEmailsInss(lote.inss_emails ?? [])],
       ['acoes equipe', () => gravarAcoes(lote.acoes ?? [])],
+      ['inss tarefas', () => sincronizarAgendaInss()],
     ];
     for (const [nome, fn] of etapas) {
       try {
@@ -225,6 +256,11 @@ async function cmdLote(arquivos) {
 const [cmd, ...resto] = process.argv.slice(2);
 if (cmd === 'djen') await cmdDjen(resto);
 else if (cmd === 'lote') await cmdLote(resto);
+else if (cmd === 'inss-tarefas') {
+  const r = await sincronizarAgendaInss();
+  await logSync('inss tarefas', r.novos, r.atual);
+  console.log(`INSS → tarefas: ${r.novos} novas, ${r.atual} atualizadas`);
+}
 else {
   console.log('Uso: node scripts/importar.mjs djen [--dias 7] | lote <arquivo.json> ...');
   process.exit(1);

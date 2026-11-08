@@ -22,12 +22,13 @@ jobs:
         run: |
           shopt -s nullglob
           arquivos=(dados/importar/*.json)
-          if [ ${#arquivos[@]} -eq 0 ]; then echo "Nenhum lote."; exit 0; fi
+          if [ ${#arquivos[@]} -eq 0 ]; then echo "Nenhum lote; só atualizando tarefas do INSS."; node scripts/importar.mjs inss-tarefas; exit 0; fi
           node scripts/importar.mjs lote "${arquivos[@]}"
       - name: Apagar os lotes já importados (dados de clientes não ficam no repositório)
         if: success()
         run: |
           git config user.name "importador"
           git config user.email "importador@users.noreply.github.com"
+          ls dados/importar/*.json >/dev/null 2>&1 || exit 0
           git rm -q dados/importar/*.json
           git commit -m "Lotes importados [skip ci]" && git push || echo "nada a apagar"

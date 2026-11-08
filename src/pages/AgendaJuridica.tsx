@@ -71,6 +71,10 @@ export default function AgendaJuridica() {
     mutationFn: async ({ id, concluido }: { id: string; concluido: boolean }) => {
       const { error } = await db.from('agenda_juridica').update({ concluido }).eq('id', id);
       if (error) throw error;
+      const item = (data ?? []).find(i => i.id === id);
+      if (item?.fonte === 'inss' && item.id_externo) {
+        await db.from('inss_requerimentos').update({ cumprido: concluido }).eq('protocolo', item.id_externo);
+      }
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['agenda-juridica'] });

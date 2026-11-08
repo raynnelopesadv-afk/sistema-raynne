@@ -62,10 +62,13 @@ export default function Inss() {
     mutationFn: async ({ id, cumprido }: { id: string; cumprido: boolean }) => {
       const { error } = await db.from('inss_requerimentos').update({ cumprido }).eq('id', id);
       if (error) throw error;
+      const r = (data ?? []).find(x => x.id === id);
+      if (r) await db.from('agenda_juridica').update({ concluido: cumprido }).eq('fonte', 'inss').eq('id_externo', r.protocolo);
     },
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['inss'] });
       qc.invalidateQueries({ queryKey: ['painel-inss'] });
+      qc.invalidateQueries({ queryKey: ['agenda-juridica'] });
       toast.success(v.cumprido ? 'Exigência marcada como cumprida' : 'Reaberta');
     },
     onError: (e: Error) => toast.error(e.message),
