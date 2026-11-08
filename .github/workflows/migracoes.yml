@@ -1,8 +1,8 @@
 name: Banco de dados (migrations)
+# Opcional: só roda manualmente e só se os secrets SUPABASE_ACCESS_TOKEN,
+# SUPABASE_PROJECT_REF e SUPABASE_DB_PASSWORD existirem. A instalação inicial
+# foi feita pelo SQL Editor (pasta supabase/instalacao).
 on:
-  push:
-    branches: [main]
-    paths: ['supabase/migrations/**']
   workflow_dispatch:
 jobs:
   push:
