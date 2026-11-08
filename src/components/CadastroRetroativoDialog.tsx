@@ -1,3 +1,4 @@
+import { BRAND } from '@/config/brand';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { History, Loader2, Plus, AlertTriangle } from 'lucide-react';
@@ -342,10 +343,10 @@ export function CadastroRetroativoDialog({ open, onOpenChange, divisao: divisaoI
                 <Label>Divisão *</Label>
                 <RadioGroup value={divisao} onValueChange={(v) => setDivisao(v as Divisao)} className="flex gap-4 pt-2">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <RadioGroupItem value="advogados" /> Advogados
+                    <RadioGroupItem value="advogados" /> {BRAND.divisionLabels.advogados}
                   </label>
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <RadioGroupItem value="educacao" /> Educação
+                    <RadioGroupItem value="educacao" /> {BRAND.divisionLabels.educacao}
                   </label>
                 </RadioGroup>
               </div>
