@@ -32,10 +32,10 @@ async function api(path, tentativa = 0) {
 }
 
 async function main() {
-  // 1) lista os documentos recentes (mais novos primeiro), até passar do corte
+  // 1) lista os documentos criados desde o corte (mais novos primeiro)
   const recentes = [];
-  for (let page = 1; page <= 60; page++) {
-    const r = await api(`/docs/?page=${page}`);
+  for (let page = 1; page <= 200; page++) {
+    const r = await api(`/docs/?page=${page}&sort_order=desc&deleted=false&created_from=${corte.toISOString().slice(0, 10)}`);
     const lista = r.results ?? r ?? [];
     if (!lista.length) break;
     let passou = false;
@@ -46,6 +46,10 @@ async function main() {
     if (passou || !r.next) break;
     await sleep(300);
   }
+
+  // pendentes já conhecidos fora da janela: confere se foram assinados
+  const { data: antigos } = await sb.from('zapsign_documentos').select('token, status').eq('status', 'pending');
+  for (const a of antigos ?? []) if (!recentes.some(r => r.token === a.token)) recentes.push({ token: a.token, status: 'pending' });
 
   // 2) detalha cada um (signatários, telefone, link) — já assinados e sem mudança são pulados
   const { data: existentes } = await sb.from('zapsign_documentos').select('token, status, atualizado_zapsign_em');
