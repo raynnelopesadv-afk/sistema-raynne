@@ -112,3 +112,21 @@ describe('nome sem e-mail', () => {
     expect(nomeAmigavel(null)).toBe('—');
   });
 });
+import { classificarContrato } from '@/lib/zapsign-area';
+describe('área do contrato ZapSign', () => {
+  it('classifica pelo nome', () => {
+    expect(classificarContrato('PROCURAÇÃO E CONTRATO AÉREO')).toBe('aereo');
+    expect(classificarContrato('Contrato honorários LATAM.docx')).toBe('aereo');
+    expect(classificarContrato('Contrato honorários - apenas GOL.docx')).toBe('aereo');
+    expect(classificarContrato('Contrato honorários. AZUL.docx')).toBe('aereo');
+    expect(classificarContrato('Contrato aviança.docx')).toBe('aereo');
+    expect(classificarContrato('Contrato honorários aux maternidade.docx')).toBe('maternidade');
+    expect(classificarContrato('MODELO AUXILIO ACIDENTE')).toBe('previdenciario');
+    expect(classificarContrato('Contrato impúbere Ramon BPC.docx')).toBe('previdenciario');
+    expect(classificarContrato('Contrato estágio. Hayllander .pdf')).toBe('interno');
+    expect(classificarContrato('Contrato prestação serviço operacional.docx')).toBe('interno');
+    expect(classificarContrato('Contrato trabalhista.docx')).toBe('outros');
+    expect(classificarContrato('Contrato.docx')).toBe('a_classificar');
+    expect(classificarContrato('Contrato Gabriel.docx')).toBe('a_classificar');
+  });
+});
