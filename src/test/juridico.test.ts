@@ -80,3 +80,35 @@ describe('ZapSign', () => {
 describe('telefone ZapSign', () => {
   it('remove 55 duplicado', () => { expect(telefone({ phone_country: '55', phone_number: '553199307083' })).toBe('+553199307083'); });
 });
+
+import { calcularDesempenho, diasUteis, seriePorDia, type Protocolo } from '@/lib/protocolos';
+describe('desempenho do operacional', () => {
+  const p = (id: string, colab: string, nome: string, data: string, tipo: Protocolo['tipo'] = 'requerimento_adm'): Protocolo =>
+    ({ id, data, colaborador_id: colab, colaborador_nome: nome, tipo, area: null, cliente_nome: 'X', beneficio: null, numero: null, orgao: null, descricao: null, criado_em: '' });
+  const lista = [
+    p('1', 'a', 'Ana', '2026-11-09'), p('2', 'a', 'Ana', '2026-11-10'), p('3', 'a', 'Ana', '2026-11-10', 'acao_judicial'),
+    p('4', 'b', 'Bia', '2026-11-10'), p('5', 'b', 'Bia', '2026-11-01'),
+  ];
+  it('dias úteis', () => { expect(diasUteis('2026-11-09', '2026-11-15')).toBe(5); });
+  it('ranking, por tipo, hoje e média', () => {
+    const d = calcularDesempenho(lista, '2026-11-09', '2026-11-13', '2026-11-10');
+    expect(d[0]).toMatchObject({ nome: 'Ana', total: 3, hoje: 2, diasComLancamento: 2, mediaDiaUtil: 0.6 });
+    expect(d[0].porTipo).toEqual({ requerimento_adm: 2, acao_judicial: 1 });
+    expect(d[0].melhorDia).toEqual({ data: '2026-11-10', qtd: 2 });
+    expect(d[1]).toMatchObject({ nome: 'Bia', total: 1 }); // o de 01/11 fica fora do período
+  });
+  it('série por dia', () => {
+    const s = seriePorDia(lista, '2026-11-09', '2026-11-10');
+    expect(s.nomes).toEqual(['Ana', 'Bia']);
+    expect(s.linhas[1]).toEqual({ data: '2026-11-10', Ana: 2, Bia: 1 });
+  });
+});
+import { nomeAmigavel } from '@/lib/protocolos';
+describe('nome sem e-mail', () => {
+  it('converte e-mail em nome', () => {
+    expect(nomeAmigavel('ana.paula@x.com')).toBe('Ana Paula');
+    expect(nomeAmigavel('raynnelopesdesouza@hotmail.com')).toBe('Raynnelopesdesouza');
+    expect(nomeAmigavel('Vitória')).toBe('Vitória');
+    expect(nomeAmigavel(null)).toBe('—');
+  });
+});

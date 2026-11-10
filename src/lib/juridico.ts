@@ -98,8 +98,19 @@ export const ACAO_LABEL: Record<string, string> = {
   concluiu_atividade: 'Concluiu atividade (Tramitação)',
 };
 
+const PROTOCOLO_ACAO: Record<string, string> = {
+  requerimento_adm: 'Protocolou requerimento administrativo',
+  acao_judicial: 'Protocolou ação judicial',
+  recurso_adm: 'Protocolou recurso administrativo',
+  recurso_judicial: 'Protocolou recurso judicial',
+  peticao: 'Protocolou petição',
+  cumprimento_exigencia: 'Cumpriu exigência do INSS',
+  outro: 'Protocolou',
+};
+
 export function acaoLabel(acao: string): string {
   if (ACAO_LABEL[acao]) return ACAO_LABEL[acao];
+  if (acao.startsWith('protocolou_')) return PROTOCOLO_ACAO[acao.slice(11)] ?? 'Protocolou';
   if (acao.startsWith('concluiu_')) return 'Concluiu ' + acao.slice(9).replace(/_/g, ' ');
   if (acao.startsWith('reabriu_')) return 'Reabriu ' + acao.slice(8).replace(/_/g, ' ');
   return acao.replace(/_/g, ' ');

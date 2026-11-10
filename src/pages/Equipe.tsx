@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { db } from '@/lib/juridico-db';
+import { nomeAmigavel } from '@/lib/protocolos';
 import { fmtData, hojeISO, somaDias, acaoLabel, type AcaoColaborador } from '@/lib/juridico';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -13,7 +14,8 @@ const PERIODOS = [
   { v: 90, l: '90 dias' },
 ];
 
-function categoria(acao: string): 'publicacoes' | 'prazos' | 'audiencias' | 'inss' | 'outros' {
+function categoria(acao: string): 'protocolos' | 'publicacoes' | 'prazos' | 'audiencias' | 'inss' | 'outros' {
+  if (acao.startsWith('protocolou_')) return 'protocolos';
   if (acao.startsWith('publicacao_tratada')) return 'publicacoes';
   if (acao === 'cumpriu_exigencia_inss') return 'inss';
   if (acao === 'concluiu_audiencia' || acao === 'concluiu_pericia') return 'audiencias';
@@ -56,10 +58,10 @@ export default function Equipe() {
   });
 
   const resumo = useMemo(() => {
-    const m: Record<string, { nome: string; publicacoes: number; prazos: number; audiencias: number; inss: number; outros: number; total: number }> = {};
+    const m: Record<string, { nome: string; protocolos: number; publicacoes: number; prazos: number; audiencias: number; inss: number; outros: number; total: number }> = {};
     for (const a of acoes.data ?? []) {
-      const nome = a.usuario_nome ?? 'Desconhecido';
-      m[nome] ??= { nome, publicacoes: 0, prazos: 0, audiencias: 0, inss: 0, outros: 0, total: 0 };
+      const nome = nomeAmigavel(a.usuario_nome);
+      m[nome] ??= { nome, protocolos: 0, publicacoes: 0, prazos: 0, audiencias: 0, inss: 0, outros: 0, total: 0 };
       m[nome][categoria(a.acao)] += 1;
       m[nome].total += 1;
     }
@@ -92,6 +94,7 @@ export default function Equipe() {
             <TableHeader>
               <TableRow>
                 <TableHead>Colaborador</TableHead>
+                <TableHead className="text-right">Protocolos</TableHead>
                 <TableHead className="text-right">Publicações tratadas</TableHead>
                 <TableHead className="text-right">Prazos/tarefas concluídos</TableHead>
                 <TableHead className="text-right">Audiências/perícias</TableHead>
@@ -103,6 +106,7 @@ export default function Equipe() {
               {resumo.map(r => (
                 <TableRow key={r.nome}>
                   <TableCell className="font-medium">{r.nome}</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.protocolos}</TableCell>
                   <TableCell className="text-right tabular-nums">{r.publicacoes}</TableCell>
                   <TableCell className="text-right tabular-nums">{r.prazos}</TableCell>
                   <TableCell className="text-right tabular-nums">{r.audiencias}</TableCell>
@@ -143,7 +147,7 @@ export default function Equipe() {
           {(acoes.data ?? []).slice(0, 200).map(a => (
             <div key={a.id} className="py-2 text-sm flex flex-wrap gap-x-3">
               <span className="text-muted-foreground text-xs w-28 shrink-0">{fmtData(a.em, 'dd/MM HH:mm')}</span>
-              <span className="font-medium">{a.usuario_nome ?? '—'}</span>
+              <span className="font-medium">{nomeAmigavel(a.usuario_nome)}</span>
               <span>{acaoLabel(a.acao)}</span>
               <span className="text-muted-foreground truncate">{a.descricao}</span>
               {a.fonte === 'tramitacao' && <span className="text-[11px] text-muted-foreground">(Tramitação)</span>}

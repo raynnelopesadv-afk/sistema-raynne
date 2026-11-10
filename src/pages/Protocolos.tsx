@@ -8,6 +8,9 @@ import { supabase } from '@/lib/supabase';
 import { DivisaoSelector } from '@/components/DivisaoSelector';
 import { ProductMultiFilter } from '@/components/ProductMultiFilter';
 import { KPICard } from '@/components/bi';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RegistroDiario } from '@/components/protocolos/RegistroDiario';
+import { DesempenhoOperacional } from '@/components/protocolos/DesempenhoOperacional';
 
 type Divisao = 'advogados' | 'educacao';
 
@@ -35,7 +38,7 @@ const mesLabel = (ym: string, curto = false) => {
   return lbl.charAt(0).toUpperCase() + lbl.slice(1);
 };
 
-export default function Protocolos() {
+function ContratosProtocolados() {
   const [divisao, setDivisao] = useState<Divisao>('advogados');
   const [productSelected, setProductSelected] = useState<string[]>([]);
 
@@ -253,6 +256,27 @@ export default function Protocolos() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+export default function Protocolos() {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="titulo-pagina text-3xl">Protocolos</h1>
+        <p className="text-sm text-muted-foreground">Cada colaborador lança aqui o que protocolou no dia. O desempenho do operacional sai daqui.</p>
+      </div>
+      <Tabs defaultValue="registro">
+        <TabsList>
+          <TabsTrigger value="registro">Registro diário</TabsTrigger>
+          <TabsTrigger value="desempenho">Desempenho da equipe</TabsTrigger>
+          <TabsTrigger value="contratos">Contratos protocolados</TabsTrigger>
+        </TabsList>
+        <TabsContent value="registro" className="mt-4"><RegistroDiario /></TabsContent>
+        <TabsContent value="desempenho" className="mt-4"><DesempenhoOperacional /></TabsContent>
+        <TabsContent value="contratos" className="mt-4"><ContratosProtocolados /></TabsContent>
+      </Tabs>
     </div>
   );
 }

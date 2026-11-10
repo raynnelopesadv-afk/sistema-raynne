@@ -8,7 +8,9 @@ import {
 } from '@/lib/juridico';
 import { UrgenciaBadge, KpiJuridico } from '@/components/juridico/UrgenciaBadge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/lib/supabase';
+import { nomeAmigavel } from '@/lib/protocolos';
 
 const FONTE_SYNC: Record<string, string> = {
   'tramitacao publicacoes': 'Tramitação',
@@ -21,6 +23,7 @@ const FONTE_SYNC: Record<string, string> = {
 export default function PainelJuridico() {
   const nav = useNavigate();
   const { user } = useAuth();
+  const { isGestor } = useUserRole();
   const hoje = hojeISO();
 
   const nome = useQuery({
@@ -28,12 +31,11 @@ export default function PainelJuridico() {
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user!.id).maybeSingle();
-      const n = data?.display_name || user?.email?.split('@')[0] || '';
-      return n.split(/[\s.]/)[0].replace(/^./, c => c.toUpperCase());
+      // só o nome cadastrado no perfil; nunca o e-mail
+      const n = (data?.display_name || '').trim();
+      return n ? nomeAmigavel(n).split(/\s+/)[0] : '';
     },
   });
-  const hora = new Date().getHours();
-  const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
   const em7 = somaDias(hoje, 7);
   const em15 = somaDias(hoje, 15);
 
@@ -94,7 +96,9 @@ export default function PainelJuridico() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-sm text-muted-foreground first-letter:uppercase">{fmtData(hoje, "EEEE, dd 'de' MMMM 'de' yyyy")}</p>
-          <h1 className="titulo-pagina text-3xl md:text-4xl mt-1">{saudacao}{nome.data ? `, ${nome.data}` : ''}.</h1>
+          <h1 className="titulo-pagina text-3xl md:text-4xl mt-1">
+            {isGestor ? "Olá, Dra. Raynne!" : `Olá, vencedor(a)${nome.data ? `, ${nome.data}` : ''}!`}
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {atrasados.length + deHoje.length === 0
               ? 'Nada vencido nem vencendo hoje. Escritório em dia.'

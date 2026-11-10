@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, MessageCircle, ExternalLink, Check, Eye } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, startOfMonth, differenceInCalendarDays, parseISO } from 'date-fns';
+import { format, startOfMonth, endOfMonth, differenceInCalendarDays, parseISO } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/juridico-db';
@@ -38,7 +38,13 @@ export default function ContratosZapsign() {
   const [aba, setAba] = useState<Aba>('pendentes');
   const [busca, setBusca] = useState('');
   const qc = useQueryClient();
-  const inicioMes = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+  const [de, setDe] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
+  const [ate, setAte] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
+  const noPeriodo = (iso: string | null) => {
+    if (!iso) return false;
+    const d = format(new Date(iso), 'yyyy-MM-dd'); // data no fuso do navegador (Brasília)
+    return d >= de && d <= ate;
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ['zapsign'],
@@ -50,7 +56,16 @@ export default function ContratosZapsign() {
   });
 
   const docs = data ?? [];
-  const assinadosMes = docs.filter(d => d.status === 'signed' && d.assinado_em && d.assinado_em >= inicioMes);
+  const assinadosMes = docs.filter(d => d.status === 'signed' && noPeriodo(d.assinado_em));
+  const enviadosPeriodo = docs.filter(d => noPeriodo(d.criado_em)).length;
+  const atalho = (a: 'hoje' | 'ontem' | 'semana' | 'mes' | 'mes_passado') => {
+    const h = new Date(); const f = (x: Date) => format(x, 'yyyy-MM-dd');
+    if (a === 'hoje') { setDe(f(h)); setAte(f(h)); }
+    if (a === 'ontem') { const o = new Date(h); o.setDate(h.getDate() - 1); setDe(f(o)); setAte(f(o)); }
+    if (a === 'semana') { const s0 = new Date(h); s0.setDate(h.getDate() - ((h.getDay() + 6) % 7)); setDe(f(s0)); setAte(f(h)); }
+    if (a === 'mes') { setDe(f(startOfMonth(h))); setAte(f(endOfMonth(h))); }
+    if (a === 'mes_passado') { const m = new Date(h.getFullYear(), h.getMonth() - 1, 1); setDe(f(m)); setAte(f(endOfMonth(m))); }
+  };
   const pendentes = docs.filter(d => d.status === 'pending');
   const recusados = docs.filter(d => d.status === 'refused');
 
@@ -81,15 +96,26 @@ export default function ContratosZapsign() {
         <p className="text-sm text-muted-foreground">Assinados no mês e assinaturas pendentes, com o contato de cada cliente. Atualiza sozinho a cada 2 horas.</p>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2">
+        {([['hoje', 'Hoje'], ['ontem', 'Ontem'], ['semana', 'Esta semana'], ['mes', 'Este mês'], ['mes_passado', 'Mês passado']] as const).map(([v, l]) => (
+          <button key={v} onClick={() => atalho(v)} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground">{l}</button>
+        ))}
+        <span className="flex items-center gap-1 text-xs">
+          <Input type="date" value={de} onChange={e => setDe(e.target.value)} className="h-8 w-36" aria-label="De" />
+          até
+          <Input type="date" value={ate} onChange={e => setAte(e.target.value)} className="h-8 w-36" aria-label="Até" />
+        </span>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiJuridico label="Assinados este mês" value={assinadosMes.length} tone="gold" onClick={() => setAba('assinados')} />
+        <KpiJuridico label="Assinados no período" value={assinadosMes.length} tone="gold" hint={`${enviadosPeriodo} enviados no período`} onClick={() => setAba('assinados')} />
         <KpiJuridico label="Aguardando assinatura" value={pendentes.length} tone={pendentes.length ? 'warning' : 'default'} onClick={() => setAba('pendentes')} />
         <KpiJuridico label="Pendentes há mais de 3 dias" value={pendentes.filter(d => d.criado_em && differenceInCalendarDays(new Date(), parseISO(d.criado_em)) > 3).length} tone="danger" onClick={() => setAba('pendentes')} />
         <KpiJuridico label="Recusados" value={recusados.length} onClick={() => setAba('recusados')} />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {([['pendentes', 'Aguardando assinatura'], ['assinados', 'Assinados este mês'], ['recusados', 'Recusados']] as [Aba, string][]).map(([v, l]) => (
+        {([['pendentes', 'Aguardando assinatura'], ['assinados', 'Assinados no período'], ['recusados', 'Recusados']] as [Aba, string][]).map(([v, l]) => (
           <button key={v} onClick={() => setAba(v)}
             className={`rounded-full border px-3 py-1 text-xs ${aba === v ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}>{l}</button>
         ))}
