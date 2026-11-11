@@ -51,6 +51,12 @@ async function main() {
     await sleep(300);
   }
   const tokensZapsign = new Set(recentes.map(d => d.token));
+  if (process.env.ZAPSIGN_LISTAR_SEM_AREA) {
+    const pastas = new Map(); for (const d of recentes) { const k = d.folder_path ?? '(sem pasta)'; pastas.set(k, (pastas.get(k) ?? 0) + 1); }
+    console.log('PASTAS:\n' + [...pastas].sort((a, b) => b[1] - a[1]).map(([k, n]) => `${n}\t${k}`).join('\n'));
+    console.log('CAMPOS: ' + Object.keys(recentes[0] ?? {}).join(','));
+    if (process.env.ZAPSIGN_SO_PASTAS) process.exit(0);
+  }
 
   // pendentes já conhecidos fora da janela: confere se foram assinados
   const { data: antigos } = await sb.from('zapsign_documentos').select('token, status').eq('status', 'pending');
