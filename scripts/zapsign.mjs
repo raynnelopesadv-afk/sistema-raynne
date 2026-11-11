@@ -28,7 +28,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function api(path, tentativa = 0) {
   const res = await fetch(`${API}${path}`, { headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/json' } });
-  if (res.status === 429 && tentativa < 5) { await sleep(2000 * (tentativa + 1)); return api(path, tentativa + 1); }
+  if ((res.status === 429 || res.status >= 500) && tentativa < 5) { await sleep(2000 * (tentativa + 1)); return api(path, tentativa + 1); }
   if (!res.ok) throw new Error(`ZapSign ${res.status} em ${path}: ${(await res.text()).slice(0, 200)}`);
   return res.json();
 }
@@ -72,7 +72,9 @@ async function main() {
     if (ex && ex.status === d.status && d.last_update_at && ex.atualizado_zapsign_em && new Date(ex.atualizado_zapsign_em) >= new Date(d.last_update_at) && d.status !== 'pending') continue;
     // pendentes antigos (45+ dias) sem mudança de status: não precisa detalhar de novo a cada 2h
     if (ex && ex.status === d.status && d.status === 'pending' && d.created_at && Date.now() - new Date(d.created_at).getTime() > 45 * 86400000) continue;
-    const det = await api(`/docs/${d.token}/`);
+    let det;
+    try { det = await api(`/docs/${d.token}/`); }
+    catch (e) { console.warn(`pulando ${d.token}: ${String(e.message).slice(0, 60)}`); continue; }
     // anexos de envelope (ex.: procuração junto do contrato) não têm status nem signatários
     if (!det?.status || !Array.isArray(det.signers) || det.signers.length === 0) continue;
     linhas.push(paraLinha(det, IGNORAR));
