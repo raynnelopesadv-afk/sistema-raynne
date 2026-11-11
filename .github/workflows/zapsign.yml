@@ -7,6 +7,9 @@ on:
       desde:
         description: 'Buscar documentos criados desde (AAAA-MM-DD)'
         default: '2026-01-01'
+      listar_sem_area:
+        description: 'Listar nomes de arquivos sem área (diagnóstico)'
+        default: ''
 jobs:
   zapsign:
     runs-on: ubuntu-latest
@@ -21,3 +24,4 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ZAPSIGN_IGNORAR: ${{ vars.ZAPSIGN_IGNORAR || 'raynne' }}
+          ZAPSIGN_LISTAR_SEM_AREA: ${{ github.event.inputs.listar_sem_area }}

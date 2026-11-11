@@ -95,9 +95,27 @@ async function main() {
   await sb.from('sync_juridico').insert({ fonte: 'zapsign', inseridos: linhas.length, atualizados: 0, erro: null });
   console.log(`ZapSign: ${recentes.length} documentos desde ${corte.toISOString().slice(0, 10)}; ${linhas.length} atualizados (${assinados} assinados, ${pendentes} pendentes); ${removidos} removidos (apagados no ZapSign).`);
   // resumo mês × área (contratos de clientes, sem repetir o mesmo cliente na mesma área)
-  const { data: todos } = await sb.from('zapsign_documentos').select('token,nome_documento,status,criado_em,assinado_em,cliente_nome').gte('criado_em', corte.toISOString());
+  const todos = [];
+  for (let de = 0; ; de += 1000) {
+    const { data, error } = await sb.from('zapsign_documentos').select('token,nome_documento,status,criado_em,assinado_em,cliente_nome').gte('criado_em', corte.toISOString()).order('token').range(de, de + 999);
+    if (error) throw error;
+    todos.push(...(data ?? []));
+    if (!data || data.length < 1000) break;
+  }
+  console.log(`No sistema: ${todos.length} documentos desde ${corte.toISOString().slice(0, 10)}.`);
   const { resumoMesArea } = await import('./lib/area.mjs');
-  console.log(resumoMesArea(todos ?? []));
+  console.log(resumoMesArea(todos));
+  if (process.env.ZAPSIGN_LISTAR_SEM_AREA) {
+    // só palavras que se repetem em 5+ arquivos (modelos), nunca nomes de clientes
+    const { classificarContrato } = await import('./lib/area.mjs');
+    const c = new Map(); let n = 0;
+    for (const d of todos) if (classificarContrato(d.nome_documento) === 'a_classificar') {
+      n++;
+      const ws = new Set(String(d.nome_documento ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/[^a-z]+/).filter(w => w.length > 2));
+      for (const w of ws) c.set(w, (c.get(w) ?? 0) + 1);
+    }
+    console.log(`SEM ÁREA: ${n} documentos. Palavras frequentes:\n` + [...c].filter(([, k]) => k >= 5).sort((a, b) => b[1] - a[1]).map(([w, k]) => `${k}\t${w}`).join('\n'));
+  }
 }
 
 {

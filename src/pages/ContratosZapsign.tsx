@@ -55,9 +55,15 @@ export default function ContratosZapsign() {
   const { data, isLoading } = useQuery({
     queryKey: ['zapsign'],
     queryFn: async () => {
-      const { data, error } = await db.from('zapsign_documentos').select('*').order('criado_em', { ascending: false }).limit(2000);
-      if (error) throw error;
-      return (data ?? []) as Doc[];
+      // o banco entrega no máximo 1000 por vez: busca em páginas até trazer tudo
+      const todos: Doc[] = [];
+      for (let de = 0; ; de += 1000) {
+        const { data, error } = await db.from('zapsign_documentos').select('*').order('criado_em', { ascending: false }).order('token').range(de, de + 999);
+        if (error) throw error;
+        todos.push(...((data ?? []) as Doc[]));
+        if (!data || data.length < 1000) break;
+      }
+      return todos;
     },
   });
 
