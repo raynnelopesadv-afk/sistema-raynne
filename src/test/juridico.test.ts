@@ -130,3 +130,21 @@ describe('área do contrato ZapSign', () => {
     expect(classificarContrato('Contrato Gabriel.docx')).toBe('a_classificar');
   });
 });
+import { unicosPorCliente, tabelaMesArea } from '@/lib/zapsign-area';
+describe('contratos por mês e área', () => {
+  it('conta cliente uma vez por área e separa assinados/pendentes por mês', () => {
+    const d = (token: string, status: string, criado: string, nome: string, area: any) => ({ token, status, criado_em: criado, assinado_em: null, cliente_nome: nome, area });
+    const docs = [
+      d('1', 'signed', '2026-01-10T12:00:00-03:00', 'Maria Fernanda', 'previdenciario'),
+      d('2', 'pending', '2026-01-11T12:00:00-03:00', 'MARIA  FERNANDA', 'previdenciario'),
+      d('3', 'pending', '2026-03-05T12:00:00-03:00', 'João', 'aereo'),
+      d('4', 'signed', '2026-03-05T12:00:00-03:00', 'Ana', 'interno'),
+    ];
+    expect(unicosPorCliente(docs).length).toBe(3);
+    const t = tabelaMesArea(docs, 2026, 11);
+    expect(t.linhas[0].cel.previdenciario).toEqual({ assinados: 1, pendentes: 0 });
+    expect(t.linhas[2].cel.aereo).toEqual({ assinados: 0, pendentes: 1 });
+    expect(t.total.previdenciario.assinados).toBe(1);
+    expect(t.linhas.length).toBe(11);
+  });
+});

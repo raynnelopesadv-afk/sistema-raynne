@@ -11,7 +11,7 @@ import { KpiJuridico } from '@/components/juridico/UrgenciaBadge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { useUserRole } from '@/hooks/useUserRole';
-import { AREA_CONTRATO_LABEL, AREAS_CLIENTE, areaDoContrato, type AreaContrato } from '@/lib/zapsign-area';
+import { AREA_CONTRATO_LABEL, areaDoContrato, tabelaMesArea, unicosPorCliente, MESES, type AreaContrato } from '@/lib/zapsign-area';
 
 interface Doc {
   token: string;
@@ -85,19 +85,12 @@ export default function ContratosZapsign() {
 
   const todosDocs = (data ?? []).map(d => ({ ...d, area: areaDoContrato(d.token, d.nome_documento, correcoes) }));
   const docs = filtroArea === 'todas' ? todosDocs.filter(d => d.area !== 'interno') : todosDocs.filter(d => d.area === filtroArea);
-  const hojeStr = format(new Date(), 'yyyy-MM-dd');
-  const porArea = AREAS_CLIENTE.map(a => {
-    const da = todosDocs.filter(d => d.area === a);
-    const ateHoje = (iso: string | null) => !!iso && format(new Date(iso), 'yyyy-MM-dd') <= hojeStr;
-    return {
-      area: a,
-      gerados: da.filter(d => ateHoje(d.criado_em)).length,
-      assinados: da.filter(d => d.status === 'signed' && ateHoje(d.assinado_em)).length,
-      geradosPeriodo: da.filter(d => noPeriodo(d.criado_em)).length,
-      assinadosPeriodo: da.filter(d => d.status === 'signed' && noPeriodo(d.assinado_em)).length,
-    };
-  });
+  const hojeDt = new Date();
+  const ano = hojeDt.getFullYear();
+  const tab = tabelaMesArea(todosDocs, ano, hojeDt.getMonth() + 1);
+  const unicos = unicosPorCliente(todosDocs.filter(d => d.area !== 'interno'));
   const assinadosMes = docs.filter(d => d.status === 'signed' && noPeriodo(d.assinado_em));
+  const assinadosUnicos = unicos.filter(d => d.status === 'signed' && noPeriodo(d.assinado_em) && (filtroArea === 'todas' || d.area === filtroArea)).length;
   const enviadosPeriodo = docs.filter(d => noPeriodo(d.criado_em)).length;
   const atalho = (a: 'hoje' | 'ontem' | 'semana' | 'mes' | 'mes_passado') => {
     const h = new Date(); const f = (x: Date) => format(x, 'yyyy-MM-dd');
@@ -149,28 +142,63 @@ export default function ContratosZapsign() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiJuridico label="Assinados no período" value={assinadosMes.length} tone="gold" hint={`${enviadosPeriodo} enviados no período`} onClick={() => setAba('assinados')} />
+        <KpiJuridico label="Contratos fechados no período" value={assinadosUnicos} tone="gold" hint={`${enviadosPeriodo} enviados no período`} onClick={() => setAba('assinados')} />
         <KpiJuridico label="Aguardando assinatura" value={pendentes.length} tone={pendentes.length ? 'warning' : 'default'} onClick={() => setAba('pendentes')} />
         <KpiJuridico label="Pendentes há mais de 3 dias" value={pendentes.filter(d => d.criado_em && differenceInCalendarDays(new Date(), parseISO(d.criado_em)) > 3).length} tone="danger" onClick={() => setAba('pendentes')} />
         <KpiJuridico label="Recusados" value={recusados.length} onClick={() => setAba('recusados')} />
       </div>
 
-      <div className="glass-card p-4">
+      <div className="glass-card p-4 overflow-x-auto">
         <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-          <h2 className="font-semibold">Contratos por área</h2>
-          <span className="text-xs text-muted-foreground">Total gerado até hoje ({fmtData(hojeStr)}) · entre parênteses, só o período escolhido · clique para filtrar</span>
+          <h2 className="font-semibold">Contratos por área — {ano} (jan a {MESES[hojeDt.getMonth()].toLowerCase()})</h2>
+          <span className="text-xs text-muted-foreground">Mês em que o contrato foi gerado · <b className="text-emerald-700">assinados</b> / <b className="text-amber-700">pendentes</b> · mesmo cliente na mesma área conta 1 vez · clique na área para filtrar a lista</span>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {porArea.map(a => (
-            <button key={a.area} onClick={() => setFiltroArea(filtroArea === a.area ? 'todas' : a.area)}
-              className={`rounded-lg border p-3 text-left transition ${filtroArea === a.area ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'} ${a.area === 'a_classificar' && a.gerados ? 'border-amber-300' : ''}`}>
-              <p className="text-xs text-muted-foreground">{AREA_CONTRATO_LABEL[a.area]}</p>
-              <p className="text-2xl font-semibold">{a.gerados} <span className="text-xs font-normal text-muted-foreground">gerados ({a.geradosPeriodo})</span></p>
-              <p className="text-sm text-emerald-700">{a.assinados} assinados <span className="text-xs text-muted-foreground">({a.assinadosPeriodo})</span></p>
-            </button>
-          ))}
-        </div>
-        {filtroArea !== 'todas' && <p className="text-xs mt-2">Filtrando: <b>{AREA_CONTRATO_LABEL[filtroArea]}</b> · <button className="underline" onClick={() => setFiltroArea('todas')}>mostrar todas</button></p>}
+        <table className="w-full text-sm min-w-[640px]">
+          <thead>
+            <tr className="border-b border-border text-xs text-muted-foreground">
+              <th className="text-left py-2 pr-2 font-medium">Mês</th>
+              {tab.areas.map(a => (
+                <th key={a} className="py-2 px-2 font-medium text-center">
+                  <button onClick={() => setFiltroArea(filtroArea === a ? 'todas' : a)} className={`rounded px-2 py-0.5 ${filtroArea === a ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}>{AREA_CONTRATO_LABEL[a].replace(' (cível/trabalhista)', '')}</button>
+                </th>
+              ))}
+              <th className="py-2 px-2 font-medium text-center">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tab.linhas.map(l => {
+              const ts = tab.areas.reduce((s, a) => s + l.cel[a].assinados, 0), tp = tab.areas.reduce((s, a) => s + l.cel[a].pendentes, 0);
+              return (
+                <tr key={l.mes} className="border-b border-border/60">
+                  <td className="py-1.5 pr-2 font-medium">{MESES[l.mes]}</td>
+                  {tab.areas.map(a => (
+                    <td key={a} className="py-1.5 px-2 text-center tabular-nums">
+                      <span className="text-emerald-700 font-semibold">{l.cel[a].assinados}</span>
+                      <span className="text-muted-foreground"> / </span>
+                      <span className="text-amber-700">{l.cel[a].pendentes}</span>
+                    </td>
+                  ))}
+                  <td className="py-1.5 px-2 text-center tabular-nums"><b className="text-emerald-700">{ts}</b> / <span className="text-amber-700">{tp}</span></td>
+                </tr>
+              );
+            })}
+            <tr className="font-semibold bg-muted/40">
+              <td className="py-2 pr-2">Total {ano}</td>
+              {tab.areas.map(a => (
+                <td key={a} className="py-2 px-2 text-center tabular-nums">
+                  <span className="text-emerald-700">{tab.total[a].assinados}</span> / <span className="text-amber-700">{tab.total[a].pendentes}</span>
+                </td>
+              ))}
+              <td className="py-2 px-2 text-center tabular-nums">
+                <span className="text-emerald-700">{tab.areas.reduce((s, a) => s + tab.total[a].assinados, 0)}</span> / <span className="text-amber-700">{tab.areas.reduce((s, a) => s + tab.total[a].pendentes, 0)}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {filtroArea !== 'todas' && <p className="text-xs mt-2">Filtrando a lista: <b>{AREA_CONTRATO_LABEL[filtroArea]}</b> · <button className="underline" onClick={() => setFiltroArea('todas')}>mostrar todas</button></p>}
+        {tab.total.a_classificar.assinados + tab.total.a_classificar.pendentes > 0 && (
+          <p className="text-xs mt-2 text-amber-800">Os da coluna "A classificar" têm nome de arquivo sem a área (ex.: "Contrato.docx"). Escolha a área na caixinha de cada contrato abaixo e eles passam para a coluna certa.</p>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">

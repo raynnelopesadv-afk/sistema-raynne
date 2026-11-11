@@ -37,6 +37,7 @@ async function main() {
   // 1) lista os documentos criados desde o corte (mais novos primeiro)
   const recentes = [];
   let listagemCompleta = false;
+  const vistos = new Set();
   for (let page = 1; page <= 400; page++) {
     const r = await api(`/docs/?page=${page}&sort_order=desc&deleted=false&created_from=${corte.toISOString().slice(0, 10)}`);
     const lista = r.results ?? r ?? [];
@@ -44,7 +45,7 @@ async function main() {
     let passou = false;
     for (const d of lista) {
       if (d.created_at && new Date(d.created_at) < corte) { passou = true; continue; }
-      recentes.push(d);
+      if (!vistos.has(d.token)) { vistos.add(d.token); recentes.push(d); }
     }
     if (passou || !r.next) { listagemCompleta = true; break; }
     await sleep(300);
@@ -70,6 +71,9 @@ async function main() {
     await sleep(250);
   }
 
+  // um registro por documento (a listagem pode repetir documentos entre páginas)
+  const porToken = new Map(linhas.map(l => [l.token, l]));
+  linhas.length = 0; linhas.push(...porToken.values());
   await sb.from('zapsign_documentos').delete().is('status', null);
   // documentos apagados no ZapSign (ou anexos de envelope) saem do sistema
   let removidos = 0;
