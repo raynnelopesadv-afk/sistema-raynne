@@ -20,8 +20,10 @@ if (!TOKEN || !url || !key) {
 const sb = createClient(url, key, { auth: { persistSession: false } });
 const IGNORAR = (process.env.ZAPSIGN_IGNORAR || 'raynne').toLowerCase().split(',').map(s => s.trim()).filter(Boolean);
 const i = process.argv.indexOf('--dias');
+const j = process.argv.indexOf('--desde');
+const DESDE = j >= 0 ? process.argv[j + 1] : (process.env.ZAPSIGN_DESDE || null);
 const DIAS = i >= 0 ? Number(process.argv[i + 1]) : 60;
-const corte = new Date(Date.now() - DIAS * 86400000);
+const corte = DESDE ? new Date(`${DESDE}T00:00:00-03:00`) : new Date(Date.now() - DIAS * 86400000);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function api(path, tentativa = 0) {
@@ -34,7 +36,8 @@ async function api(path, tentativa = 0) {
 async function main() {
   // 1) lista os documentos criados desde o corte (mais novos primeiro)
   const recentes = [];
-  for (let page = 1; page <= 200; page++) {
+  let listagemCompleta = false;
+  for (let page = 1; page <= 400; page++) {
     const r = await api(`/docs/?page=${page}&sort_order=desc&deleted=false&created_from=${corte.toISOString().slice(0, 10)}`);
     const lista = r.results ?? r ?? [];
     if (!lista.length) break;
@@ -43,9 +46,10 @@ async function main() {
       if (d.created_at && new Date(d.created_at) < corte) { passou = true; continue; }
       recentes.push(d);
     }
-    if (passou || !r.next) break;
+    if (passou || !r.next) { listagemCompleta = true; break; }
     await sleep(300);
   }
+  const tokensZapsign = new Set(recentes.map(d => d.token));
 
   // pendentes já conhecidos fora da janela: confere se foram assinados
   const { data: antigos } = await sb.from('zapsign_documentos').select('token, status').eq('status', 'pending');
@@ -67,6 +71,17 @@ async function main() {
   }
 
   await sb.from('zapsign_documentos').delete().is('status', null);
+  // documentos apagados no ZapSign (ou anexos de envelope) saem do sistema
+  let removidos = 0;
+  if (listagemCompleta && tokensZapsign.size > 0) {
+    const { data: noBanco } = await sb.from('zapsign_documentos').select('token').gte('criado_em', corte.toISOString());
+    const sobrando = (noBanco ?? []).map(x => x.token).filter(t => !tokensZapsign.has(t));
+    for (let k = 0; k < sobrando.length; k += 100) {
+      const { error } = await sb.from('zapsign_documentos').delete().in('token', sobrando.slice(k, k + 100));
+      if (error) throw error;
+    }
+    removidos = sobrando.length;
+  }
   for (let k = 0; k < linhas.length; k += 100) {
     const { error } = await sb.from('zapsign_documentos').upsert(linhas.slice(k, k + 100), { onConflict: 'token' });
     if (error) throw error;
@@ -74,7 +89,11 @@ async function main() {
   const assinados = linhas.filter(l => l.status === 'signed').length;
   const pendentes = linhas.filter(l => l.status === 'pending').length;
   await sb.from('sync_juridico').insert({ fonte: 'zapsign', inseridos: linhas.length, atualizados: 0, erro: null });
-  console.log(`ZapSign: ${recentes.length} documentos nos últimos ${DIAS} dias; ${linhas.length} atualizados (${assinados} assinados, ${pendentes} pendentes).`);
+  console.log(`ZapSign: ${recentes.length} documentos desde ${corte.toISOString().slice(0, 10)}; ${linhas.length} atualizados (${assinados} assinados, ${pendentes} pendentes); ${removidos} removidos (apagados no ZapSign).`);
+  // resumo mês × área (contratos de clientes, sem repetir o mesmo cliente na mesma área)
+  const { data: todos } = await sb.from('zapsign_documentos').select('token,nome_documento,status,criado_em,assinado_em,cliente_nome').gte('criado_em', corte.toISOString());
+  const { resumoMesArea } = await import('./lib/area.mjs');
+  console.log(resumoMesArea(todos ?? []));
 }
 
 {
