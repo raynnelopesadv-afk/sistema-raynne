@@ -11,7 +11,7 @@ import { KpiJuridico } from '@/components/juridico/UrgenciaBadge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { useUserRole } from '@/hooks/useUserRole';
-import { AREA_CONTRATO_LABEL, areaDoContrato, tabelaMesArea, unicosPorCliente, MESES, type AreaContrato } from '@/lib/zapsign-area';
+import { AREA_CONTRATO_LABEL, areasComHeranca, tabelaMesArea, unicosPorCliente, MESES, type AreaContrato } from '@/lib/zapsign-area';
 
 interface Doc {
   token: string;
@@ -89,7 +89,7 @@ export default function ContratosZapsign() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const todosDocs = (data ?? []).map(d => ({ ...d, area: areaDoContrato(d.token, d.nome_documento, correcoes) }));
+  const todosDocs = areasComHeranca(data ?? [], correcoes);
   const docs = filtroArea === 'todas' ? todosDocs.filter(d => d.area !== 'interno') : todosDocs.filter(d => d.area === filtroArea);
   const hojeDt = new Date();
   const ano = hojeDt.getFullYear();
@@ -238,6 +238,7 @@ export default function ContratosZapsign() {
                       </Select>
                     ) : <span className="rounded bg-muted px-1.5 py-0.5 text-[11px]">{AREA_CONTRATO_LABEL[d.area]}</span>}
                     <span className="truncate">{d.nome_documento}</span>
+                    {d.areaHerdada && <span className="text-[10px] text-muted-foreground" title="Área deduzida de outro documento do mesmo cliente">(pelo cliente)</span>}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {d.cliente_telefone ?? 'sem telefone'}{d.cliente_email ? ` · ${d.cliente_email}` : ''}

@@ -148,3 +148,15 @@ describe('contratos por mês e área', () => {
     expect(t.linhas.length).toBe(11);
   });
 });
+import { areasComHeranca } from '@/lib/zapsign-area';
+describe('área herdada do cliente', () => {
+  it('procuração genérica herda a área do contrato do mesmo cliente', () => {
+    const r = areasComHeranca([
+      { token: 'a', nome_documento: 'Contrato auxílio acidente - Deivide.docx', cliente_nome: 'Deivide Silva' },
+      { token: 'b', nome_documento: 'Procuração.docx', cliente_nome: 'DEIVIDE  SILVA' },
+      { token: 'c', nome_documento: 'Contrato.docx', cliente_nome: 'Outra Pessoa' },
+    ], {});
+    expect(r[1].area).toBe('previdenciario'); expect(r[1].areaHerdada).toBe(true);
+    expect(r[2].area).toBe('a_classificar');
+  });
+});

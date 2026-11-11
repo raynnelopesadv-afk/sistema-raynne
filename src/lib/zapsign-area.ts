@@ -71,3 +71,24 @@ export function tabelaMesArea(docs: DocArea[], ano: number, ateMes: number) {
   }])) as Record<AreaContrato, { assinados: number; pendentes: number }>;
   return { areas, linhas, total };
 }
+
+/** Aplica a área a todos: nome do arquivo → correção manual → herda de outro documento do mesmo cliente. */
+export function areasComHeranca<T extends { token: string; nome_documento: string | null; cliente_nome: string | null }>(
+  docs: T[], correcoes: Record<string, AreaContrato>,
+): (T & { area: AreaContrato; areaHerdada: boolean })[] {
+  const base = docs.map(d => ({ ...d, area: areaDoContrato(d.token, d.nome_documento, correcoes), areaHerdada: false }));
+  const porCliente = new Map<string, Map<AreaContrato, number>>();
+  for (const d of base) {
+    const n = normNome(d.cliente_nome);
+    if (!n || d.area === 'a_classificar' || d.area === 'interno') continue;
+    const m = porCliente.get(n) ?? new Map(); m.set(d.area, (m.get(d.area) ?? 0) + 1); porCliente.set(n, m);
+  }
+  for (const d of base) {
+    if (d.area !== 'a_classificar') continue;
+    const m = porCliente.get(normNome(d.cliente_nome));
+    if (!m) continue;
+    d.area = [...m].sort((a, b) => b[1] - a[1])[0][0];
+    d.areaHerdada = true;
+  }
+  return base;
+}
