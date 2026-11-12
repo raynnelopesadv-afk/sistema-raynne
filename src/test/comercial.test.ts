@@ -29,4 +29,15 @@ describe('relatório comercial de fim do dia', () => {
     expect(txt).toContain('Bia');
     expect(txt).toContain('4 assinaturas pendentes');
   });
+
+  it('usa o ZapSign quando tem mais assinados que lançados', () => {
+    const a = analisarComercial({
+      hoje: '2026-11-12', metaEquipeDia: 3, vendedores: [{ id: 'a', nome: 'Ana', metaMes: 0 }],
+      fechamentos: [{ vendedorId: 'a', dia: '2026-11-12' }],
+      zapsign: { pendentes: 0, assinadosHoje: 2, assinadosMes: 20 },
+    });
+    expect(a.equipe.mes).toBe(20);
+    expect(a.equipe.hoje).toBe(2);
+    expect(textoRelatorio(a)).toContain('19 contrato(s) assinado(s) ainda não lançado(s)');
+  });
 });

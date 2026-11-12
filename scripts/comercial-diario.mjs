@@ -9,6 +9,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { analisarComercial, textoRelatorio } from './lib/comercial.mjs';
+import { classificarContrato } from './lib/area.mjs';
 
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -31,8 +32,22 @@ const { data: fechados, error: e2 } = await sb.from('clientes_fechados')
   .limit(20000);
 if (e2) throw e2;
 const { count: pendentesZap } = await sb.from('zapsign_documentos').select('token', { count: 'exact', head: true }).eq('status', 'pending');
-const { count: assinadosHoje } = await sb.from('zapsign_documentos').select('token', { count: 'exact', head: true })
-  .gte('assinado_em', `${hoje}T00:00:00-03:00`).lte('assinado_em', `${hoje}T23:59:59-03:00`);
+// Contratos assinados no ZapSign (fonte oficial dos fechamentos), sem documentos internos,
+// contando 1 por cliente por dia.
+const { data: assinados } = await sb.from('zapsign_documentos').select('nome_documento, cliente_nome, assinado_em')
+  .eq('status', 'signed').gte('assinado_em', `${inicioMes}T00:00:00-03:00`).limit(10000);
+const diaSP = t => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date(t));
+const unicos = new Set();
+let assinadosMes = 0, assinadosHoje = 0;
+for (const d of assinados ?? []) {
+  if (classificarContrato(d.nome_documento) === 'interno') continue;
+  const dia = diaSP(d.assinado_em);
+  const k = `${dia}|${(d.cliente_nome ?? d.nome_documento ?? '').trim().toLowerCase()}`;
+  if (unicos.has(k) || dia > hoje) continue;
+  unicos.add(k);
+  assinadosMes++;
+  if (dia === hoje) assinadosHoje++;
+}
 
 const diaDe = f => f.data_fechamento ?? (f.fechado_em ? new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date(f.fechado_em)) : null);
 const analise = analisarComercial({
@@ -41,7 +56,7 @@ const analise = analisarComercial({
   vendedores: (closers ?? []).map(c => ({ id: c.id, nome: c.nome, metaMes: Number(c.meta_mes || 0) })),
   fechamentos: (fechados ?? []).filter(f => f.status_qualificacao !== 'desistencia').map(f => ({ vendedorId: f.closer_id, dia: diaDe(f) })).filter(f => f.dia),
   desistencias: (fechados ?? []).filter(f => f.status_qualificacao === 'desistencia').map(f => ({ vendedorId: f.closer_id, dia: diaDe(f) })).filter(f => f.dia),
-  zapsign: { pendentes: pendentesZap ?? 0, assinadosHoje: assinadosHoje ?? 0 },
+  zapsign: { pendentes: pendentesZap ?? 0, assinadosHoje, assinadosMes },
 });
 
 const conteudo = textoRelatorio(analise);

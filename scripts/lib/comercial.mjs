@@ -62,8 +62,12 @@ export function analisarComercial(p) {
   }).sort((a, b) => a.ritmo - b.ritmo);
 
   const semVendedor = p.fechamentos.filter(f => !f.vendedorId && f.dia >= inicioMes && f.dia <= hoje).length;
-  const mesEquipe = p.fechamentos.filter(f => f.dia >= inicioMes && f.dia <= hoje).length;
-  const hojeEquipe = p.fechamentos.filter(f => f.dia === hoje).length;
+  const lancadosMes = p.fechamentos.filter(f => f.dia >= inicioMes && f.dia <= hoje).length;
+  const lancadosHoje = p.fechamentos.filter(f => f.dia === hoje).length;
+  // o total da equipe usa o maior entre o lançado no sistema e o assinado no ZapSign (sem somar os dois)
+  const zap = { pendentes: 0, assinadosHoje: 0, assinadosMes: 0, ...(p.zapsign ?? {}) };
+  const mesEquipe = Math.max(lancadosMes, zap.assinadosMes);
+  const hojeEquipe = Math.max(lancadosHoje, zap.assinadosHoje);
   const faltaEquipe = Math.max(0, metaEquipeMes - mesEquipe);
   return {
     hoje, amanha: proximoDiaUtil(hoje), diasUteisMes: uteisMes.length, diasUteisPassados: uteisPassados.length, diasUteisRestantes: restantes,
@@ -71,9 +75,9 @@ export function analisarComercial(p) {
       hoje: hojeEquipe, metaDia: p.metaEquipeDia, mes: mesEquipe, metaMes: metaEquipeMes, falta: faltaEquipe,
       porDiaNecessario: restantes > 0 ? Math.ceil(faltaEquipe / restantes) : faltaEquipe,
       percentual: metaEquipeMes > 0 ? Math.round((mesEquipe / metaEquipeMes) * 100) : 0,
-      semVendedor,
+      semVendedor, lancadosMes, lancadosHoje,
     },
-    zapsign: p.zapsign ?? { pendentes: 0, assinadosHoje: 0 },
+    zapsign: zap,
     vendedores: vend,
   };
 }
@@ -87,6 +91,8 @@ export function textoRelatorio(a) {
   const L = [];
   L.push(`**Hoje (${br(a.hoje)}): ${e.hoje} fechamento${e.hoje === 1 ? '' : 's'}** — meta do dia ${e.metaDia}. ${e.hoje >= e.metaDia ? 'Meta do dia batida! 🎉' : `Faltaram ${e.metaDia - e.hoje}.`}`);
   L.push(`**Mês:** ${e.mes} de ${e.metaMes} (${e.percentual}%). Faltam ${e.falta} em ${a.diasUteisRestantes} dias úteis → **${e.porDiaNecessario} por dia** a partir de amanhã.`);
+  L.push(`ZapSign: ${a.zapsign.assinadosHoje} assinado(s) hoje e ${a.zapsign.assinadosMes} no mês · lançados no sistema pelos vendedores: ${e.lancadosHoje} hoje e ${e.lancadosMes} no mês.`);
+  if (a.zapsign.assinadosMes > e.lancadosMes) L.push(`⚠️ ${a.zapsign.assinadosMes - e.lancadosMes} contrato(s) assinado(s) ainda não lançado(s) em Fechamento — sem isso o ranking por vendedor fica incompleto.`);
   if (e.semVendedor) L.push(`⚠️ ${e.semVendedor} fechamento(s) do mês sem vendedor marcado — corrigir em Fechamento para o ranking ficar certo.`);
   L.push('');
   L.push('### Quem está fraco');
