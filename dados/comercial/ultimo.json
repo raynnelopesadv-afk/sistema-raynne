@@ -1,22 +1,25 @@
 {
-  "hoje": "2026-11-11",
-  "amanha": "2026-11-12",
+  "hoje": "2026-11-12",
+  "amanha": "2026-11-13",
   "diasUteisMes": 21,
-  "diasUteisPassados": 8,
-  "diasUteisRestantes": 13,
+  "diasUteisPassados": 9,
+  "diasUteisRestantes": 12,
   "equipe": {
     "hoje": 0,
     "metaDia": 3,
-    "mes": 0,
+    "mes": 37,
     "metaMes": 63,
-    "falta": 63,
-    "porDiaNecessario": 5,
-    "percentual": 0,
-    "semVendedor": 0
+    "falta": 26,
+    "porDiaNecessario": 3,
+    "percentual": 59,
+    "semVendedor": 0,
+    "lancadosMes": 0,
+    "lancadosHoje": 0
   },
   "zapsign": {
     "pendentes": 871,
-    "assinadosHoje": 7
+    "assinadosHoje": 0,
+    "assinadosMes": 37
   },
   "vendedores": [
     {
@@ -30,7 +33,7 @@
       "falta": 32,
       "porDia": 3,
       "ritmo": 0,
-      "diasSemFechar": 8,
+      "diasSemFechar": 9,
       "desistencias": 0,
       "situacao": "vermelho"
     },
@@ -45,7 +48,7 @@
       "falta": 32,
       "porDia": 3,
       "ritmo": 0,
-      "diasSemFechar": 8,
+      "diasSemFechar": 9,
       "desistencias": 0,
       "situacao": "vermelho"
     }
