@@ -40,8 +40,8 @@ const navItems: Item[] = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const collapsed = state === 'collapsed';
+  const { state, isMobile, setOpenMobile } = useSidebar();
+  const collapsed = state === 'collapsed' && !isMobile;
   const { signOut } = useAuth();
   const { isAgencia } = useUserRole();
   const { can } = usePermissions();
@@ -84,6 +84,7 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === '/'}
+                      onClick={() => { if (isMobile) setOpenMobile(false); }}
                       className="flex items-center gap-2.5 px-3 py-1 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
                       activeClassName="bg-sidebar-accent text-[hsl(41_55%_62%)] font-medium"
                     >

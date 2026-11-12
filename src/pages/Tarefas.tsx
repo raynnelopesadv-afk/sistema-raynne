@@ -25,6 +25,8 @@ import { TarefaSheet } from '@/components/tarefas/TarefaSheet';
 import { SetoresDialog } from '@/components/tarefas/SetoresDialog';
 
 function iniciais(n: string | null) {
+  const m = nomeAmigavel(n).match(/^(\S)\S*\s+(\d+)$/); // "Jurídico 01" → "J01"
+  if (m) return (m[1] + m[2]).toUpperCase();
   return nomeAmigavel(n).split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || '?';
 }
 
