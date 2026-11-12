@@ -31,10 +31,13 @@ interface Doc {
 
 type Aba = 'pendentes' | 'assinados' | 'recusados';
 
-function whatsapp(tel: string | null, nome: string | null, link: string | null) {
+function whatsapp(tel: string | null, nome: string | null, link: string | null, abriu = false) {
   if (!tel) return null;
   const primeiro = (nome ?? '').split(' ')[0] ?? '';
-  const msg = `Olá, ${primeiro}! Aqui é do escritório Raynne Lopes Advocacia. Seu contrato está pronto para assinatura${link ? `: ${link}` : ''}. Qualquer dúvida, estamos à disposição.`;
+  const l = link ? `\n\n👉 ${link}` : '';
+  const msg = abriu
+    ? `Oi, ${primeiro}! Aqui é do escritório da Dra. Raynne Lopes. Vi que você abriu o contrato, mas a assinatura ainda não foi concluída. Ficou alguma dúvida? É rapidinho: abre o link, confere seus dados e assina com o dedo na tela, leva 1 minuto. Assim que assinar, a gente já começa o seu processo.${l}`
+    : `Oi, ${primeiro}! Aqui é do escritório da Dra. Raynne Lopes. Seu contrato está pronto, só falta a sua assinatura para a gente começar o seu processo. É rapidinho, pelo celular mesmo: abre o link e assina com o dedo na tela.${l}`;
   return `https://wa.me/${tel.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -225,7 +228,7 @@ export default function ContratosZapsign() {
         <div className="glass-card divide-y divide-border">
           {lista.map(d => {
             const dias = d.criado_em ? differenceInCalendarDays(new Date(), parseISO(d.criado_em)) : null;
-            const wa = whatsapp(d.cliente_telefone, d.cliente_nome, d.link_assinatura);
+            const wa = whatsapp(d.cliente_telefone, d.cliente_nome, d.link_assinatura, (d.cliente_visualizacoes ?? 0) > 0);
             return (
               <div key={d.token} className="p-3 flex flex-wrap items-start gap-3">
                 <div className="min-w-0 flex-1">
