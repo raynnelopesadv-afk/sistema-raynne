@@ -1,0 +1,28 @@
+name: Testar acessos da equipe
+on:
+  workflow_dispatch:
+    inputs:
+      senha:
+        description: 'Senha da equipe'
+        required: true
+      logins:
+        description: 'Logins (parte depois do +)'
+        default: 'juridico01,juridico02,juridico03,lider,comercial01,comercial02'
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esconder senha
+        run: echo "::add-mask::${{ github.event.inputs.senha }}"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - name: Testar
+        run: |
+          export SUPABASE_URL=$(grep '^VITE_SUPABASE_URL=' .env.production | cut -d= -f2- | tr -d '"')
+          export SUPABASE_ANON_KEY=$(grep '^VITE_SUPABASE_PUBLISHABLE_KEY=' .env.production | cut -d= -f2- | tr -d '"')
+          node scripts/testar-acessos.mjs
+        env:
+          SENHA: ${{ github.event.inputs.senha }}
+          LOGINS: ${{ github.event.inputs.logins }}
