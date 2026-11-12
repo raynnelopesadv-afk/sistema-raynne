@@ -2,7 +2,8 @@ name: Alertas de meta no celular
 # De hora em hora, das 9h às 17h (Brasília), seg a sex, manda o "Vai, vencedor(a)!"
 # para quem cadastrou o celular na tela "Meu celular". Pausa no almoço: variável
 # ALERTA_HORAS_PAUSA (padrão "12,13").
-# Quando a migração dos alertas muda, este workflow instala as tabelas sozinho.
+# Quando a migração dos alertas muda, este workflow instala as tabelas sozinho
+# (se existir o secret SUPABASE_ACCESS_TOKEN; senão, cole o .sql no SQL Editor).
 on:
   schedule:
     - cron: '2 12-20 * * 1-5'   # 9h02 às 17h02 (Brasília)
@@ -29,7 +30,7 @@ jobs:
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ]; then
-            echo "::error::Faltam os secrets SUPABASE_ACCESS_TOKEN/SUPABASE_PROJECT_REF para instalar as tabelas."; exit 1; fi
+            echo "::notice::Sem SUPABASE_ACCESS_TOKEN: cole o arquivo da migração no SQL Editor da Supabase uma vez."; exit 0; fi
           f="supabase/migrations/20261112120000_alertas_meta.sql"
           python3 -c "import json,sys; print(json.dumps({'query': open(sys.argv[1]).read()}))" "$f" > /tmp/q.json
           code=$(curl -sS -o /tmp/r.txt -w '%{http_code}' -X POST \
