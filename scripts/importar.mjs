@@ -228,6 +228,17 @@ async function cmdDjen(args) {
   }
 }
 
+// Relatórios escritos pela IA (ex.: plano do comercial). Substitui o do mesmo tipo/dia.
+async function gravarRelatorios(lista) {
+  const linhas = lista.filter(r => r.tipo && r.data && r.conteudo).map(r => ({
+    tipo: r.tipo, data: r.data, titulo: r.titulo ?? null, conteudo: r.conteudo, dados: r.dados ?? null, criado_em: new Date().toISOString(),
+  }));
+  if (!linhas.length) return { novos: 0, atual: 0 };
+  const { error } = await sb.from('relatorios_ia').upsert(linhas, { onConflict: 'tipo,data' });
+  if (error) throw error;
+  return { novos: linhas.length, atual: 0 };
+}
+
 async function cmdLote(arquivos) {
   for (const arq of arquivos) {
     const lote = JSON.parse(readFileSync(arq, 'utf8'));
@@ -237,6 +248,7 @@ async function cmdLote(arquivos) {
       ['agenda', () => gravarAgenda(lote.agenda ?? [])],
       ['inss e-mails', () => gravarEmailsInss(lote.inss_emails ?? [])],
       ['acoes equipe', () => gravarAcoes(lote.acoes ?? [])],
+      ...(lote.relatorios?.length ? [['relatorios ia', () => gravarRelatorios(lote.relatorios)]] : []),
       ['inss tarefas', () => sincronizarAgendaInss()],
     ];
     for (const [nome, fn] of etapas) {

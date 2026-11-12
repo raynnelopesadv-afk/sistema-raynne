@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, Trophy, Plus } from 'lucide-react';
+import { Loader2, Trophy, Plus, Sparkles } from 'lucide-react';
 import { endOfMonth, format, startOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Cell } from 'recharts';
@@ -136,6 +136,44 @@ export function RankingOperacional() {
 
 interface Fechado { id: string; nome_cliente: string; closer_id: string | null; data_fechamento: string | null; fechado_em: string | null; status_qualificacao: string }
 
+function Linha({ texto }: { texto: string }) {
+  const partes = texto.split(/(\*\*[^*]+\*\*)/g);
+  return <>{partes.map((p, i) => p.startsWith('**') && p.endsWith('**') ? <strong key={i}>{p.slice(2, -2)}</strong> : <span key={i}>{p}</span>)}</>;
+}
+
+/** Plano da IA de fim do dia para a líder do comercial (tabela relatorios_ia). */
+export function PlanoIAComercial() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['relatorio-ia-comercial'],
+    queryFn: async () => {
+      const { data, error } = await db.from('relatorios_ia').select('data, titulo, conteudo, criado_em')
+        .eq('tipo', 'comercial').order('data', { ascending: false }).limit(1).maybeSingle();
+      if (error) return null; // tabela ainda não instalada
+      return data as { data: string; titulo: string | null; conteudo: string; criado_em: string } | null;
+    },
+  });
+  return (
+    <div className="glass-card p-5 space-y-2 border border-primary/30">
+      <div className="flex items-center gap-2">
+        <Sparkles className="w-5 h-5 text-primary" />
+        <div>
+          <h3 className="font-semibold">{data?.titulo ?? 'Plano da IA para amanhã'}</h3>
+          <p className="text-xs text-muted-foreground">Gerado no fim de cada dia útil para a líder do comercial{data ? ` · análise de ${fmtData(data.data, 'dd/MM')}` : ''}</p>
+        </div>
+      </div>
+      {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : !data ? (
+        <p className="text-sm text-muted-foreground">O primeiro plano aparece hoje depois das 18h30.</p>
+      ) : (
+        <div className="text-sm space-y-1">
+          {data.conteudo.split('\n').map((l, i) => l.startsWith('### ')
+            ? <h4 key={i} className="font-semibold pt-2">{l.slice(4)}</h4>
+            : l.trim() === '' ? <div key={i} className="h-1" /> : <p key={i}><Linha texto={l} /></p>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Comercial: fechamentos do dia por vendedor + ranking do mês. */
 export function ComercialFechamentos() {
   const nav = useNavigate();
@@ -203,6 +241,7 @@ export function ComercialFechamentos() {
           </div>
         )}
       </div>
+      <PlanoIAComercial />
       <SeletorMes qual={m.qual} setQual={m.setQual} />
       <RankingMes titulo="Quem fechou mais" rotulo={m.rotulo} unidade="contratos fechados" linhas={linhasMes} carregando={isLoading} />
     </div>
