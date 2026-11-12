@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/lib/supabase';
 import { nomeAmigavel } from '@/lib/protocolos';
+import { MinhaMetaHoje } from '@/components/MinhaMetaHoje';
 
 const FONTE_SYNC: Record<string, string> = {
   'tramitacao publicacoes': 'Tramitação',
@@ -97,8 +98,9 @@ export default function PainelJuridico() {
         <div>
           <p className="text-sm text-muted-foreground first-letter:uppercase">{fmtData(hoje, "EEEE, dd 'de' MMMM 'de' yyyy")}</p>
           <h1 className="titulo-pagina text-3xl md:text-4xl mt-1">
-            {isGestor ? "Olá, Dra. Raynne!" : `Olá, vencedor(a)${nome.data ? `, ${nome.data}` : ''}!`}
+            {isGestor ? "Oi, Dra. Raynne!" : "Oi, vencedor(a)!"}
           </h1>
+          {!isGestor && <p className="text-sm font-medium text-[hsl(41_55%_50%)] mt-1">Aqui só tem os melhores.</p>}
           <p className="text-sm text-muted-foreground mt-1">
             {atrasados.length + deHoje.length === 0
               ? 'Nada vencido nem vencendo hoje. Escritório em dia.'
@@ -113,6 +115,8 @@ export default function PainelJuridico() {
           ))}
         </div>
       </div>
+
+      <MinhaMetaHoje />
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         <KpiJuridico label="Atrasados" value={atrasados.length} tone={atrasados.length ? 'danger' : 'default'} onClick={() => nav('/agenda-juridica?filtro=atrasados')} />

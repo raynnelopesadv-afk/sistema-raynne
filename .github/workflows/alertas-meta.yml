@@ -1,0 +1,46 @@
+name: Alertas de meta no celular
+# De hora em hora, das 9h às 17h (Brasília), seg a sex, manda o "Vai, vencedor(a)!"
+# para quem cadastrou o celular na tela "Meu celular". Pausa no almoço: variável
+# ALERTA_HORAS_PAUSA (padrão "12,13").
+# Quando a migração dos alertas muda, este workflow instala as tabelas sozinho.
+on:
+  schedule:
+    - cron: '2 12-20 * * 1-5'   # 9h02 às 17h02 (Brasília)
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/20261112120000_alertas_meta.sql'
+      - '.github/workflows/alertas-meta.yml'
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: 'Enviar agora mesmo fora do horário (teste): sim/nao'
+        default: 'nao'
+concurrency: { group: alertas-meta, cancel-in-progress: false }
+jobs:
+  alertas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar tabelas dos alertas
+        if: ${{ github.event_name == 'push' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          f="supabase/migrations/20261112120000_alertas_meta.sql"
+          python3 -c "import json,sys; print(json.dumps({'query': open(sys.argv[1]).read()}))" "$f" > /tmp/q.json
+          code=$(curl -sS -o /tmp/r.txt -w '%{http_code}' -X POST \
+            "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' --data @/tmp/q.json)
+          echo "HTTP $code"; head -c 600 /tmp/r.txt; echo
+          test "$code" -ge 200 -a "$code" -lt 300
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - run: node scripts/alertas-meta.mjs $MODO
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ALERTA_HORAS_PAUSA: ${{ vars.ALERTA_HORAS_PAUSA || '12,13' }}
+          MODO: ${{ github.event_name == 'push' && '--preparar' || (github.event.inputs.forcar == 'sim' && '--forcar' || '') }}

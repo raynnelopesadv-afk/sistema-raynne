@@ -31,6 +31,7 @@ import Inss from "./pages/Inss";
 import Equipe from "./pages/Equipe";
 import ContratosZapsign from "./pages/ContratosZapsign";
 import Tarefas from "./pages/Tarefas";
+import MeuCelular from "./pages/MeuCelular";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +75,7 @@ function AuthGate() {
         <Route path="/inss" element={<Inss />} />
         <Route path="/equipe" element={<Equipe />} />
         <Route path="/tarefas" element={<Tarefas />} />
+        <Route path="/meu-celular" element={<MeuCelular />} />
         <Route path="/contratos" element={<ContratosZapsign />} />
         <Route path="/comercial" element={<Index />} />
         <Route path="/reset-password" element={<ResetPassword />} />
