@@ -8,12 +8,11 @@ export const PLANO_DIA = {
   juridico01: {
     nome: 'Jurídico 01', papel: 'Ações judiciais e requerimentos administrativos', setor: 'Protocolo',
     blocos: [
-      { hora: '09:00', ate: '09:15', titulo: 'Abertura do dia', detalhe: 'Painel Jurídico, suas tarefas de hoje e respostas de clientes que chegaram no WhatsApp.' },
-      { hora: '09:15', ate: '10:30', titulo: 'Cobrança de documentos (10 clientes da fila)', detalhe: 'Planilha FILA OPERACIONAL: filtre seu nome e a semana. Mande a etapa da régua de cada cliente (D0, D1, D3) e anote a data.' },
-      { hora: '10:30', ate: '12:00', titulo: 'Protocolo, bloco 1 (meta: 3)', detalhe: 'Sem WhatsApp. Protocole quem já tem documento mínimo: requerimento no Meu INSS/GERID ou ação judicial. Lance cada um no Registro do dia com o número.' },
-      { hora: '14:00', ate: '15:00', titulo: 'Ligações e vídeo-chamadas', detalhe: 'Clientes em D5 (ligação) e D7 (vídeo-chamada para criar/recuperar a senha gov.br junto com o cliente).' },
-      { hora: '15:00', ate: '16:30', titulo: 'Protocolo, bloco 2 (meta: 2)', detalhe: 'Mais protocolos ou montar as pastas de quem mandou documento hoje.' },
-      { hora: '16:30', ate: '17:00', titulo: 'Fechamento do dia', detalhe: 'Conferir se todo protocolo do dia está no Registro do dia, atualizar a coluna Resultado da planilha e concluir as tarefas.' },
+      { hora: '09:00', ate: '10:00', titulo: 'Cobrança rápida (no máximo 1 hora)', detalhe: 'Igual o comercial: 1) ver no WhatsApp quem já foi cobrado e mandou documento; 2) mandar a mensagem para os clientes do dia (aba HOJE da planilha). Às 10h para, mesmo que falte alguém.' },
+      { hora: '10:00', ate: '12:00', titulo: 'Protocolo, bloco 1 (meta: 3)', detalhe: 'Sem WhatsApp. Protocole com o mínimo quem já mandou: documento pessoal + acesso ao Meu INSS (ou procuração) + laudo/atestado quando for incapacidade. O resto entra depois na exigência. Lance cada um no Registro do dia com o número.' },
+      { hora: '14:00', ate: '15:00', titulo: 'Ligações e vídeo-chamadas', detalhe: 'Quem não respondeu de manhã: ligação. Quem não tem senha gov.br: vídeo-chamada para criar junto e protocolar em seguida.' },
+      { hora: '15:00', ate: '16:30', titulo: 'Protocolo, bloco 2 (meta: 2)', detalhe: 'Protocolar com o mínimo quem mandou documento durante o dia.' },
+      { hora: '16:30', ate: '17:00', titulo: 'Fechamento do dia', detalhe: 'Conferir se todo protocolo do dia está no Registro do dia, preencher a coluna Resultado da planilha e concluir as tarefas.' },
     ],
   },
   juridico02: null, // igual ao Jurídico 01 (preenchido abaixo)

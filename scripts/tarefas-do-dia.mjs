@@ -20,6 +20,13 @@ for (let page = 1; page <= 20; page++) {
   if (data.users.length < 200) break;
 }
 const { data: setores } = await sb.from('setores').select('id, nome');
+if (process.argv.includes('--refazer')) {
+  // apaga as tarefas do plano de hoje que ainda não foram concluídas, para recriar com o horário novo
+  const { error, count } = await sb.from('tarefas').delete({ count: 'exact' })
+    .eq('prazo', hoje).like('descricao', '%plano do dia%').neq('status', 'concluida');
+  if (error) throw error;
+  console.log(`refazer: ${count ?? 0} tarefas antigas de hoje removidas`);
+}
 const { data: jaTem } = await sb.from('tarefas').select('titulo, responsavel_id').eq('prazo', hoje);
 const existe = new Set((jaTem ?? []).map(t => `${t.responsavel_id}|${t.titulo}`));
 

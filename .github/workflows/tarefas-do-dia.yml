@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: '50 11 * * 1-5'   # 8h50 (Brasília), seg a sex
   workflow_dispatch:
+    inputs:
+      refazer:
+        description: 'Apagar as tarefas de hoje ainda abertas e recriar com o plano atual'
+        default: 'nao'
 jobs:
   tarefas:
     runs-on: ubuntu-latest
@@ -11,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci --no-audit --no-fund
-      - run: node scripts/tarefas-do-dia.mjs
+      - run: node scripts/tarefas-do-dia.mjs ${{ github.event.inputs.refazer == 'sim' && '--refazer' || '' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
