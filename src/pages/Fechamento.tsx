@@ -142,6 +142,8 @@ export default function Fechamento() {
   const [view, setView] = usePersistentState<ViewMode>('fechamento.view', 'list');
   const [hideEmptyCols, setHideEmptyCols] = usePersistentState<boolean>('fechamento.hideEmptyCols', false);
   const [addingCloser, setAddingCloser] = useState(false);
+  const [addingProduto, setAddingProduto] = useState(false);
+  const [novoProduto, setNovoProduto] = useState({ nome: '', valor: '' });
   const [novoCloserNome, setNovoCloserNome] = useState('');
   const [retroOpen, setRetroOpen] = useState(false);
   const [dupInfo, setDupInfo] = useState<{ payload: Record<string, unknown>; match: { nome_cliente: string; data_fechamento: string | null } } | null>(null);
@@ -327,6 +329,46 @@ export default function Fechamento() {
       if (error) throw error;
     },
     onSuccess: () => { setExcluirInfo(null); setExcluirMotivo(''); toast.success('Solicitação de exclusão enviada ao gestor.'); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const addProduto = useMutation({
+    mutationFn: async () => {
+      const nome = novoProduto.nome.trim();
+      if (!nome) throw new Error('Informe o nome do produto');
+      const { data, error } = await supabase
+        .from('products')
+        .insert({ nome, divisao, ativo: true, valor: Number(novoProduto.valor.replace(',', '.')) || 0 } as never)
+        .select('id, nome, valor')
+        .single();
+      if (error) throw error;
+      return data as { id: string; nome: string; valor: number };
+    },
+    onSuccess: (novo) => {
+      qc.invalidateQueries({ queryKey: ['products'] });
+      setForm(f => ({ ...f, product_id: novo.id, variante: '', valor: String(novo.valor ?? '') }));
+      setAddingProduto(false);
+      setNovoProduto({ nome: '', valor: '' });
+      toast.success(`Produto "${novo.nome}" cadastrado`);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const PRODUTOS_PADRAO: Record<string, string[]> = {
+    advogados: ['BPC/LOAS', 'Auxílio-acidente', 'Aposentadoria por incapacidade', 'Auxílio por incapacidade temporária (auxílio-doença)', 'Salário-maternidade', 'Aposentadoria por idade', 'Pensão por morte'],
+    educacao: ['Atraso de voo', 'Cancelamento de voo', 'Extravio de bagagem', 'Overbooking'],
+  };
+  const addPadrao = useMutation({
+    mutationFn: async () => {
+      const lista = PRODUTOS_PADRAO[divisao] ?? [];
+      const { error } = await supabase.from('products').insert(lista.map(nome => ({ nome, divisao, ativo: true, valor: 0 })) as never);
+      if (error) throw error;
+      return lista.length;
+    },
+    onSuccess: (n) => {
+      qc.invalidateQueries({ queryKey: ['products'] });
+      toast.success(`${n} produtos cadastrados. Ajuste os valores em Menu → Produtos.`);
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -830,9 +872,37 @@ export default function Fechamento() {
               const valor = productValorMap[v];
               return { ...f, product_id: v, variante: '', valor: valor != null ? String(valor) : f.valor };
             })}>
-              <SelectTrigger><SelectValue placeholder="Produto" /></SelectTrigger>
-              <SelectContent className="max-h-72 overflow-y-auto">{(products ?? []).map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent>
+              <SelectTrigger><SelectValue placeholder="Produto (tipo de ação/benefício)" /></SelectTrigger>
+              <SelectContent className="max-h-72 overflow-y-auto">
+                {(products ?? []).length === 0
+                  ? <div className="px-3 py-2 text-sm text-muted-foreground">Nenhum produto cadastrado nesta divisão.</div>
+                  : (products ?? []).map(p => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}
+              </SelectContent>
             </Select>
+            {(products ?? []).length === 0 && !isGestor && (
+              <p className="text-xs text-destructive">Ainda não há produtos cadastrados. Peça à Dra. Raynne para cadastrar em Menu → Produtos.</p>
+            )}
+            {isGestor && (products ?? []).length === 0 && (
+              <Button type="button" size="sm" variant="outline" className="w-full" disabled={addPadrao.isPending} onClick={() => addPadrao.mutate()}>
+                {addPadrao.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : `Cadastrar produtos padrão (${(PRODUTOS_PADRAO[divisao] ?? []).join(', ')})`}
+              </Button>
+            )}
+            {isGestor && (!addingProduto ? (
+              <button type="button" onClick={() => setAddingProduto(true)} className="text-xs text-primary hover:underline">
+                + Cadastrar produto novo
+              </button>
+            ) : (
+              <div className="flex gap-2 items-center">
+                <Input placeholder="Nome (ex.: BPC/LOAS)" value={novoProduto.nome} autoFocus
+                  onChange={e => setNovoProduto(n => ({ ...n, nome: e.target.value }))} />
+                <Input placeholder="Valor R$" inputMode="decimal" className="w-28" value={novoProduto.valor}
+                  onChange={e => setNovoProduto(n => ({ ...n, valor: e.target.value }))} />
+                <Button type="button" size="sm" disabled={!novoProduto.nome.trim() || addProduto.isPending} onClick={() => addProduto.mutate()}>
+                  {addProduto.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar'}
+                </Button>
+                <Button type="button" size="sm" variant="ghost" onClick={() => setAddingProduto(false)}>Cancelar</Button>
+              </div>
+            ))}
             {variantesDoProduto.length > 0 && (
               <Select value={form.variante ?? ''} onValueChange={v => setForm(f => {
                 const cfg = (productVarCfgMap[f.product_id ?? ''] ?? []).find(x => x.nome === v);
@@ -842,7 +912,11 @@ export default function Fechamento() {
                 <SelectContent>{variantesDoProduto.map(vr => <SelectItem key={vr} value={vr}>{vr}</SelectItem>)}</SelectContent>
               </Select>
             )}
-            <Input type="number" placeholder="Valor" value={form.valor ?? ''} onChange={e => setForm(f => ({ ...f, valor: e.target.value }))} />
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Valor do contrato (R$) — honorários que o escritório vai receber</label>
+              <Input type="number" inputMode="decimal" placeholder="Ex.: 1500" value={form.valor ?? ''} onChange={e => setForm(f => ({ ...f, valor: e.target.value }))} />
+              <p className="text-[11px] text-muted-foreground mt-1">Já vem preenchido pelo produto. Mude se combinou outro valor com o cliente.</p>
+            </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Origem</label>
               <Select value={form.origem_lead || 'meta_ads'} onValueChange={v => setForm(f => ({ ...f, origem_lead: v }))}>
