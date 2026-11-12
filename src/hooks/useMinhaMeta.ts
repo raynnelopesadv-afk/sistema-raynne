@@ -40,7 +40,9 @@ export function useMinhaMeta() {
         return { feito: (data ?? []).filter(d => d.concluido).length, meta: total, unidade: 'prazos' };
       }
       const email = (user!.email ?? '').toLowerCase();
-      const { data: c } = await db.from('closers').select('id').ilike('email', email).maybeSingle();
+      const { data: proprio } = await db.from('closers').select('id').eq('id', user!.id).maybeSingle();
+      const { data: porEmail } = proprio ? { data: null } : await db.from('closers').select('id').ilike('email', email).maybeSingle();
+      const c = proprio ?? porEmail;
       let feito = 0;
       if (c?.id) {
         const { data } = await db.from('clientes_fechados').select('status_qualificacao')

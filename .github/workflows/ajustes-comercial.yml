@@ -1,0 +1,26 @@
+name: Ajustes do comercial (líder e produtos)
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/ajustes-comercial.mjs', '.github/workflows/ajustes-comercial.yml']
+  workflow_dispatch:
+jobs:
+  ajustar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - name: Ajustar
+        shell: bash
+        run: |
+          set +e
+          node scripts/ajustes-comercial.mjs > /tmp/out.txt 2>&1
+          st=$?
+          cat /tmp/out.txt
+          while IFS= read -r l; do echo "::notice::$l"; done < /tmp/out.txt
+          exit $st
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

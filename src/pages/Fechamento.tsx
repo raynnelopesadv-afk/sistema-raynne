@@ -143,6 +143,7 @@ export default function Fechamento() {
   const [hideEmptyCols, setHideEmptyCols] = usePersistentState<boolean>('fechamento.hideEmptyCols', false);
   const [addingCloser, setAddingCloser] = useState(false);
   const [addingProduto, setAddingProduto] = useState(false);
+  const [novoCloserEmail, setNovoCloserEmail] = useState('');
   const [novoProduto, setNovoProduto] = useState({ nome: '', valor: '' });
   const [novoCloserNome, setNovoCloserNome] = useState('');
   const [retroOpen, setRetroOpen] = useState(false);
@@ -376,7 +377,7 @@ export default function Fechamento() {
     mutationFn: async (nome: string) => {
       const { data, error } = await supabase
         .from('closers')
-        .insert({ nome, divisao, ativo: true })
+        .insert({ nome, divisao, ativo: true, ...(novoCloserEmail.trim() ? { email: novoCloserEmail.trim().toLowerCase() } : {}) } as never)
         .select('id, nome, divisao')
         .single();
       if (error) throw error;
@@ -387,6 +388,7 @@ export default function Fechamento() {
       setForm(f => ({ ...f, closer_id: novo.id }));
       setAddingCloser(false);
       setNovoCloserNome('');
+      setNovoCloserEmail('');
       toast.success(`Closer "${novo.nome}" adicionado`);
     },
     onError: (e: Error) => toast.error(e.message),
@@ -846,15 +848,21 @@ export default function Fechamento() {
               </Select>
               {!addingCloser ? (
                 <button type="button" onClick={() => { setAddingCloser(true); setNovoCloserNome(''); }} className="text-xs text-primary hover:underline">
-                  + Adicionar closer externo (ex-funcionário)
+                  + Adicionar closer (ex.: líder Dra. Anielle ou ex-funcionário)
                 </button>
               ) : (
                 <div className="flex gap-2 items-center">
                   <Input
-                    placeholder="Nome do closer externo"
+                    placeholder="Nome (ex.: Dra. Anielle)"
                     value={novoCloserNome}
                     onChange={e => setNovoCloserNome(e.target.value)}
                     autoFocus
+                  />
+                  <Input
+                    placeholder="E-mail do login (opcional)"
+                    type="email"
+                    value={novoCloserEmail}
+                    onChange={e => setNovoCloserEmail(e.target.value)}
                   />
                   <Button
                     type="button"

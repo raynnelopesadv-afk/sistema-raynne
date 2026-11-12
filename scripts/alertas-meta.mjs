@@ -75,8 +75,9 @@ if (comerciais.length) {
     if (f.status_qualificacao === 'desistencia') continue;
     porCloser[f.closer_id] = (porCloser[f.closer_id] ?? 0) + 1;
   }
+  const idsCloser = new Set((closers ?? []).map(c => c.id));
   for (const i of comerciais) {
-    const cid = closerDoEmail[emails[i.userId]];
+    const cid = idsCloser.has(i.userId) ? i.userId : closerDoEmail[emails[i.userId]];
     if (!cid) console.log(`aviso: ${i.nome} não está ligado a um closer (confira o e-mail no cadastro do closer).`);
     feitos[i.userId] = cid ? (porCloser[cid] ?? 0) : 0;
   }
