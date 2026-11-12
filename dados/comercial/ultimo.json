@@ -7,19 +7,19 @@
   "equipe": {
     "hoje": 3,
     "metaDia": 3,
-    "mes": 39,
+    "mes": 40,
     "metaMes": 63,
-    "falta": 24,
+    "falta": 23,
     "porDiaNecessario": 2,
-    "percentual": 62,
+    "percentual": 63,
     "semVendedor": 0,
     "lancadosMes": 3,
     "lancadosHoje": 3
   },
   "zapsign": {
-    "pendentes": 103,
-    "assinadosHoje": 2,
-    "assinadosMes": 39
+    "pendentes": 102,
+    "assinadosHoje": 3,
+    "assinadosMes": 40
   },
   "vendedores": [
     {
