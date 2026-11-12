@@ -7,7 +7,8 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { db } from '@/lib/juridico-db';
 import { fmtData, hojeISO } from '@/lib/juridico';
 import type { Tarefa } from '@/lib/tarefas';
-import { PLANO_DIA, EXPEDIENTE, META_PROTOCOLOS_DIA, META_COBRANCAS_DIA } from '../../../scripts/lib/plano-dia.mjs';
+import { PLANO_DIA, EXPEDIENTE, META_PROTOCOLOS_DIA, META_COBRANCAS_DIA, recadoDoDia } from '../../../scripts/lib/plano-dia.mjs';
+import { Megaphone } from 'lucide-react';
 
 type Bloco = { hora: string; ate: string; titulo: string; detalhe: string };
 type Plano = { nome: string; papel: string; setor: string; blocos: Bloco[] };
@@ -136,6 +137,13 @@ export function PlanoDoDia() {
         <Clock className="w-4 h-4 text-muted-foreground" />
         <span className="first-letter:uppercase">{fmtData(hoje, "EEEE, dd/MM")}</span>
         <span className="text-muted-foreground">· expediente {EXPEDIENTE.inicio} às {EXPEDIENTE.fim}, intervalo {EXPEDIENTE.intervaloDe} às {EXPEDIENTE.intervaloAte}</span>
+      </div>
+      <div className="rounded-xl border border-primary/40 bg-primary/10 p-4 flex gap-3">
+        <Megaphone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+        <div>
+          <p className="text-xs uppercase tracking-wide text-primary font-semibold">Recado do dia</p>
+          <p className="text-sm font-medium">{recadoDoDia(hoje)}</p>
+        </div>
       </div>
       <p className="text-xs text-muted-foreground">
         As tarefas de cada bloco aparecem sozinhas às 8h50 (seg a sex) em Tarefas. Marque aqui ou lá quando terminar. A fila de clientes para cobrar e protocolar está na planilha FILA OPERACIONAL.

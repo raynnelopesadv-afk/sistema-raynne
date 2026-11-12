@@ -41,3 +41,17 @@ PLANO_DIA.juridico02 = { ...PLANO_DIA.juridico01, nome: 'Jurídico 02' };
 
 export const META_PROTOCOLOS_DIA = 5;   // por pessoa do protocolo (Jurídico 01 e 02)
 export const META_COBRANCAS_DIA = 10;   // clientes da fila por pessoa
+
+/** Recado da manhã (um por dia, em rodízio). {meta} vira a meta do dia. */
+export const RECADOS = [
+  'Bom dia, time! Meta de hoje: {meta} protocolos cada um, 3 até o meio-dia e 2 à tarde. Cada protocolo é uma família recebendo um valor a mais todo mês.',
+  'Hoje é dia de bater {meta}! Comece pelos clientes que já mandaram documento: protocolo rápido primeiro, cobrança depois.',
+  'Lembrete do dia: {meta} protocolos por pessoa. Requerimento no INSS conta e sai em minutos. Bora zerar a fila!',
+  'Foco total no bloco das 10h30: sem WhatsApp, só protocolo. Meta de {meta} hoje, e o 1º lugar do mês está em aberto no ranking.',
+  'Cada documento que chega hoje vira protocolo hoje. Meta: {meta} por pessoa. Lance tudo no Registro do dia para contar no ranking.',
+];
+export function recadoDoDia(dataISO, meta = META_PROTOCOLOS_DIA) {
+  const d = new Date(dataISO + 'T12:00:00Z');
+  const dia = Math.floor((d - new Date(Date.UTC(d.getUTCFullYear(), 0, 1))) / 86400000);
+  return RECADOS[dia % RECADOS.length].replace('{meta}', String(meta));
+}

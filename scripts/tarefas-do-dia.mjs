@@ -5,7 +5,7 @@
 // Variáveis: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, EMAIL_BASE (padrão raynnelopes.adv@gmail.com)
 
 import { createClient } from '@supabase/supabase-js';
-import { PLANO_DIA } from './lib/plano-dia.mjs';
+import { PLANO_DIA, recadoDoDia, META_PROTOCOLOS_DIA } from './lib/plano-dia.mjs';
 
 const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const i = process.argv.indexOf('--data');
@@ -29,7 +29,10 @@ for (const [login, plano] of Object.entries(PLANO_DIA)) {
   const u = usuarios.find(x => (x.email ?? '').toLowerCase() === email);
   if (!u) { console.log(`- ${plano.nome}: login ${email} não encontrado, pulei`); continue; }
   const setorId = setores?.find(s => s.nome === plano.setor)?.id ?? null;
-  const novas = plano.blocos
+  const temMeta = login === 'juridico01' || login === 'juridico02';
+  const recado = { hora: '08:55', ate: '09:00', titulo: temMeta ? `Recado do dia: meta de ${META_PROTOCOLOS_DIA} protocolos` : 'Recado do dia',
+    detalhe: recadoDoDia(hoje) + (temMeta ? '' : ' (sua meta: cumprir todos os blocos de hoje).') };
+  const novas = [recado, ...plano.blocos]
     .map(b => ({ titulo: `${b.hora} · ${b.titulo}`, b }))
     .filter(x => !existe.has(`${u.id}|${x.titulo}`))
     .map(({ titulo, b }) => ({
