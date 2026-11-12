@@ -1,0 +1,53 @@
+{
+  "hoje": "2026-11-11",
+  "amanha": "2026-11-12",
+  "diasUteisMes": 21,
+  "diasUteisPassados": 8,
+  "diasUteisRestantes": 13,
+  "equipe": {
+    "hoje": 0,
+    "metaDia": 3,
+    "mes": 0,
+    "metaMes": 63,
+    "falta": 63,
+    "porDiaNecessario": 5,
+    "percentual": 0,
+    "semVendedor": 0
+  },
+  "zapsign": {
+    "pendentes": 871,
+    "assinadosHoje": 7
+  },
+  "vendedores": [
+    {
+      "id": "493f62a5-85d2-427a-9093-8c277dc24756",
+      "nome": "Comercial 01",
+      "hoje": 0,
+      "ontem": 0,
+      "ultimos5": 0,
+      "mes": 0,
+      "meta": 32,
+      "falta": 32,
+      "porDia": 3,
+      "ritmo": 0,
+      "diasSemFechar": 8,
+      "desistencias": 0,
+      "situacao": "vermelho"
+    },
+    {
+      "id": "1063a7f6-020d-4316-814d-0f4929ab59df",
+      "nome": "Comercial 02",
+      "hoje": 0,
+      "ontem": 0,
+      "ultimos5": 0,
+      "mes": 0,
+      "meta": 32,
+      "falta": 32,
+      "porDia": 3,
+      "ritmo": 0,
+      "diasSemFechar": 8,
+      "desistencias": 0,
+      "situacao": "vermelho"
+    }
+  ]
+}
