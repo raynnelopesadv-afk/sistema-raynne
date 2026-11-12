@@ -22,4 +22,4 @@ jobs:
         env: { CHAVE: '${{ github.event.inputs.chave }}' }
         run: |
           gzip -c saida/pendentes.json | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:CHAVE | base64 -w0 > saida/p.b64
-          echo "INICIO_DADOS"; cat saida/p.b64; echo; echo "FIM_DADOS"
+          echo "INICIO_DADOS"; fold -w 3000 saida/p.b64 | sed "s/^/D:/"; echo; echo "FIM_DADOS"
