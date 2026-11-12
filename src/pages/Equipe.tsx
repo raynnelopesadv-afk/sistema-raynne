@@ -19,6 +19,7 @@ function categoria(acao: string): 'protocolos' | 'publicacoes' | 'prazos' | 'aud
   if (acao.startsWith('publicacao_tratada')) return 'publicacoes';
   if (acao === 'cumpriu_exigencia_inss') return 'inss';
   if (acao === 'concluiu_audiencia' || acao === 'concluiu_pericia') return 'audiencias';
+  if (acao === 'concluiu_tarefa') return 'outros';
   if (acao.startsWith('concluiu_')) return 'prazos';
   return 'outros';
 }

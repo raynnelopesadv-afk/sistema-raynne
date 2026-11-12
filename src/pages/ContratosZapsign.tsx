@@ -132,7 +132,7 @@ export default function ContratosZapsign() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="titulo-pagina text-3xl">Contratos (ZapSign)</h1>
+        <h1 className="titulo-pagina text-3xl">Contratos Fechados</h1>
         <p className="text-sm text-muted-foreground">Assinados, pendentes e o total por área (Aéreo, Maternidade, Previdenciário). A área é preenchida sozinha pelo nome do documento. Atualiza a cada 2 horas.</p>
       </div>
 

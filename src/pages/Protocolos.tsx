@@ -11,6 +11,7 @@ import { KPICard } from '@/components/bi';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RegistroDiario } from '@/components/protocolos/RegistroDiario';
 import { DesempenhoOperacional } from '@/components/protocolos/DesempenhoOperacional';
+import { RankingOperacional, ComercialFechamentos } from '@/components/protocolos/Rankings';
 
 type Divisao = 'advogados' | 'educacao';
 
@@ -265,17 +266,28 @@ export default function Protocolos() {
     <div className="space-y-4">
       <div>
         <h1 className="titulo-pagina text-3xl">Protocolos</h1>
-        <p className="text-sm text-muted-foreground">Cada colaborador lança aqui o que protocolou no dia. O desempenho do operacional sai daqui.</p>
+        <p className="text-sm text-muted-foreground">Operacional: cada colaborador lança o que distribuiu no dia. Comercial: cada vendedor lança o seu fechamento. No fim do mês, o ranking mostra o 1º lugar.</p>
       </div>
-      <Tabs defaultValue="registro">
+      <Tabs defaultValue="operacional">
         <TabsList>
-          <TabsTrigger value="registro">Registro diário</TabsTrigger>
-          <TabsTrigger value="desempenho">Desempenho da equipe</TabsTrigger>
-          <TabsTrigger value="contratos">Contratos protocolados</TabsTrigger>
+          <TabsTrigger value="operacional">Operacional (Jurídico)</TabsTrigger>
+          <TabsTrigger value="comercial">Comercial</TabsTrigger>
         </TabsList>
-        <TabsContent value="registro" className="mt-4"><RegistroDiario /></TabsContent>
-        <TabsContent value="desempenho" className="mt-4"><DesempenhoOperacional /></TabsContent>
-        <TabsContent value="contratos" className="mt-4"><ContratosProtocolados /></TabsContent>
+        <TabsContent value="operacional" className="mt-4">
+          <Tabs defaultValue="registro">
+            <TabsList>
+              <TabsTrigger value="registro">Registro do dia</TabsTrigger>
+              <TabsTrigger value="ranking">Ranking do mês</TabsTrigger>
+              <TabsTrigger value="desempenho">Desempenho da equipe</TabsTrigger>
+              <TabsTrigger value="contratos">Contratos protocolados</TabsTrigger>
+            </TabsList>
+            <TabsContent value="registro" className="mt-4"><RegistroDiario /></TabsContent>
+            <TabsContent value="ranking" className="mt-4"><RankingOperacional /></TabsContent>
+            <TabsContent value="desempenho" className="mt-4"><DesempenhoOperacional /></TabsContent>
+            <TabsContent value="contratos" className="mt-4"><ContratosProtocolados /></TabsContent>
+          </Tabs>
+        </TabsContent>
+        <TabsContent value="comercial" className="mt-4"><ComercialFechamentos /></TabsContent>
       </Tabs>
     </div>
   );
