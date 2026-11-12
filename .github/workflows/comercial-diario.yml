@@ -1,7 +1,7 @@
 name: Comercial — fim do dia (números para a IA)
 on:
   schedule:
-    - cron: '20 21 * * 1-5'   # 18h20 (Brasília), seg a sex
+    - cron: '0 22 * * 1-5'   # 19h00 (Brasília), seg a sex
   workflow_dispatch:
 permissions:
   contents: write
