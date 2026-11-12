@@ -31,7 +31,8 @@ const { data: fechados, error: e2 } = await sb.from('clientes_fechados')
   .or(`data_fechamento.gte.${corte},and(data_fechamento.is.null,fechado_em.gte.${corte}T00:00:00-03:00)`)
   .limit(20000);
 if (e2) throw e2;
-const { count: pendentesZap } = await sb.from('zapsign_documentos').select('token', { count: 'exact', head: true }).eq('status', 'pending');
+const { count: pendentesZap } = await sb.from('zapsign_documentos').select('token', { count: 'exact', head: true }).eq('status', 'pending')
+  .gte('criado_em', new Date(Date.now() - 30 * 86400000).toISOString()); // só os enviados nos últimos 30 dias
 // Contratos assinados no ZapSign (fonte oficial dos fechamentos), sem documentos internos,
 // contando 1 por cliente por dia.
 const { data: assinados } = await sb.from('zapsign_documentos').select('nome_documento, cliente_nome, assinado_em')
