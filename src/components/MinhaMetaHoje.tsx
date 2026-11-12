@@ -1,30 +1,14 @@
-import { useNavigate } from 'react-router-dom';
-import { BellRing, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { useMinhaMeta } from '@/hooks/useMinhaMeta';
 import { SETORES } from '@/lib/alertas';
 
 /** Cartão "Minha meta do dia" da tela inicial (ou o convite para ativar os alertas). */
 export function MinhaMetaHoje() {
-  const nav = useNavigate();
   const { inscricao, carregando, progresso } = useMinhaMeta();
   if (carregando) return null;
 
-  if (!inscricao) {
-    return (
-      <button
-        type="button"
-        onClick={() => nav('/meu-celular')}
-        className="w-full text-left rounded-2xl p-4 bg-[hsl(222_47%_15%)] text-white flex items-center gap-3 hover:opacity-95"
-      >
-        <BellRing className="w-6 h-6 text-[hsl(41_55%_62%)] shrink-0" />
-        <span className="flex-1">
-          <span className="block font-bold">Ative os alertas da sua meta no celular</span>
-          <span className="block text-sm text-white/75">De hora em hora: "Vai, vencedor(a)! Bora pra meta!"</span>
-        </span>
-        <span className="text-sm font-semibold text-[hsl(41_55%_62%)]">Ativar</span>
-      </button>
-    );
-  }
+  // Sem cadastro: o aviso global (AvisoCelularGlobal) já aparece em todas as telas.
+  if (!inscricao) return null;
 
   if (inscricao.setor_meta === 'gestao' || !progresso) return null;
   const { feito, meta, unidade } = progresso;

@@ -9,6 +9,7 @@ import { usePendenciasEspelhamento } from '@/hooks/usePendenciasEspelhamento';
 import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { BRAND } from '@/config/brand';
+import { AvisoCelularGlobal } from '@/components/AvisoCelularGlobal';
 
 function MarcaDagua() {
   const { state, isMobile } = useSidebar();
@@ -64,6 +65,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 </span>
               </Link>
             )}
+            {!isTvMode && <AvisoCelularGlobal />}
             {children}
           </main>
         </div>
