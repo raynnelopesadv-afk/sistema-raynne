@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RegistroDiario } from '@/components/protocolos/RegistroDiario';
 import { DesempenhoOperacional } from '@/components/protocolos/DesempenhoOperacional';
 import { RankingOperacional, ComercialFechamentos } from '@/components/protocolos/Rankings';
+import { PlanoDoDia } from '@/components/protocolos/PlanoDoDia';
 
 type Divisao = 'advogados' | 'educacao';
 
@@ -274,13 +275,15 @@ export default function Protocolos() {
           <TabsTrigger value="comercial">Comercial</TabsTrigger>
         </TabsList>
         <TabsContent value="operacional" className="mt-4">
-          <Tabs defaultValue="registro">
-            <TabsList>
+          <Tabs defaultValue="plano">
+            <TabsList className="flex-wrap h-auto">
+              <TabsTrigger value="plano">Plano do dia</TabsTrigger>
               <TabsTrigger value="registro">Registro do dia</TabsTrigger>
               <TabsTrigger value="ranking">Ranking do mês</TabsTrigger>
               <TabsTrigger value="desempenho">Desempenho da equipe</TabsTrigger>
               <TabsTrigger value="contratos">Contratos protocolados</TabsTrigger>
             </TabsList>
+            <TabsContent value="plano" className="mt-4"><PlanoDoDia /></TabsContent>
             <TabsContent value="registro" className="mt-4"><RegistroDiario /></TabsContent>
             <TabsContent value="ranking" className="mt-4"><RankingOperacional /></TabsContent>
             <TabsContent value="desempenho" className="mt-4"><DesempenhoOperacional /></TabsContent>

@@ -1,0 +1,17 @@
+name: Tarefas do dia (plano do operacional)
+on:
+  schedule:
+    - cron: '50 11 * * 1-5'   # 8h50 (Brasília), seg a sex
+  workflow_dispatch:
+jobs:
+  tarefas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - run: node scripts/tarefas-do-dia.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
