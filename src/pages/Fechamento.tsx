@@ -356,7 +356,7 @@ export default function Fechamento() {
   });
 
   const PRODUTOS_PADRAO: Record<string, string[]> = {
-    advogados: ['BPC/LOAS', 'Auxílio-acidente', 'Aposentadoria por incapacidade', 'Auxílio por incapacidade temporária (auxílio-doença)', 'Salário-maternidade', 'Aposentadoria por idade', 'Pensão por morte'],
+    advogados: ['Auxílio-acidente', 'Benefício por incapacidade temporária', 'BPC/LOAS', 'Aposentadoria', 'Salário-maternidade'],
     educacao: ['Atraso de voo', 'Cancelamento de voo', 'Extravio de bagagem', 'Overbooking'],
   };
   const addPadrao = useMutation({

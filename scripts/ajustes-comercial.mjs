@@ -29,15 +29,28 @@ for (const u of lideres) {
   console.log(error ? `aviso: líder não incluída (${error.message})` : `Líder incluída como closer: ${u.email}`);
 }
 
-// 2) Produtos padrão
+// 2) Produtos: a lista do previdenciário é exatamente a definida pela Dra. Raynne
 const PADRAO = {
-  advogados: ['BPC/LOAS', 'Auxílio-acidente', 'Aposentadoria por incapacidade', 'Auxílio por incapacidade temporária (auxílio-doença)', 'Salário-maternidade', 'Aposentadoria por idade', 'Pensão por morte'],
+  advogados: ['Auxílio-acidente', 'Benefício por incapacidade temporária', 'BPC/LOAS', 'Aposentadoria', 'Salário-maternidade'],
   educacao: ['Atraso de voo', 'Cancelamento de voo', 'Extravio de bagagem', 'Overbooking'],
 };
+const EXATA = { advogados: true, educacao: false };
 for (const [divisao, nomes] of Object.entries(PADRAO)) {
   const { data: atuais, error } = await sb.from('products').select('id, nome, ativo').eq('divisao', divisao);
   if (error) { console.log(`aviso: produtos (${error.message})`); continue; }
-  if ((atuais ?? []).some(p => p.ativo)) { console.log(`${divisao}: já tem ${atuais.length} produtos ativos.`); continue; }
-  const { error: e2 } = await sb.from('products').insert(nomes.map(nome => ({ nome, divisao, ativo: true, valor: 0 })));
-  console.log(e2 ? `aviso: produtos não cadastrados (${e2.message})` : `${divisao}: ${nomes.length} produtos cadastrados.`);
+  const lista = atuais ?? [];
+  if (!EXATA[divisao] && lista.some(p => p.ativo)) { console.log(`${divisao}: já tem produtos ativos.`); continue; }
+  for (const nome of nomes) {
+    const ja = lista.find(p => p.nome === nome);
+    const { error: e2 } = ja
+      ? await sb.from('products').update({ ativo: true }).eq('id', ja.id)
+      : await sb.from('products').insert({ nome, divisao, ativo: true, valor: 0 });
+    if (e2) console.log(`aviso: ${nome} (${e2.message})`);
+  }
+  if (EXATA[divisao]) {
+    const sobra = lista.filter(p => p.ativo && !nomes.includes(p.nome));
+    for (const p of sobra) await sb.from('products').update({ ativo: false }).eq('id', p.id);
+    if (sobra.length) console.log(`${divisao}: desativados ${sobra.map(p => p.nome).join(', ')}`);
+  }
+  console.log(`${divisao}: produtos ativos = ${nomes.join(', ')}`);
 }
