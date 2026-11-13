@@ -31,7 +31,7 @@ for (const u of lideres) {
 
 // 2) Produtos: a lista do previdenciário é exatamente a definida pela Dra. Raynne
 const PADRAO = {
-  advogados: ['Auxílio-acidente', 'Benefício por incapacidade temporária', 'BPC/LOAS', 'Aposentadoria', 'Salário-maternidade'],
+  advogados: ['Auxílio-acidente', 'Benefício por incapacidade temporária', 'BPC/LOAS', 'Aposentadoria', 'Salário-maternidade', 'Pensão por morte', 'Trabalhista'],
   educacao: ['Atraso de voo', 'Cancelamento de voo', 'Extravio de bagagem', 'Overbooking'],
 };
 const EXATA = { advogados: true, educacao: false };
