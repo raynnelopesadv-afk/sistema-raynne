@@ -70,11 +70,11 @@ export function AppSidebar() {
         )}
       </div>
 
-      <SidebarContent className="py-1 gap-0">
+      <SidebarContent className="menu-rolagem py-1 gap-0">
         {grupos.map(grupo => (
         <SidebarGroup key={grupo.nome} className="py-1">
           {!collapsed && (
-            <p className="px-3 pt-2 pb-1 text-[11px] font-medium text-sidebar-foreground/60">{grupo.nome}</p>
+            <p className="px-3 pt-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[hsl(42_56%_62%)]/70">{grupo.nome}</p>
           )}
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
@@ -85,17 +85,17 @@ export function AppSidebar() {
                       to={item.url}
                       end={item.url === '/'}
                       onClick={() => { if (isMobile) setOpenMobile(false); }}
-                      className="flex items-center gap-2.5 px-3 py-1 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
-                      activeClassName="bg-sidebar-accent text-[hsl(41_55%_62%)] font-medium"
+                      className="relative flex items-center gap-3 px-3 py-1.5 rounded-lg text-sidebar-foreground menu-item transition-all duration-200"
+                      activeClassName="menu-ativo bg-sidebar-accent text-[hsl(42_56%_66%)] font-semibold"
                     >
                       <span className="relative shrink-0">
-                        <item.icon className="w-5 h-5" />
+                        <item.icon className="w-[18px] h-[18px]" strokeWidth={1.75} />
                         {item.url === '/config' && pendentes > 0 && collapsed && (
                           <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-destructive" />
                         )}
                       </span>
                       {!collapsed && (
-                        <span className="text-sm flex items-center gap-2">
+                        <span className="text-[13.5px] font-medium tracking-[-0.005em] flex items-center gap-2">
                           {item.title}
                           {item.url === '/config' && pendentes > 0 && (
                             <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-destructive text-white text-[10px] font-bold">
