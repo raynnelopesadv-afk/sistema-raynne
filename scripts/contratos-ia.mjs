@@ -111,7 +111,7 @@ await sb.from('sync_juridico').insert({ fonte: 'zapsign ia', inseridos: novos, a
     usuarios.push(...data.users);
     if (data.users.length < 200) break;
   }
-  const dela = usuarios.filter(u => /^raynne/i.test(u.email ?? ''));
+  const dela = usuarios.filter(u => /^raynne/i.test(u.email ?? '') && !(u.email ?? '').includes('+')); // só a Dra. Raynne; logins da equipe usam "+"
   for (const u of dela) {
     await sb.from('profiles').update({ display_name: NOME }).eq('user_id', u.id);
     await sb.auth.admin.updateUserById(u.id, { user_metadata: { ...(u.user_metadata ?? {}), display_name: NOME } });
