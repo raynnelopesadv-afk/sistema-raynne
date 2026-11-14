@@ -339,7 +339,7 @@ export default function Processos() {
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Processos</h1>
-          <p className="text-sm text-muted-foreground mt-1">Workspace do operador técnico — protocolar, desqualificar e registrar resultados</p>
+          <p className="text-sm text-muted-foreground mt-1">Fila dos contratos fechados. O protocolo é lançado em Protocolos → Registro diário (o cliente sai daqui sozinho); aqui ficam desqualificar e registrar resultados.</p>
         </div>
         {canWrite && (
           <Button

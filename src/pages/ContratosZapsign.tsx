@@ -48,7 +48,7 @@ export default function ContratosZapsign() {
   const [busca, setBusca] = useState('');
   const qc = useQueryClient();
   const [de, setDe] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
-  const [ate, setAte] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
+  const [ate, setAte] = useState(format(new Date(), 'yyyy-MM-dd')); // mês corrente: dia 1 até hoje
   const noPeriodo = (iso: string | null) => {
     if (!iso) return false;
     const d = format(new Date(iso), 'yyyy-MM-dd'); // data no fuso do navegador (Brasília)
@@ -106,11 +106,12 @@ export default function ContratosZapsign() {
     if (a === 'hoje') { setDe(f(h)); setAte(f(h)); }
     if (a === 'ontem') { const o = new Date(h); o.setDate(h.getDate() - 1); setDe(f(o)); setAte(f(o)); }
     if (a === 'semana') { const s0 = new Date(h); s0.setDate(h.getDate() - ((h.getDay() + 6) % 7)); setDe(f(s0)); setAte(f(h)); }
-    if (a === 'mes') { setDe(f(startOfMonth(h))); setAte(f(endOfMonth(h))); }
+    if (a === 'mes') { setDe(f(startOfMonth(h))); setAte(f(h)); }
     if (a === 'mes_passado') { const m = new Date(h.getFullYear(), h.getMonth() - 1, 1); setDe(f(m)); setAte(f(endOfMonth(m))); }
   };
-  const pendentes = docs.filter(d => d.status === 'pending');
-  const recusados = docs.filter(d => d.status === 'refused');
+  // Pendentes e recusados também respeitam o período escolhido (enviados no período)
+  const pendentes = docs.filter(d => d.status === 'pending' && noPeriodo(d.criado_em));
+  const recusados = docs.filter(d => d.status === 'refused' && noPeriodo(d.criado_em));
 
   const lista = useMemo(() => {
     const base = aba === 'pendentes' ? pendentes : aba === 'assinados' ? assinadosMes : recusados;
@@ -150,10 +151,8 @@ export default function ContratosZapsign() {
         </span>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <KpiJuridico label="Contratos fechados no período" value={assinadosUnicos} tone="gold" hint={`${enviadosPeriodo} enviados no período`} onClick={() => setAba('assinados')} />
-        <KpiJuridico label="Aguardando assinatura" value={pendentes.length} tone={pendentes.length ? 'warning' : 'default'} onClick={() => setAba('pendentes')} />
-        <KpiJuridico label="Pendentes há mais de 3 dias" value={pendentes.filter(d => d.criado_em && differenceInCalendarDays(new Date(), parseISO(d.criado_em)) > 3).length} tone="danger" onClick={() => setAba('pendentes')} />
         <KpiJuridico label="Recusados" value={recusados.length} onClick={() => setAba('recusados')} />
       </div>
 

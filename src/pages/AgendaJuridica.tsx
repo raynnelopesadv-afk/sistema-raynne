@@ -22,7 +22,7 @@ const FILTROS: { v: Filtro; l: string }[] = [
   { v: 'hoje', l: 'Hoje' },
   { v: 'semana', l: 'Próximos 7 dias' },
   { v: 'mes', l: 'Próximos 30 dias' },
-  { v: 'concluidos', l: 'Concluídos (30 dias)' },
+  { v: 'concluidos', l: 'Feitos (30 dias)' },
 ];
 
 const FONTE_LABEL: Record<string, string> = {
@@ -79,7 +79,7 @@ export default function AgendaJuridica() {
     onSuccess: (_, v) => {
       qc.invalidateQueries({ queryKey: ['agenda-juridica'] });
       qc.invalidateQueries({ queryKey: ['painel-agenda'] });
-      toast.success(v.concluido ? 'Marcado como concluído' : 'Reaberto');
+      toast.success(v.concluido ? 'Marcado como feito' : 'Reaberto');
     },
     onError: (e: Error) => toast.error(e.message),
   });
