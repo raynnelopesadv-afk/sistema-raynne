@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { db } from '@/lib/juridico-db';
+import { supabase } from '@/lib/supabase';
 import { fmtData, hojeISO } from '@/lib/juridico';
 import {
   AREAS, BENEFICIOS_SUGERIDOS, TIPO_PROTOCOLO_CURTO, TIPO_PROTOCOLO_LABEL, nomeAmigavel,
@@ -32,6 +33,11 @@ export function useColaboradores() {
   });
 }
 
+interface NaFila { id: string; nome_cliente: string; divisao: string; product_id: string | null; data_fechamento: string | null }
+const normNome = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim();
+// Lançar estes tipos tira o cliente da fila de "aguardando protocolo" (tela Processos)
+const TIPOS_QUE_PROTOCOLAM: Record<string, 'administrativo' | 'judicial'> = { requerimento_adm: 'administrativo', acao_judicial: 'judicial' };
+
 export function RegistroDiario() {
   const { user } = useAuth();
   const { isGestor } = useUserRole();
@@ -40,7 +46,39 @@ export function RegistroDiario() {
   const [data, setData] = useState(hojeISO());
   const [colab, setColab] = useState<string>('');
   const [form, setForm] = useState(VAZIO);
+  const [filaId, setFilaId] = useState<string | null>(null);
   const quem = colab || user?.id || '';
+
+  // Fila: contratos fechados que ainda não foram protocolados
+  const fila = useQuery({
+    queryKey: ['fila-protocolo'],
+    queryFn: async () => {
+      const [{ data: rows, error }, { data: prods }] = await Promise.all([
+        supabase.from('clientes_fechados').select('id, nome_cliente, divisao, product_id, data_fechamento')
+          .eq('protocolado', false).not('status_qualificacao', 'in', '(desqualificado,desistencia)').limit(5000),
+        supabase.from('products').select('id, nome'),
+      ]);
+      if (error) throw error;
+      const nomeProd = Object.fromEntries((prods ?? []).map(p => [p.id, p.nome as string]));
+      return { lista: (rows ?? []) as NaFila[], nomeProd };
+    },
+  });
+  const escolhido = (fila.data?.lista ?? []).find(c => c.id === filaId) ?? null;
+  const sugestoes = useMemo(() => {
+    const t = normNome(form.cliente_nome);
+    if (filaId || t.length < 2) return [];
+    return (fila.data?.lista ?? []).filter(c => normNome(c.nome_cliente).includes(t)).slice(0, 6);
+  }, [form.cliente_nome, filaId, fila.data]);
+  const escolher = (c: NaFila) => {
+    const prod = c.product_id ? fila.data?.nomeProd[c.product_id] : undefined;
+    setFilaId(c.id);
+    setForm(f => ({
+      ...f,
+      cliente_nome: c.nome_cliente,
+      area: c.divisao === 'educacao' ? (AREAS.find(a => /a[eé]reo/i.test(a)) ?? f.area) : 'Previdenciário',
+      beneficio: f.beneficio || prod || '',
+    }));
+  };
 
   const { data: doDia, isLoading } = useQuery({
     queryKey: ['protocolos-dia', data],
@@ -64,18 +102,38 @@ export function RegistroDiario() {
   const salvar = useMutation({
     mutationFn: async () => {
       if (!form.cliente_nome.trim()) throw new Error('Informe o nome do cliente.');
+      // cliente da fila: o escolhido na lista ou, se digitou, o único com o mesmo nome
+      let alvo = escolhido;
+      if (!alvo) {
+        const iguais = (fila.data?.lista ?? []).filter(c => normNome(c.nome_cliente) === normNome(form.cliente_nome));
+        if (iguais.length === 1) alvo = iguais[0];
+      }
       const { error } = await db.from('protocolos_operacional').insert({
         data, colaborador_id: quem, tipo: form.tipo, area: form.area || null,
         cliente_nome: form.cliente_nome.trim(), beneficio: form.beneficio.trim() || null,
         numero: form.numero.trim() || null, orgao: form.orgao.trim() || null, descricao: form.descricao.trim() || null,
       });
       if (error) throw error;
+      const tipoProc = TIPOS_QUE_PROTOCOLAM[form.tipo];
+      if (alvo && tipoProc) {
+        const { error: e2 } = await supabase.from('clientes_fechados').update({
+          protocolado: true, data_protocolo: data, tipo_processo: tipoProc, status_qualificacao: 'qualificado',
+          ...(form.numero.trim() ? { numero_protocolo: form.numero.trim() } : {}),
+        }).eq('id', alvo.id);
+        if (e2) return { naFila: false, aviso: `Lançado, mas não consegui marcar ${alvo.nome_cliente} como protocolado em Processos (${e2.message}).` };
+        return { naFila: true, aviso: '' };
+      }
+      return { naFila: false, aviso: '' };
     },
-    onSuccess: () => {
+    onSuccess: (r) => {
       qc.invalidateQueries({ queryKey: ['protocolos-dia'] });
       qc.invalidateQueries({ queryKey: ['protocolos-periodo'] });
+      qc.invalidateQueries({ queryKey: ['fila-protocolo'] });
+      qc.invalidateQueries({ queryKey: ['protocolos'] });
       setForm({ ...VAZIO, tipo: form.tipo, area: form.area });
-      toast.success('Protocolo lançado');
+      setFilaId(null);
+      if (r?.aviso) toast.warning(r.aviso);
+      else toast.success(r?.naFila ? 'Protocolo lançado e cliente saiu da fila de Processos' : 'Protocolo lançado');
     },
     onError: (e: Error) => toast.error(e.message.includes('row-level security') ? 'Você só pode lançar protocolos em seu nome.' : e.message),
   });
@@ -147,7 +205,24 @@ export function RegistroDiario() {
         </div>
         <div>
           <Label className="text-xs">Cliente *</Label>
-          <Input value={form.cliente_nome} onChange={e => set('cliente_nome', e.target.value)} placeholder="Nome do cliente" />
+          <Input value={form.cliente_nome} onChange={e => { setFilaId(null); set('cliente_nome', e.target.value); }} placeholder="Digite e escolha da fila de contratos fechados" />
+          {sugestoes.length > 0 && (
+            <div className="mt-1 rounded-md border border-border bg-card divide-y divide-border">
+              {sugestoes.map(c => (
+                <button key={c.id} type="button" onClick={() => escolher(c)} className="w-full text-left px-2.5 py-1.5 text-sm hover:bg-muted">
+                  {c.nome_cliente}
+                  <span className="text-xs text-muted-foreground"> · {(c.product_id && fila.data?.nomeProd[c.product_id]) || (c.divisao === 'educacao' ? 'Aéreo' : 'Previdenciário')}{c.data_fechamento ? ` · fechado em ${fmtData(c.data_fechamento, 'dd/MM')}` : ''}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {escolhido && (
+            <p className="mt-1 text-xs text-emerald-700">
+              ✓ Cliente da fila de contratos fechados{TIPOS_QUE_PROTOCOLAM[form.tipo] ? ' — ao lançar, sai da fila de Processos como protocolado.' : ' (este tipo de lançamento não tira da fila).'}
+              {' '}<button type="button" className="underline" onClick={() => setFilaId(null)}>desvincular</button>
+            </p>
+          )}
+          {fila.data && <p className="mt-1 text-[11px] text-muted-foreground">{fila.data.lista.length} cliente(s) aguardando protocolo.</p>}
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
