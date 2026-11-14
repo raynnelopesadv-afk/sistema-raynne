@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,7 +19,6 @@ import Consulta from "./pages/Consulta";
 import MetaAds from "./pages/MetaAds";
 import Funis from "./pages/Funis";
 import Produtos from "./pages/Produtos";
-import Processos from "./pages/Processos";
 import Protocolos from "./pages/Protocolos";
 import Qualificacao from "./pages/Qualificacao";
 import Config from "./pages/Config";
@@ -87,7 +86,7 @@ function AuthGate() {
         <Route path="/meta-ads" element={<MetaAds />} />
         <Route path="/funis" element={<Funis />} />
         <Route path="/produtos" element={<Produtos />} />
-        <Route path="/processos" element={<Processos />} />
+        <Route path="/processos" element={<Navigate to="/protocolos?aba=fila" replace />} />
         <Route path="/protocolos" element={<Protocolos />} />
         <Route path="/qualificacao" element={<Qualificacao />} />
         <Route path="/config" element={<Config />} />

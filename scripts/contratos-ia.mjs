@@ -100,3 +100,43 @@ for (const d of docs.sort((a, b) => a.assinado_em.localeCompare(b.assinado_em)))
 }
 console.log(`IA Liderhub: ${docs.length} contratos da IA assinados desde ${DESDE}; ${novos} novos fechamentos; ${jaLancados} já estavam lançados.`);
 await sb.from('sync_juridico').insert({ fonte: 'zapsign ia', inseridos: novos, atualizados: preenchidos, erro: null });
+
+// 5) Nome de exibição da Dra. Raynne (no lugar do e-mail) em perfis, protocolos e histórico
+{
+  const NOME = 'Dra. Raynne';
+  const usuarios = [];
+  for (let page = 1; page <= 20; page++) {
+    const { data, error } = await sb.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) { console.log(`aviso: usuários (${error.message})`); break; }
+    usuarios.push(...data.users);
+    if (data.users.length < 200) break;
+  }
+  const dela = usuarios.filter(u => /^raynne/i.test(u.email ?? ''));
+  for (const u of dela) {
+    await sb.from('profiles').update({ display_name: NOME }).eq('user_id', u.id);
+    await sb.auth.admin.updateUserById(u.id, { user_metadata: { ...(u.user_metadata ?? {}), display_name: NOME } });
+    await sb.from('protocolos_operacional').update({ colaborador_nome: NOME }).eq('colaborador_id', u.id).neq('colaborador_nome', NOME);
+    await sb.from('colaborador_acoes').update({ usuario_nome: NOME }).eq('usuario_id', u.id).neq('usuario_nome', NOME);
+  }
+  console.log(`Nome "${NOME}" aplicado a ${dela.length} login(s): ${dela.map(u => u.email).join(', ')}`);
+}
+
+// 6) Protocolos já lançados no Registro diário tiram o cliente da fila de Processos
+{
+  const TIPO = { requerimento_adm: 'administrativo', acao_judicial: 'judicial' };
+  const lancados = await todos('protocolos_operacional', 'cliente_nome, tipo, data, numero', q => q.in('tipo', Object.keys(TIPO)));
+  const fila = await todos('clientes_fechados', 'id, nome_cliente', q => q.eq('protocolado', false).not('status_qualificacao', 'in', '(desqualificado,desistencia)'));
+  const porNome = new Map();
+  for (const c of fila) { const k = normNome(c.nome_cliente); if (k) porNome.set(k, [...(porNome.get(k) ?? []), c]); }
+  let marcados = 0;
+  for (const p of lancados.sort((a, b) => a.data.localeCompare(b.data))) {
+    const cands = porNome.get(normNome(p.cliente_nome)) ?? [];
+    if (cands.length !== 1) continue; // só quando o nome bate com um único cliente da fila
+    const { error } = await sb.from('clientes_fechados').update({
+      protocolado: true, data_protocolo: p.data, tipo_processo: TIPO[p.tipo], status_qualificacao: 'qualificado',
+      ...(p.numero ? { numero_protocolo: p.numero } : {}),
+    }).eq('id', cands[0].id);
+    if (!error) { marcados++; porNome.delete(normNome(p.cliente_nome)); }
+  }
+  console.log(`Registro diário → Processos: ${marcados} cliente(s) marcados como protocolados (${lancados.length} lançamentos conferidos).`);
+}

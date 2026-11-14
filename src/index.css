@@ -35,7 +35,7 @@
     --input: 80 7% 85%;
     --ring: 41 69% 39%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     /* barra lateral em grafite, onde a logo dourada brilha */
     --sidebar-background: 216 13% 10%;
@@ -76,8 +76,13 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-family: 'Lato', 'IBM Plex Sans', system-ui, sans-serif;
     font-feature-settings: 'tnum' 0;
+    letter-spacing: 0.005em;
+  }
+  h1, h2, h3 {
+    font-family: 'Lato', system-ui, sans-serif;
+    letter-spacing: -0.015em;
   }
 }
 
@@ -86,11 +91,18 @@
     @apply bg-card/80 backdrop-blur-[3px] border border-border rounded-xl;
     box-shadow: 0 1px 2px hsl(214 12% 12% / 0.04), 0 8px 24px -12px hsl(214 12% 12% / 0.08);
   }
-  /* títulos de página em serifa, como peça jurídica */
+  /* títulos de página: sans moderna, forte e limpa */
   .titulo-pagina {
-    font-family: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-family: 'Lato', system-ui, sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+  /* subtítulo leve, no estilo "Software jurídico completo." */
+  .titulo-leve {
+    font-family: 'Lato', system-ui, sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.02em;
   }
   .marca-rl {
     font-family: 'Cinzel', 'Times New Roman', serif;

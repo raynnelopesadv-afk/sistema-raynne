@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, DollarSign, Calendar, CheckCircle2, Users,
-  Search, Megaphone, GitBranch, Package, Scale, Settings, LogOut, Wallet, FileCheck2, Percent,
+  Search, Megaphone, GitBranch, Package, Settings, LogOut, Wallet, FileCheck2, Percent,
   Gavel, CalendarClock, Newspaper, Landmark, UsersRound, FileSignature, ListTodo, BellRing
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
@@ -34,7 +34,6 @@ const navItems: Item[] = [
   { title: 'Meta Ads', url: '/meta-ads', icon: Megaphone, grupo: 'Comercial' },
   { title: 'Funis', url: '/funis', icon: GitBranch, grupo: 'Comercial' },
   { title: 'Produtos', url: '/produtos', icon: Package, grupo: 'Comercial' },
-  { title: 'Processos', url: '/processos', icon: Scale, grupo: 'Jurídico' },
   { title: 'Protocolos', url: '/protocolos', icon: FileCheck2, grupo: 'Jurídico' },
   { title: 'Aproveitamento', url: '/qualificacao', icon: Percent, grupo: 'Comercial' },
   { title: 'Config', url: '/config', icon: Settings, grupo: 'Escritório' },

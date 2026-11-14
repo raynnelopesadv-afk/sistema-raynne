@@ -1,3 +1,5 @@
+import { useSearchParams } from 'react-router-dom';
+import Processos from './Processos';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, FileCheck2, Percent, CalendarCheck, Stamp } from 'lucide-react';
@@ -263,27 +265,31 @@ function ContratosProtocolados() {
 }
 
 export default function Protocolos() {
+  const [params, setParams] = useSearchParams();
+  const aba = params.get('aba') === 'fila' ? 'fila' : (params.get('aba') ?? 'plano');
   return (
     <div className="space-y-4">
       <div>
         <h1 className="titulo-pagina text-3xl">Protocolos</h1>
-        <p className="text-sm text-muted-foreground">Operacional: cada colaborador lança o que distribuiu no dia. Comercial: cada vendedor lança o seu fechamento. No fim do mês, o ranking mostra o 1º lugar.</p>
+        <p className="text-sm text-muted-foreground">Operacional: a fila dos contratos fechados e o que cada colaborador protocolou no dia (lançou aqui, o cliente sai da fila). Comercial: cada vendedor lança o seu fechamento. No fim do mês, o ranking mostra o 1º lugar.</p>
       </div>
-      <Tabs defaultValue="operacional">
+      <Tabs defaultValue={params.get('aba') === 'comercial' ? 'comercial' : 'operacional'}>
         <TabsList>
           <TabsTrigger value="operacional">Operacional (Jurídico)</TabsTrigger>
           <TabsTrigger value="comercial">Comercial</TabsTrigger>
         </TabsList>
         <TabsContent value="operacional" className="mt-4">
-          <Tabs defaultValue="plano">
+          <Tabs value={aba} onValueChange={v => setParams(v === 'plano' ? {} : { aba: v }, { replace: true })}>
             <TabsList className="flex-wrap h-auto">
               <TabsTrigger value="plano">Plano do dia</TabsTrigger>
+              <TabsTrigger value="fila">Fila de protocolo</TabsTrigger>
               <TabsTrigger value="registro">Registro do dia</TabsTrigger>
               <TabsTrigger value="ranking">Ranking do mês</TabsTrigger>
               <TabsTrigger value="desempenho">Desempenho da equipe</TabsTrigger>
               <TabsTrigger value="contratos">Contratos protocolados</TabsTrigger>
             </TabsList>
             <TabsContent value="plano" className="mt-4"><PlanoDoDia /></TabsContent>
+            <TabsContent value="fila" className="mt-4"><Processos /></TabsContent>
             <TabsContent value="registro" className="mt-4"><RegistroDiario /></TabsContent>
             <TabsContent value="ranking" className="mt-4"><RankingOperacional /></TabsContent>
             <TabsContent value="desempenho" className="mt-4"><DesempenhoOperacional /></TabsContent>
