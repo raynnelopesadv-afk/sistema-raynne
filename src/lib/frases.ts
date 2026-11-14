@@ -113,6 +113,13 @@ export const COACH_EQUIPE: string[] = [
 
 // Closers (comercial e líder): coach de vendas
 export const FRASE_CLOSER = 'Cada "não" te deixa mais perto do "sim". Próximo!';
+/** Orientação fixa dos closers: manhã = liga, liga, liga e depois mensagem; tarde = só os quentes. */
+export function orientacaoCloser(d = new Date()): string {
+  return momentoDoDia(d) === 'manha'
+    ? 'Manhã: LIGA, LIGA, LIGA! Depois manda mensagem.'
+    : 'Tarde: só liga nos QUENTES e vai pra cima!';
+}
+
 export const COACH_CLOSER: string[] = [
   FRASE_CLOSER,
   'Liga agora pro próximo lead. Quem liga mais, fecha mais!',
@@ -170,6 +177,11 @@ export function frasesPara(email: string | null | undefined, d = new Date(), met
   const doMomento = (dela ? FRASES_RAYNNE : FRASES_EQUIPE)[momentoDoDia(d)];
   const versiculos = dela ? VERSICULOS_RAYNNE : VERSICULOS_EQUIPE;
   const closer = setor === 'comercial' || setor === 'lider';
-  const coach = dela ? COACH_RAYNNE : closer ? intercalar(COACH_CLOSER, COACH_EQUIPE) : COACH_EQUIPE;
+  if (!dela && closer) {
+    // closer: a orientação do momento e o "Cada não..." aparecem o tempo todo, entre as demais
+    const demais = intercalar(doMomento, COACH_CLOSER, versiculos, frasesDaMeta(meta));
+    return demais.flatMap((f, i) => [i % 2 ? FRASE_CLOSER : orientacaoCloser(d), f]);
+  }
+  const coach = dela ? COACH_RAYNNE : COACH_EQUIPE;
   return intercalar(doMomento, coach, versiculos, dela ? [] : frasesDaMeta(meta));
 }

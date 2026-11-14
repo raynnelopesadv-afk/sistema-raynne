@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { momentoDoDia, frasesPara, FRASES_RAYNNE, FRASES_EQUIPE, FRASE_CLOSER } from '@/lib/frases';
+import { momentoDoDia, frasesPara, FRASES_RAYNNE, FRASES_EQUIPE, FRASE_CLOSER, orientacaoCloser } from '@/lib/frases';
 
 describe('frases do dia', () => {
   it('muda conforme o horário', () => {
@@ -22,5 +22,13 @@ describe('frases do dia', () => {
     expect(frasesPara('comercial01@rl.com', d, null, 'comercial')).toContain(FRASE_CLOSER);
     expect(frasesPara('lider@rl.com', d, null, 'lider')).toContain(FRASE_CLOSER);
     expect(frasesPara('juridico01@rl.com', d, null, 'juridico')).not.toContain(FRASE_CLOSER);
+  });
+  it('closer: liga, liga, liga de manhã; à tarde só os quentes, sempre na rotação', () => {
+    const manha = frasesPara('c@rl.com', new Date(2026, 10, 14, 9), null, 'comercial');
+    const tarde = frasesPara('c@rl.com', new Date(2026, 10, 14, 15), null, 'comercial');
+    expect(orientacaoCloser(new Date(2026, 10, 14, 9))).toContain('LIGA, LIGA, LIGA');
+    expect(orientacaoCloser(new Date(2026, 10, 14, 15))).toContain('QUENTES');
+    expect(manha.filter((_, i) => i % 2 === 0).every(f => f === orientacaoCloser(new Date(2026, 10, 14, 9)) || f === FRASE_CLOSER)).toBe(true);
+    expect(tarde).toContain(orientacaoCloser(new Date(2026, 10, 14, 15)));
   });
 });

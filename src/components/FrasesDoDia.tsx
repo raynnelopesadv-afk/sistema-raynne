@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, PhoneCall } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { frasesPara } from '@/lib/frases';
+import { frasesPara, orientacaoCloser, ehRaynne } from '@/lib/frases';
 import { useMinhaMeta } from '@/hooks/useMinhaMeta';
 import { useUserRole } from '@/hooks/useUserRole';
 
@@ -34,6 +34,11 @@ export function FrasesDoDia({ className = '' }: { className?: string }) {
 
   return (
     <div className={`flex items-center justify-center gap-2 min-w-0 ${className}`} aria-live="polite">
+      {(setor === 'comercial' || setor === 'lider') && !ehRaynne(user?.email) && (
+        <span className="hidden lg:inline-flex items-center gap-1.5 shrink-0 rounded-full bg-primary text-primary-foreground px-3 py-1 text-xs font-bold">
+          <PhoneCall className="w-3.5 h-3.5" /> {orientacaoCloser(agora)}
+        </span>
+      )}
       <Sparkles className="w-4 h-4 shrink-0 text-primary" />
       <span
         className={`frase-dia line-clamp-2 md:truncate leading-tight font-semibold text-[13px] md:text-sm transition-all duration-500 ${visivel ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'}`}
