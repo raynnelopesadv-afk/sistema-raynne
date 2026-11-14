@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { momentoDoDia, frasesPara, FRASES_RAYNNE, FRASES_EQUIPE, FRASE_CLOSER, orientacaoCloser } from '@/lib/frases';
+import { momentoDoDia, frasesPara, FRASES_RAYNNE, FRASES_EQUIPE, FRASE_CLOSER, orientacaoCloser, ehRaynne } from '@/lib/frases';
 
 describe('frases do dia', () => {
   it('muda conforme o horário', () => {
@@ -16,6 +16,16 @@ describe('frases do dia', () => {
     expect(equipe).toContain(FRASES_EQUIPE.manha[0]);
     expect(equipe).toContain('Vai, vencedor(a)! Faltam 2, bora pra meta!');
     expect(frasesPara('comercial01@rl.com', d, { meta: 3, feito: 3 })).toContain('Meta batida! Aqui só tem os melhores!');
+  });
+  it('logins da equipe com "+" no Gmail da Dra. Raynne NÃO recebem as frases dela', () => {
+    const d = new Date(2026, 10, 14, 9);
+    expect(ehRaynne('raynnelopes.adv@gmail.com')).toBe(true);
+    expect(ehRaynne('raynnelsouza@gmail.com')).toBe(true);
+    for (const login of ['comercial01', 'comercial02', 'lider', 'juridico01', 'juridico02', 'juridico03']) {
+      const email = `raynnelopes.adv+${login}@gmail.com`;
+      expect(ehRaynne(email)).toBe(false);
+      expect(frasesPara(email, d)).not.toContain(FRASES_RAYNNE.manha[0]);
+    }
   });
   it('closers recebem "Cada não te deixa mais perto do sim"; jurídico não', () => {
     const d = new Date(2026, 10, 14, 9);

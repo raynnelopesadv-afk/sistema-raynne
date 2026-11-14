@@ -67,22 +67,43 @@ export async function ativarNoAparelho(): Promise<void> {
   if (!chave) throw new Error('O sistema ainda está preparando os alertas. Tente de novo em alguns minutos.');
   const reg = await navigator.serviceWorker.register('/sw.js');
   await navigator.serviceWorker.ready;
+  const novaInscricao = () => reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64ParaBytes(chave as string) });
   let sub = await reg.pushManager.getSubscription();
-  if (!sub) {
-    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64ParaBytes(chave as string) });
+  if (sub && !(await ehDesteUsuario(sub.endpoint))) {
+    // Este aparelho estava ligado a OUTRA pessoa (ex.: a Dra. Raynne entrou antes neste celular/computador).
+    // Troca a inscrição para que ela pare de chegar aqui e só cheguem os alertas de quem está logado agora.
+    await sub.unsubscribe().catch(() => undefined);
+    sub = null;
   }
-  const j = sub.toJSON();
-  const { error: e2 } = await db.from('alertas_dispositivos').upsert({
+  if (!sub) sub = await novaInscricao();
+  let j = sub.toJSON();
+  let { error: e2 } = await db.from('alertas_dispositivos').upsert({
     endpoint: j.endpoint, p256dh: j.keys?.p256dh, auth: j.keys?.auth, aparelho: nomeAparelho(), falhas: 0,
   }, { onConflict: 'endpoint' });
+  if (e2) {
+    // endereço ainda preso a outro usuário: gera um novo e tenta de novo
+    await sub.unsubscribe().catch(() => undefined);
+    sub = await novaInscricao();
+    j = sub.toJSON();
+    ({ error: e2 } = await db.from('alertas_dispositivos').insert({
+      endpoint: j.endpoint, p256dh: j.keys?.p256dh, auth: j.keys?.auth, aparelho: nomeAparelho(), falhas: 0,
+    }));
+  }
   if (e2) throw new Error(e2.message);
+}
+
+/** O aparelho está cadastrado no nome de quem está logado? (cada um só enxerga os próprios aparelhos) */
+async function ehDesteUsuario(endpoint: string): Promise<boolean> {
+  const { data } = await db.from('alertas_dispositivos').select('id').eq('endpoint', endpoint).maybeSingle();
+  return !!data;
 }
 
 /** Este aparelho já está recebendo? */
 export async function aparelhoAtivo(): Promise<boolean> {
   if (!suportaPush() || Notification.permission !== 'granted') return false;
   const reg = await navigator.serviceWorker.getRegistration('/sw.js');
-  return !!(await reg?.pushManager.getSubscription());
+  const sub = await reg?.pushManager.getSubscription();
+  return !!sub && (await ehDesteUsuario(sub.endpoint));
 }
 
 /** Notificação de teste, direto no aparelho. */
@@ -95,6 +116,19 @@ export async function testarNoAparelho(): Promise<void> {
     badge: '/icone-192.png',
     tag: 'teste',
   });
+}
+
+/** Ao sair do sistema: este aparelho para de receber os alertas de quem saiu
+ *  (assim, se outra pessoa entrar no mesmo celular/computador, não recebe as mensagens da anterior). */
+export async function soltarAparelhoAoSair(): Promise<void> {
+  try {
+    if (!suportaPush()) return;
+    const reg = await navigator.serviceWorker.getRegistration('/sw.js');
+    const sub = await reg?.pushManager.getSubscription();
+    if (!sub) return;
+    await db.from('alertas_dispositivos').delete().eq('endpoint', sub.endpoint);
+    await sub.unsubscribe();
+  } catch { /* sair nunca pode travar */ }
 }
 
 /** Desliga os alertas neste aparelho. */

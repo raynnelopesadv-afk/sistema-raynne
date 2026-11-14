@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { soltarAparelhoAoSair } from '@/lib/alertas';
 
 interface AuthContextType {
   session: Session | null;
@@ -36,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    await soltarAparelhoAoSair();
     await supabase.auth.signOut();
   };
 

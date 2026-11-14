@@ -164,8 +164,10 @@ export function intercalar(...listas) {
   return out;
 }
 
+/** Só a Dra. Raynne. Os logins da equipe usam o Gmail dela com "+" (raynnelopes.adv+comercial01@gmail.com) e NÃO são ela. */
 export function ehRaynne(email) {
-  return /^raynne/i.test(email ?? '');
+  const e = (email ?? '').trim().toLowerCase();
+  return /^raynne/.test(e) && !e.split('@')[0].includes('+');
 }
 
 export function frasesPara(email, d = new Date(), meta, setor) {
