@@ -54,7 +54,7 @@ const diaDe = f => f.data_fechamento ?? (f.fechado_em ? new Intl.DateTimeFormat(
 const analise = analisarComercial({
   hoje,
   metaEquipeDia: Number(process.env.META_EQUIPE_DIA || 3),
-  vendedores: (closers ?? []).map(c => ({ id: c.id, nome: c.nome, metaMes: Number(c.meta_mes || 0) })),
+  vendedores: (closers ?? []).filter(c => !/^ia\b/i.test(c.nome ?? '')).map(c => ({ id: c.id, nome: c.nome, metaMes: Number(c.meta_mes || 0) })),
   fechamentos: (fechados ?? []).filter(f => f.status_qualificacao !== 'desistencia').map(f => ({ vendedorId: f.closer_id, dia: diaDe(f) })).filter(f => f.dia),
   desistencias: (fechados ?? []).filter(f => f.status_qualificacao === 'desistencia').map(f => ({ vendedorId: f.closer_id, dia: diaDe(f) })).filter(f => f.dia),
   zapsign: { pendentes: pendentesZap ?? 0, assinadosHoje, assinadosMes },
