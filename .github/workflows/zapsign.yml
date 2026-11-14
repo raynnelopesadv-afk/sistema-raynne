@@ -26,3 +26,8 @@ jobs:
           ZAPSIGN_IGNORAR: ${{ vars.ZAPSIGN_IGNORAR || 'raynne' }}
           ZAPSIGN_LISTAR_SEM_AREA: ${{ github.event.inputs.listar_sem_area }}
           ZAPSIGN_SO_PASTAS: ${{ github.event.inputs.listar_sem_area }}
+      - name: Contratos da IA (IA Liderhub) e valores do faturamento
+        run: node scripts/contratos-ia.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
