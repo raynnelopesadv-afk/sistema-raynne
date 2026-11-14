@@ -1,0 +1,16 @@
+type Momento = 'manha' | 'tarde' | 'noite';
+type MetaHoje = { meta: number; feito: number } | null | undefined;
+export function momentoDoDia(d?: Date): Momento;
+export const FRASES_EQUIPE: Record<Momento, string[]>;
+export const FRASES_RAYNNE: Record<Momento, string[]>;
+export const VERSICULOS_RAYNNE: string[];
+export const VERSICULOS_EQUIPE: string[];
+export const COACH_EQUIPE: string[];
+export const COACH_CLOSER: string[];
+export const COACH_RAYNNE: string[];
+export const FRASE_CLOSER: string;
+export function orientacaoCloser(d?: Date): string;
+export function frasesDaMeta(m: MetaHoje): string[];
+export function intercalar(...listas: string[][]): string[];
+export function ehRaynne(email?: string | null): boolean;
+export function frasesPara(email: string | null | undefined, d?: Date, meta?: MetaHoje, setor?: string | null): string[];

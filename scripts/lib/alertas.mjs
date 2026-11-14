@@ -5,6 +5,12 @@
 //   - Prazos: cumprir todos os prazos do dia.
 //   - Gestão: não tem meta própria; acompanha a equipe toda.
 // Funções puras (sem banco), testadas em src/test/alertas.test.ts.
+// Cada mensagem pessoal leva também uma frase de fé/coach (as mesmas da tela, em frases.mjs).
+
+import {
+  FRASE_CLOSER, orientacaoCloser, intercalar,
+  COACH_CLOSER, COACH_EQUIPE, COACH_RAYNNE, VERSICULOS_EQUIPE, VERSICULOS_RAYNNE, FRASES_RAYNNE, momentoDoDia,
+} from './frases.mjs';
 
 export const SETORES_META = {
   comercial: { label: 'Comercial', meta: 3, unidade: 'contratos' },
@@ -56,6 +62,28 @@ export function mensagemPessoal({ setor, feito, meta, hora, prazos }) {
     titulo: 'Vai, vencedor(a)!',
     corpo: `São ${hora}h e você está com ${feito} de ${meta} ${unidade}. ${plural(faltam, 'Falta só 1', `Faltam ${faltam}`)} — você consegue, bora pra meta!`,
   };
+}
+
+/** Frase de incentivo desta hora para o setor (muda a cada hora e a cada dia). */
+export function fraseDoCelular(setor, hora, dia = new Date().getDate()) {
+  const d = new Date(2000, 0, 1, hora);
+  const n = dia * 13 + hora;
+  if (setor === 'gestao') {
+    const lista = intercalar(VERSICULOS_RAYNNE, FRASES_RAYNNE[momentoDoDia(d)], COACH_RAYNNE);
+    return lista[n % lista.length];
+  }
+  if (setor === 'comercial' || setor === 'lider') {
+    const lista = intercalar([FRASE_CLOSER], COACH_CLOSER, VERSICULOS_EQUIPE);
+    return `${orientacaoCloser(d)} ${lista[n % lista.length]}`;
+  }
+  const lista = intercalar(VERSICULOS_EQUIPE, COACH_EQUIPE);
+  return lista[n % lista.length];
+}
+
+/** Bênção da Dra. Raynne (gestão) no celular: às 9h e às 14h. */
+export function mensagemGestao(hora, dia) {
+  if (hora !== 9 && hora !== 14) return null;
+  return { titulo: hora === 9 ? 'Bom dia, Dra. Raynne! Deus é contigo!' : 'Vai ter vitória, Dra. Raynne!', corpo: fraseDoCelular('gestao', hora, dia) };
 }
 
 /** Quem cada setor enxerga no aviso da equipe. */
@@ -112,7 +140,7 @@ export function mensagemResumo({ setor, pessoas, prazos }) {
  * feitos: { [userId]: número feito hoje } (contratos ou protocolos, conforme o setor)
  * prazos: { total, feitos } do dia
  */
-export function montarAlertas({ hora, inscricoes, feitos, prazos }) {
+export function montarAlertas({ hora, inscricoes, feitos, prazos, dia = new Date().getDate() }) {
   const pessoas = inscricoes
     .filter(i => i.setor !== 'gestao' && i.setor !== 'prazos')
     .map(i => ({ userId: i.userId, nome: i.nome, setor: i.setor, meta: SETORES_META[i.setor]?.meta ?? 0, feito: feitos[i.userId] ?? 0 }));
@@ -120,7 +148,10 @@ export function montarAlertas({ hora, inscricoes, feitos, prazos }) {
   for (const i of inscricoes) {
     const meta = SETORES_META[i.setor]?.meta ?? 0;
     if (i.alertaHora) {
-      const m = mensagemPessoal({ setor: i.setor, feito: feitos[i.userId] ?? 0, meta, hora, prazos });
+      const m = i.setor === 'gestao'
+        ? mensagemGestao(hora, dia)
+        : mensagemPessoal({ setor: i.setor, feito: feitos[i.userId] ?? 0, meta, hora, prazos });
+      if (m && i.setor !== 'gestao') m.corpo = `${m.corpo}\n${fraseDoCelular(i.setor, hora, dia)}`;
       if (m) saida.push({ userId: i.userId, tipo: 'pessoal', ...m });
     }
     if (i.alertaEquipe) {
