@@ -97,6 +97,35 @@ export const VERSICULOS_EQUIPE: string[] = [
   'Eu creio em você, e Deus mais ainda. Bora vencer!',
 ];
 
+// Modo coach: energia, foco e ação — para a produtividade triplicar
+export const COACH_EQUIPE: string[] = [
+  'Uma tarefa de cada vez, com 100% de foco. É assim que se triplica o resultado!',
+  'Não espere a vontade chegar: comece, e a energia vem junto. Bora!',
+  'Liga agora pro próximo cliente. Ação gera resultado!',
+  'Disciplina vence talento quando o talento não tem disciplina. Seja os dois!',
+  'Celular de lado, foco ligado: os próximos 30 minutos valem ouro.',
+  'Cada "não" te deixa mais perto do "sim". Próximo!',
+  'Campeão não é quem nunca cai: é quem levanta e fecha o próximo contrato.',
+  'Você é a média do seu esforço diário. Hoje, eleve a média!',
+  'Pergunta de coach: o que você pode terminar AGORA em 15 minutos? Faz!',
+  'Resultado extraordinário vem de gente comum fazendo o básico com excelência, todo dia.',
+  'Comemora cada protocolo, cada fechamento. Vitória pequena gera vitória grande!',
+  'Respira, alinha a postura e vai pra cima. Hoje é dia de recorde!',
+];
+
+export const COACH_RAYNNE: string[] = [
+  'Líder que acredita multiplica. Sua fé faz a equipe triplicar!',
+  'Você não construiu um escritório: construiu um império. E ele está só começando.',
+  'Decida como a advogada milionária que você já é. Ela age hoje.',
+  'Seu padrão eleva o padrão de todo mundo. Continue sendo referência!',
+  'Pensa grande, executa rápido, celebra cada conquista.',
+  'Delegue o que pesa e concentre sua energia no que só você faz.',
+  'Quem planta excelência colhe autoridade. Você é autoridade!',
+  'Visão de dona, coração de serva, fé de gigante. Essa é você.',
+  'O próximo nível da RL Advocacia começa na decisão que você toma hoje.',
+  'Reconheça a equipe hoje: elogio sincero triplica a entrega!',
+];
+
 export type MetaHoje = { meta: number; feito: number } | null | undefined;
 
 /** Frases quando a meta do dia ainda não foi batida (ou acabou de ser). */
@@ -128,5 +157,6 @@ export function frasesPara(email: string | null | undefined, d = new Date(), met
   const dela = ehRaynne(email);
   const doMomento = (dela ? FRASES_RAYNNE : FRASES_EQUIPE)[momentoDoDia(d)];
   const versiculos = dela ? VERSICULOS_RAYNNE : VERSICULOS_EQUIPE;
-  return intercalar(doMomento, versiculos, dela ? [] : frasesDaMeta(meta));
+  const coach = dela ? COACH_RAYNNE : COACH_EQUIPE;
+  return intercalar(doMomento, coach, versiculos, dela ? [] : frasesDaMeta(meta));
 }
