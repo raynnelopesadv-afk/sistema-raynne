@@ -140,6 +140,13 @@
     border-radius: 0 3px 3px 0;
     background: hsl(42 56% 62%);
   }
+  /* frase do dia: texto em degradê marinho → ouro */
+  .frase-dia {
+    background: linear-gradient(90deg, hsl(217 44% 18%), hsl(40 63% 36%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   /* passar o mouse: brilho dourado */
   .menu-item:hover {
     background: linear-gradient(90deg, hsl(42 56% 62% / 0.16), hsl(42 56% 62% / 0.04));

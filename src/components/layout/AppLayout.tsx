@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { BRAND } from '@/config/brand';
 import { AvisoCelularGlobal } from '@/components/AvisoCelularGlobal';
+import { FrasesDoDia } from '@/components/FrasesDoDia';
 
 function MarcaDagua() {
   const { state, isMobile } = useSidebar();
@@ -35,9 +36,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <SidebarTrigger className="hidden md:flex text-muted-foreground hover:text-foreground" />
               <div className="flex items-center gap-2 md:hidden">
                 <img src={BRAND.emblemaUrl} alt="" className="h-7 w-auto" />
-                <span className="marca-rl text-sm font-semibold text-foreground">{BRAND.appName}</span>
               </div>
-              <div className="ml-auto flex items-center gap-2">
+              <FrasesDoDia className="flex-1 px-1" />
+              <div className="flex items-center gap-2">
                 <TvModeButton />
               </div>
             </header>
