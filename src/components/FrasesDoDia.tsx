@@ -3,13 +3,16 @@ import { Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { frasesPara } from '@/lib/frases';
 import { useMinhaMeta } from '@/hooks/useMinhaMeta';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const INTERVALO_MS = 10000;
 
 // Faixa no topo da tela: frases que vão passando e mudam com o momento do dia.
 export function FrasesDoDia({ className = '' }: { className?: string }) {
   const { user } = useAuth();
-  const { progresso } = useMinhaMeta();
+  const { progresso, inscricao } = useMinhaMeta();
+  const { isVendas } = useUserRole();
+  const setor = inscricao?.setor_meta ?? (isVendas ? 'comercial' : null);
   const [agora, setAgora] = useState(() => new Date());
   const [i, setI] = useState(() => Math.floor(Math.random() * 5));
   const [visivel, setVisivel] = useState(true);
@@ -26,7 +29,7 @@ export function FrasesDoDia({ className = '' }: { className?: string }) {
     return () => clearInterval(t);
   }, []);
 
-  const frases = frasesPara(user?.email, agora, progresso);
+  const frases = frasesPara(user?.email, agora, progresso, setor);
   const frase = frases[i % frases.length];
 
   return (

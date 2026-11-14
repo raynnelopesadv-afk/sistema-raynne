@@ -101,16 +101,28 @@ export const VERSICULOS_EQUIPE: string[] = [
 export const COACH_EQUIPE: string[] = [
   'Uma tarefa de cada vez, com 100% de foco. É assim que se triplica o resultado!',
   'Não espere a vontade chegar: comece, e a energia vem junto. Bora!',
-  'Liga agora pro próximo cliente. Ação gera resultado!',
   'Disciplina vence talento quando o talento não tem disciplina. Seja os dois!',
   'Celular de lado, foco ligado: os próximos 30 minutos valem ouro.',
-  'Cada "não" te deixa mais perto do "sim". Próximo!',
   'Campeão não é quem nunca cai: é quem levanta e fecha o próximo contrato.',
   'Você é a média do seu esforço diário. Hoje, eleve a média!',
   'Pergunta de coach: o que você pode terminar AGORA em 15 minutos? Faz!',
   'Resultado extraordinário vem de gente comum fazendo o básico com excelência, todo dia.',
   'Comemora cada protocolo, cada fechamento. Vitória pequena gera vitória grande!',
   'Respira, alinha a postura e vai pra cima. Hoje é dia de recorde!',
+];
+
+// Closers (comercial e líder): coach de vendas
+export const FRASE_CLOSER = 'Cada "não" te deixa mais perto do "sim". Próximo!';
+export const COACH_CLOSER: string[] = [
+  FRASE_CLOSER,
+  'Liga agora pro próximo lead. Quem liga mais, fecha mais!',
+  'Objeção não é "não": é pedido de mais segurança. Acolhe e fecha!',
+  FRASE_CLOSER,
+  'Seu próximo contrato está em uma conversa de distância. Chama!',
+  'Retorna aquele lead que ficou de pensar: hoje ele decide com você.',
+  FRASE_CLOSER,
+  'Você não vende contrato: você entrega o direito que muda a vida do cliente.',
+  'Closer de verdade pede o fechamento. Pede!',
 ];
 
 export const COACH_RAYNNE: string[] = [
@@ -153,10 +165,11 @@ export function ehRaynne(email?: string | null): boolean {
   return /^raynne/i.test(email ?? '');
 }
 
-export function frasesPara(email: string | null | undefined, d = new Date(), meta?: MetaHoje): string[] {
+export function frasesPara(email: string | null | undefined, d = new Date(), meta?: MetaHoje, setor?: string | null): string[] {
   const dela = ehRaynne(email);
   const doMomento = (dela ? FRASES_RAYNNE : FRASES_EQUIPE)[momentoDoDia(d)];
   const versiculos = dela ? VERSICULOS_RAYNNE : VERSICULOS_EQUIPE;
-  const coach = dela ? COACH_RAYNNE : COACH_EQUIPE;
+  const closer = setor === 'comercial' || setor === 'lider';
+  const coach = dela ? COACH_RAYNNE : closer ? intercalar(COACH_CLOSER, COACH_EQUIPE) : COACH_EQUIPE;
   return intercalar(doMomento, coach, versiculos, dela ? [] : frasesDaMeta(meta));
 }
