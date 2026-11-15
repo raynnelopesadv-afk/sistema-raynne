@@ -98,8 +98,10 @@ export default function ContratosZapsign() {
   const ano = hojeDt.getFullYear();
   const tab = tabelaMesArea(todosDocs, ano, hojeDt.getMonth() + 1);
   const unicos = unicosPorCliente(todosDocs.filter(d => d.area !== 'interno'));
-  const assinadosMes = docs.filter(d => d.status === 'signed' && noPeriodo(d.assinado_em));
-  const assinadosUnicos = unicos.filter(d => d.status === 'signed' && noPeriodo(d.assinado_em) && (filtroArea === 'todas' || d.area === filtroArea)).length;
+  // Fechado conta no período em que o contrato foi ENVIADO (mesma regra da tabela por mês):
+  // contrato enviado em outubro e assinado em novembro conta em outubro.
+  const assinadosMes = docs.filter(d => d.status === 'signed' && noPeriodo(d.criado_em));
+  const assinadosUnicos = unicos.filter(d => d.status === 'signed' && noPeriodo(d.criado_em) && (filtroArea === 'todas' || d.area === filtroArea)).length;
   const enviadosPeriodo = docs.filter(d => noPeriodo(d.criado_em)).length;
   const atalho = (a: 'hoje' | 'ontem' | 'semana' | 'mes' | 'mes_passado') => {
     const h = new Date(); const f = (x: Date) => format(x, 'yyyy-MM-dd');
