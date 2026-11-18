@@ -88,7 +88,7 @@ export default function MeuCelular() {
         <p className="text-sm text-muted-foreground flex items-center gap-1.5"><Smartphone className="w-4 h-4" /> Meu celular</p>
         <h1 className="titulo-pagina text-3xl mt-1">Receba os alertas da meta no seu celular</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          De hora em hora (9h às 17h) o sistema te avisa como você e a equipe estão. Vencedor(a) não perde a meta de vista.
+          Às 9h, 11h, 15h e 17h o sistema te avisa como você e a equipe estão. Vencedor(a) não perde a meta de vista.
         </p>
       </div>
 
@@ -130,7 +130,7 @@ export default function MeuCelular() {
       </section>
 
       <section className="glass-card px-4 divide-y divide-border">
-        <label className="flex items-center justify-between gap-3 py-3 text-sm">De hora em hora, das 9h às 17h<Switch checked={hora} onCheckedChange={setHora} /></label>
+        <label className="flex items-center justify-between gap-3 py-3 text-sm">A cada 2 horas (9h, 11h, 15h e 17h)<Switch checked={hora} onCheckedChange={setHora} /></label>
         <label className="flex items-center justify-between gap-3 py-3 text-sm">Quem da equipe está abaixo da meta<Switch checked={equipe} onCheckedChange={setEquipe} /></label>
         <label className="flex items-center justify-between gap-3 py-3 text-sm">Resumo do fim do dia (17h)<Switch checked={resumo} onCheckedChange={setResumo} /></label>
       </section>

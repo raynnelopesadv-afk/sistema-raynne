@@ -1,4 +1,4 @@
-// Alertas de meta no celular: monta as mensagens de hora em hora.
+// Alertas de meta no celular: monta as mensagens (a cada 2 horas: 9h, 11h, 15h e 17h).
 // Regras (definidas pela Dra. Raynne):
 //   - Comercial e líder: 3 contratos fechados por dia, cada um.
 //   - Jurídico (protocolos): 4 a 5 protocolos por dia (meta 4, ideal 5).
@@ -80,9 +80,9 @@ export function fraseDoCelular(setor, hora, dia = new Date().getDate()) {
   return lista[n % lista.length];
 }
 
-/** Bênção da Dra. Raynne (gestão) no celular: às 9h e às 14h. */
+/** Bênção da Dra. Raynne (gestão) no celular: às 9h e às 15h. */
 export function mensagemGestao(hora, dia) {
-  if (hora !== 9 && hora !== 14) return null;
+  if (hora !== 9 && hora !== 15) return null;
   return { titulo: hora === 9 ? 'Bom dia, Dra. Raynne! Deus é contigo!' : 'Vai ter vitória, Dra. Raynne!', corpo: fraseDoCelular('gestao', hora, dia) };
 }
 

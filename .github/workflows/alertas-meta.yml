@@ -1,12 +1,12 @@
 name: Alertas de meta no celular
-# De hora em hora, das 9h às 17h (Brasília), seg a sex, manda o "Vai, vencedor(a)!"
-# para quem cadastrou o celular na tela "Meu celular". Pausa no almoço: variável
-# ALERTA_HORAS_PAUSA (padrão "12,13").
+# A cada 2 horas (9h, 11h, 15h e 17h de Brasília), seg a sex, manda o "Vai, vencedor(a)!"
+# para quem cadastrou o celular na tela "Meu celular". Os horários ficam na
+# variável ALERTA_HORAS (padrão "9,11,15,17"); almoço sem alerta.
 # Quando a migração dos alertas muda, este workflow instala as tabelas sozinho
 # (se existir o secret SUPABASE_ACCESS_TOKEN; senão, cole o .sql no SQL Editor).
 on:
   schedule:
-    - cron: '2 12-20 * * 1-5'   # 9h02 às 17h02 (Brasília)
+    - cron: '2 12,14,18,20 * * 1-5'   # 9h02, 11h02, 15h02 e 17h02 (Brasília)
   push:
     branches: [main]
     paths:
@@ -56,5 +56,5 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          ALERTA_HORAS_PAUSA: ${{ vars.ALERTA_HORAS_PAUSA || '12,13' }}
+          ALERTA_HORAS: ${{ vars.ALERTA_HORAS || '9,11,15,17' }}
           MODO: ${{ github.event_name == 'push' && '--preparar' || (github.event.inputs.forcar == 'sim' && '--forcar' || '') }}

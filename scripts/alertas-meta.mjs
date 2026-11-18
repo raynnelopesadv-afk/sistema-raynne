@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// Alertas de meta no celular — roda de hora em hora (9h às 17h, seg a sex).
+// Alertas de meta no celular — roda a cada 2 horas (9h, 11h, 15h e 17h, seg a sex).
 // Calcula quanto cada pessoa já fez hoje e manda a notificação "Vai, vencedor(a)!"
 // para quem cadastrou o celular na tela "Meu celular".
 //
 //   node scripts/alertas-meta.mjs              envia os alertas da hora atual
 //   node scripts/alertas-meta.mjs --preparar   só garante as chaves de envio (não envia nada)
 //   node scripts/alertas-meta.mjs --forcar     envia mesmo fora do horário (teste)
-// Variáveis: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ALERTA_HORAS_PAUSA (padrão "12,13": almoço)
+// Variáveis: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ALERTA_HORAS (padrão "9,11,15,17")
 
 import { createClient } from '@supabase/supabase-js';
 import webpush from 'web-push';
@@ -35,8 +35,8 @@ webpush.setVapidDetails('mailto:raynnelopes.adv@gmail.com', cfg.vapid_publica, c
 const agora = new Date();
 const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(agora);
 const hora = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Sao_Paulo', hour: '2-digit', hourCycle: 'h23' }).format(agora));
-const pausa = (process.env.ALERTA_HORAS_PAUSA ?? '12,13').split(',').map(s => Number(s.trim())).filter(n => !Number.isNaN(n));
-if (!arg('--forcar') && (hora < HORA_INICIO || hora > HORA_FIM || pausa.includes(hora))) {
+const horas = (process.env.ALERTA_HORAS || '9,11,15,17').split(',').map(s => Number(s.trim())).filter(n => !Number.isNaN(n));
+if (!arg('--forcar') && (hora < HORA_INICIO || hora > HORA_FIM || !horas.includes(hora))) {
   console.log(`São ${hora}h: fora do horário de alertas. Nada enviado.`);
   process.exit(0);
 }

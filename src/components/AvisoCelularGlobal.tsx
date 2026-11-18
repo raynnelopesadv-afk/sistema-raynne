@@ -17,7 +17,7 @@ export function AvisoCelularGlobal() {
       <BellRing className="w-5 h-5 shrink-0 text-[hsl(41_55%_62%)]" />
       <span className="flex-1">
         <span className="font-bold">Cadastre seu celular para receber os alertas da meta.</span>{' '}
-        <span className="text-white/75">De hora em hora: "Vai, vencedor(a)! Bora pra meta!"</span>
+        <span className="text-white/75">A cada 2 horas: "Vai, vencedor(a)! Bora pra meta!"</span>
       </span>
       <span className="font-semibold text-[hsl(41_55%_62%)] shrink-0">Cadastrar</span>
     </Link>
