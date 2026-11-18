@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Loader2, Gift, Trash2, Download, Megaphone, ChevronDown } from 'lucide-react';
+import { Loader2, Gift, Trash2, Download, Megaphone, ChevronDown, Link2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -111,6 +111,19 @@ export default function Indicacoes() {
   });
 
   const todas = lista.data ?? [];
+
+  // Nomes dos contratos vinculados/sugeridos (só a gestão)
+  const idsContratos = useMemo(() => Array.from(new Set(todas.flatMap(i => [i.contrato_id, i.contrato_sugerido_id]).filter(Boolean) as string[])), [todas]);
+  const contratos = useQuery({
+    queryKey: ['indicacoes-contratos', idsContratos],
+    enabled: isGestor && idsContratos.length > 0,
+    queryFn: async () => {
+      const { data, error } = await db.rpc('indicacoes_contratos', { _ids: idsContratos });
+      if (error) throw error;
+      return Object.fromEntries(((data ?? []) as { id: string; nome_cliente: string; data_contrato: string | null }[]).map(c => [c.id, c]));
+    },
+  });
+  const contrato = (id?: string | null) => (id ? contratos.data?.[id] : undefined);
   const resumo = useMemo(() => resumoDoMes(todas, mes), [todas, mes]);
   const doMesLista = useMemo(() => doMes(todas, mes), [todas, mes]);
   const totais = resumo.reduce((s, r) => ({ fechadas: s.fechadas + r.fechadas, total: s.total + r.total, aPagar: s.aPagar + r.aPagar }), { fechadas: 0, total: 0, aPagar: 0 });
@@ -170,7 +183,7 @@ export default function Indicacoes() {
               <li>Família de quem faleceu e contribuía para o INSS → pensão por morte</li>
             </ul>
           </div>
-          <div><p className="font-semibold">6. Como lançar</p><p className="text-muted-foreground">Pegue o nome e o telefone da pessoa e lance aqui na aba <strong>na hora</strong>, antes de passar o contato para o escritório. A data do lançamento é o que garante que a indicação é sua.</p></div>
+          <div><p className="font-semibold">6. Como lançar</p><p className="text-muted-foreground">Pegue o nome completo e o telefone da pessoa e lance aqui na aba <strong>na hora</strong>, antes de passar o contato para o escritório. A data do lançamento é o que garante que a indicação é sua. Quando o contrato dela for lançado em Contratos Fechados, a indicação vira <strong>"Virou contrato"</strong> sozinha (o sistema confere pelo telefone e pelo nome).</p></div>
           <p className="rounded-md bg-primary/10 p-3"><strong>Importante:</strong> não prometa resultado nem valor de benefício. Diga apenas que a advogada vai analisar o caso, sem compromisso. Quem orienta juridicamente é sempre a Dra. Raynne.</p>
         </div>
       </details>
@@ -260,7 +273,24 @@ export default function Indicacoes() {
                         <SelectContent>{STATUS_INDICACAO.map(s => <SelectItem key={s.valor} value={s.valor}>{s.label}</SelectItem>)}</SelectContent>
                       </Select>
                     ) : labelStatus(i.status)}
-                    {i.status === 'fechado' && <div className="text-[11px] text-muted-foreground mt-0.5">fechou em {fmt(i.data_fechamento)}</div>}
+                    {i.status === 'fechado' && (
+                      <div className="text-[11px] text-muted-foreground mt-0.5">
+                        fechou em {fmt(i.data_fechamento)}
+                        {i.vinculo_automatico && <span className="ml-1 inline-flex items-center gap-0.5 text-primary"><Link2 className="w-3 h-3" />automático</span>}
+                        {isGestor && contrato(i.contrato_id) && <div>contrato: {contrato(i.contrato_id)!.nome_cliente}</div>}
+                      </div>
+                    )}
+                    {i.status === 'indicado' && i.contrato_sugerido_id && (
+                      isGestor ? (
+                        <div className="mt-1 rounded-md border border-amber-300 bg-amber-50 p-1.5 text-[11px]">
+                          <div className="font-medium text-amber-800">Possível contrato: {contrato(i.contrato_sugerido_id)?.nome_cliente ?? '…'}{contrato(i.contrato_sugerido_id)?.data_contrato ? ` (${fmt(contrato(i.contrato_sugerido_id)!.data_contrato)})` : ''}</div>
+                          <div className="mt-1 flex gap-1">
+                            <Button size="sm" className="h-6 px-2 text-[11px]" onClick={() => atualizar.mutate({ id: i.id, campos: { status: 'fechado', contrato_id: i.contrato_sugerido_id, contrato_sugerido_id: null } })}><Check className="w-3 h-3 mr-0.5" />É o mesmo</Button>
+                            <Button size="sm" variant="outline" className="h-6 px-2 text-[11px]" onClick={() => atualizar.mutate({ id: i.id, campos: { contrato_descartado_id: i.contrato_sugerido_id, contrato_sugerido_id: null } })}><X className="w-3 h-3 mr-0.5" />Não é</Button>
+                          </div>
+                        </div>
+                      ) : <div className="text-[11px] text-amber-700 mt-0.5">em conferência pela gestão</div>
+                    )}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {isGestor && i.status === 'fechado' ? (

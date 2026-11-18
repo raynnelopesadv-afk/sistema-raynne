@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'supabase/migrations/20261118100000_indicacoes.sql'
+      - 'supabase/migrations/20261118190000_indicacoes_vinculo_contrato.sql'
       - '.github/workflows/indicacoes.yml'
   workflow_dispatch:
 jobs:
@@ -20,12 +21,13 @@ jobs:
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ]; then
             echo "::error::Sem SUPABASE_ACCESS_TOKEN: cole supabase/migrations/20261118100000_indicacoes.sql no SQL Editor da Supabase uma vez."; exit 1; fi
-          f="supabase/migrations/20261118100000_indicacoes.sql"
+          for f in supabase/migrations/20261118100000_indicacoes.sql supabase/migrations/20261118190000_indicacoes_vinculo_contrato.sql; do
           python3 -c "import json,sys; print(json.dumps({'query': open(sys.argv[1]).read()}))" "$f" > /tmp/q.json
           code=$(curl -sS -o /tmp/r.txt -w '%{http_code}' -X POST \
             "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' --data @/tmp/q.json)
           echo "HTTP $code"; head -c 600 /tmp/r.txt; echo
           if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
-            echo "::error::Instalação: HTTP $code $(head -c 300 /tmp/r.txt | tr '\n' ' ')"; exit 1; fi
+            echo "::error::Instalação ($f): HTTP $code $(head -c 300 /tmp/r.txt | tr '\n' ' ')"; exit 1; fi
+          done
           echo "::notice::Tabela de indicações instalada."

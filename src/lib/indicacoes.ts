@@ -42,6 +42,12 @@ export interface Indicacao {
   pago: boolean;
   pago_em: string | null;
   observacao: string | null;
+  /** Contrato (Contratos Fechados) vinculado automaticamente ou confirmado pela gestão. */
+  contrato_id?: string | null;
+  /** Contrato com nome parecido, aguardando a gestão confirmar. */
+  contrato_sugerido_id?: string | null;
+  contrato_descartado_id?: string | null;
+  vinculo_automatico?: boolean;
 }
 
 /** Mês (AAAA-MM) em que a indicação conta para a comissão: o do fechamento. */
