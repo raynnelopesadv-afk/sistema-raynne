@@ -113,11 +113,11 @@ export default function Indicacoes() {
   const todas = lista.data ?? [];
   const resumo = useMemo(() => resumoDoMes(todas, mes), [todas, mes]);
   const doMesLista = useMemo(() => doMes(todas, mes), [todas, mes]);
-  const totais = resumo.reduce((s, r) => ({ fechadas: s.fechadas + r.fechadas, total: s.total + r.total, aPagar: s.aPagar + r.aPagar }), { fechadas: 0, total: 0, aPagar: 0 });
+  const totais = resumo.reduce((s, r) => ({ lancado: s.lancado + r.lancado, fechadas: s.fechadas + r.fechadas, total: s.total + r.total, aPagar: s.aPagar + r.aPagar }), { lancado: 0, fechadas: 0, total: 0, aPagar: 0 });
 
   function exportarCsv() {
-    const linhas = [['Colaborador', 'Indicadas no mês', 'Viraram contrato', 'Comissão', 'Pago', 'A pagar']];
-    for (const r of resumo) linhas.push([r.nome, String(r.indicadas), String(r.fechadas), r.total.toFixed(2).replace('.', ','), r.pago.toFixed(2).replace('.', ','), r.aPagar.toFixed(2).replace('.', ',')]);
+    const linhas = [['Colaborador', 'Indicadas no mês', 'Total lançado', 'Viraram contrato', 'Comissão', 'Pago', 'A pagar']];
+    for (const r of resumo) linhas.push([r.nome, String(r.indicadas), r.lancado.toFixed(2).replace('.', ','), String(r.fechadas), r.total.toFixed(2).replace('.', ','), r.pago.toFixed(2).replace('.', ','), r.aPagar.toFixed(2).replace('.', ',')]);
     linhas.push([], ['Colaborador', 'Cliente', 'Telefone', 'Produto', 'Indicado em', 'Status', 'Fechou em', 'Valor', 'Pago']);
     for (const i of doMesLista) linhas.push([i.indicador_nome ?? '', i.cliente_nome, i.telefone ?? '', labelProduto(i.produto), fmt(i.data_indicacao), labelStatus(i.status), fmt(i.data_fechamento), String(i.valor ?? valorPadrao(i.produto)).replace('.', ','), i.pago ? 'sim' : 'não']);
     const csv = '﻿' + linhas.map(l => l.map(c => `"${(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
@@ -207,7 +207,7 @@ export default function Indicacoes() {
       <section className="glass-card p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
           <h2 className="font-semibold">Comissão do mês por colaborador</h2>
-          <p className="text-sm text-muted-foreground">{totais.fechadas} indicações viraram contrato · total {brl(totais.total)} · a pagar <span className="font-semibold text-primary">{brl(totais.aPagar)}</span></p>
+          <p className="text-sm text-muted-foreground">total lançado <span className="font-semibold">{brl(totais.lancado)}</span> · {totais.fechadas} indicações viraram contrato · total {brl(totais.total)} · a pagar <span className="font-semibold text-primary">{brl(totais.aPagar)}</span></p>
         </div>
         {lista.isLoading ? <Loader2 className="w-5 h-5 animate-spin text-primary" /> : lista.isError ? (
           <p className="text-sm text-destructive">O módulo de indicações ainda está sendo instalado no banco. Tente de novo em alguns minutos.</p>
@@ -216,7 +216,7 @@ export default function Indicacoes() {
         ) : (
           <Table>
             <TableHeader><TableRow>
-              <TableHead>Colaborador</TableHead><TableHead className="text-right">Indicadas no mês</TableHead><TableHead className="text-right">Viraram contrato</TableHead>
+              <TableHead>Colaborador</TableHead><TableHead className="text-right">Indicadas no mês</TableHead><TableHead className="text-right">Total lançado</TableHead><TableHead className="text-right">Viraram contrato</TableHead>
               <TableHead className="text-right">Comissão</TableHead><TableHead className="text-right">Pago</TableHead><TableHead className="text-right">A pagar</TableHead>
             </TableRow></TableHeader>
             <TableBody>
@@ -224,6 +224,7 @@ export default function Indicacoes() {
                 <TableRow key={r.indicadorId}>
                   <TableCell className="font-medium">{idx === 0 && r.fechadas > 0 ? '🏆 ' : ''}{r.nome}</TableCell>
                   <TableCell className="text-right tabular-nums">{r.indicadas}</TableCell>
+                  <TableCell className="text-right tabular-nums font-semibold">{brl(r.lancado)}</TableCell>
                   <TableCell className="text-right tabular-nums">{r.fechadas}</TableCell>
                   <TableCell className="text-right tabular-nums font-semibold">{brl(r.total)}</TableCell>
                   <TableCell className="text-right tabular-nums">{brl(r.pago)}</TableCell>

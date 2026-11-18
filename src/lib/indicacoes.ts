@@ -54,6 +54,8 @@ export interface ResumoIndicador {
   indicadorId: string;
   nome: string;
   indicadas: number;
+  /** Soma dos valores de tudo que foi lançado no mês (exceto "não fechou"). */
+  lancado: number;
   fechadas: number;
   total: number;
   pago: number;
@@ -67,10 +69,14 @@ export interface ResumoIndicador {
 export function resumoDoMes(lista: Indicacao[], mes: string): ResumoIndicador[] {
   const m: Record<string, ResumoIndicador> = {};
   const linha = (i: Indicacao) => (m[i.indicador_id] ??= {
-    indicadorId: i.indicador_id, nome: i.indicador_nome || 'Colaborador', indicadas: 0, fechadas: 0, total: 0, pago: 0, aPagar: 0,
+    indicadorId: i.indicador_id, nome: i.indicador_nome || 'Colaborador', indicadas: 0, lancado: 0, fechadas: 0, total: 0, pago: 0, aPagar: 0,
   });
   for (const i of lista) {
-    if (i.data_indicacao.slice(0, 7) === mes) linha(i).indicadas += 1;
+    if (i.data_indicacao.slice(0, 7) === mes) {
+      const r = linha(i);
+      r.indicadas += 1;
+      if (i.status !== 'nao_fechou') r.lancado += Number(i.valor ?? valorPadrao(i.produto));
+    }
     if (mesDaComissao(i) === mes) {
       const r = linha(i);
       const v = Number(i.valor ?? valorPadrao(i.produto));
