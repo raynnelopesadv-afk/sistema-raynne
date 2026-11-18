@@ -1,6 +1,6 @@
 // Comissão por indicação: cada colaborador indica clientes de fora (não do tráfego pago).
-// Conta para a comissão do mês a indicação que virou contrato (status "fechado"),
-// pelo mês do fechamento. Valores definidos pela Dra. Raynne.
+// Conta para a comissão do mês tudo que o colaborador lançou no mês (exceto "não fechou"),
+// para a equipe ver o valor acumulado. Valores definidos pela Dra. Raynne.
 
 export type ProdutoIndicacao = 'auxilio_acidente' | 'bpc' | 'aposentadoria' | 'pensao_morte' | 'salario_maternidade' | 'auxilio_doenca' | 'outro';
 export type StatusIndicacao = 'indicado' | 'fechado' | 'nao_fechou';
@@ -54,8 +54,6 @@ export interface ResumoIndicador {
   indicadorId: string;
   nome: string;
   indicadas: number;
-  /** Soma dos valores de tudo que foi lançado no mês (exceto "não fechou"). */
-  lancado: number;
   fechadas: number;
   total: number;
   pago: number;
@@ -64,26 +62,25 @@ export interface ResumoIndicador {
 
 /**
  * Resumo do mês por colaborador.
- * "indicadas" = indicações lançadas no mês; "fechadas"/valores = que viraram contrato no mês.
+ * "indicadas"/valores = lançadas no mês (exceto "não fechou"); "fechadas" = viraram contrato no mês.
  */
 export function resumoDoMes(lista: Indicacao[], mes: string): ResumoIndicador[] {
   const m: Record<string, ResumoIndicador> = {};
   const linha = (i: Indicacao) => (m[i.indicador_id] ??= {
-    indicadorId: i.indicador_id, nome: i.indicador_nome || 'Colaborador', indicadas: 0, lancado: 0, fechadas: 0, total: 0, pago: 0, aPagar: 0,
+    indicadorId: i.indicador_id, nome: i.indicador_nome || 'Colaborador', indicadas: 0, fechadas: 0, total: 0, pago: 0, aPagar: 0,
   });
   for (const i of lista) {
+    // Comissão conta no mês do lançamento: tudo que foi lançado, exceto "não fechou".
     if (i.data_indicacao.slice(0, 7) === mes) {
       const r = linha(i);
       r.indicadas += 1;
-      if (i.status !== 'nao_fechou') r.lancado += Number(i.valor ?? valorPadrao(i.produto));
+      if (i.status !== 'nao_fechou') {
+        const v = Number(i.valor ?? valorPadrao(i.produto));
+        r.total += v;
+        if (i.pago) r.pago += v; else r.aPagar += v;
+      }
     }
-    if (mesDaComissao(i) === mes) {
-      const r = linha(i);
-      const v = Number(i.valor ?? valorPadrao(i.produto));
-      r.fechadas += 1;
-      r.total += v;
-      if (i.pago) r.pago += v; else r.aPagar += v;
-    }
+    if (mesDaComissao(i) === mes) linha(i).fechadas += 1;
   }
   return Object.values(m).sort((a, b) => b.total - a.total || b.fechadas - a.fechadas || b.indicadas - a.indicadas);
 }

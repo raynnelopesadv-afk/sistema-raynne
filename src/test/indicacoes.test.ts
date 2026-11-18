@@ -17,7 +17,7 @@ describe('comissão por indicação', () => {
     expect(valorPadrao('auxilio_doenca')).toBe(40);
   });
 
-  it('só conta o que virou contrato, no mês do fechamento', () => {
+  it('comissão soma tudo que foi lançado no mês, exceto não fechou', () => {
     const lista = [
       base({ status: 'fechado', data_fechamento: '2026-11-10', valor: 45 }),
       base({ status: 'fechado', data_fechamento: '2026-11-12', produto: 'salario_maternidade', valor: 40, pago: true }),
@@ -30,9 +30,10 @@ describe('comissão por indicação', () => {
     const r = resumoDoMes(lista, '2026-11');
     const ana = r.find(x => x.indicadorId === 'a')!;
     expect(ana.fechadas).toBe(3);
-    expect(ana.total).toBe(130);
+    // lançadas em nov (exceto não fechou): 45 + 40(pago) + 45 + 45 = 175
+    expect(ana.total).toBe(175);
     expect(ana.pago).toBe(40);
-    expect(ana.aPagar).toBe(90);
+    expect(ana.aPagar).toBe(135);
     expect(ana.indicadas).toBe(5);
     expect(r[0].nome).toBe('Ana');
     expect(doMes(lista, '2026-11').length).toBe(7);
