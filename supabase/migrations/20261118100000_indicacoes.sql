@@ -3,7 +3,7 @@
 -- Cada colaborador lança os clientes que INDICOU (clientes de fora, não do
 -- tráfego pago). A comissão do mês conta as indicações que viraram contrato.
 -- Valor por indicação (regra da Dra. Raynne):
---   R$ 45 — auxílio-acidente, BPC/LOAS, aposentadoria
+--   R$ 45 — auxílio-acidente, BPC/LOAS, aposentadoria, pensão por morte
 --   R$ 40 — salário-maternidade, auxílio-doença
 --   outros produtos: valor definido pela gestão no lançamento
 -- Idempotente: pode rodar mais de uma vez.
@@ -15,7 +15,7 @@ create table if not exists public.indicacoes (
   indicador_nome text,
   cliente_nome text not null,
   telefone text,
-  produto text not null check (produto in ('auxilio_acidente','bpc','aposentadoria','salario_maternidade','auxilio_doenca','outro')),
+  produto text not null,
   data_indicacao date not null default (now() at time zone 'America/Sao_Paulo')::date,
   status text not null default 'indicado' check (status in ('indicado','fechado','nao_fechou')),
   data_fechamento date,
@@ -27,6 +27,10 @@ create table if not exists public.indicacoes (
   criado_em timestamptz not null default now(),
   atualizado_em timestamptz not null default now()
 );
+-- (re)cria a regra de produtos, incluindo pensão por morte
+alter table public.indicacoes drop constraint if exists indicacoes_produto_check;
+alter table public.indicacoes add constraint indicacoes_produto_check
+  check (produto in ('auxilio_acidente','bpc','aposentadoria','pensao_morte','salario_maternidade','auxilio_doenca','outro'));
 create index if not exists ix_indicacoes_indicador on public.indicacoes (indicador_id, data_indicacao desc);
 create index if not exists ix_indicacoes_data on public.indicacoes (data_indicacao desc);
 
@@ -34,7 +38,7 @@ create index if not exists ix_indicacoes_data on public.indicacoes (data_indicac
 create or replace function public.indicacao_valor_padrao(_produto text)
 returns numeric language sql immutable as $$
   select case _produto
-    when 'auxilio_acidente' then 45 when 'bpc' then 45 when 'aposentadoria' then 45
+    when 'auxilio_acidente' then 45 when 'bpc' then 45 when 'aposentadoria' then 45 when 'pensao_morte' then 45
     when 'salario_maternidade' then 40 when 'auxilio_doenca' then 40
     else 0 end::numeric;
 $$;

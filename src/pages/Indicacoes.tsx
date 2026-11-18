@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Loader2, Gift, Trash2, Download } from 'lucide-react';
+import { Loader2, Gift, Trash2, Download, Megaphone, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -133,7 +133,7 @@ export default function Indicacoes() {
         <div>
           <h1 className="titulo-pagina text-3xl">Comissão por Indicação</h1>
           <p className="text-sm text-muted-foreground">
-            Cliente de fora que você indicou e virou contrato = comissão no mês. R$ 45 auxílio-acidente, BPC e aposentadoria · R$ 40 salário-maternidade e auxílio-doença.
+            Cliente de fora que você indicou e virou contrato = comissão no mês. R$ 45 auxílio-acidente, BPC/LOAS, aposentadoria e pensão por morte · R$ 40 salário-maternidade, auxílio-doença e outros.
           </p>
         </div>
         <div className="flex gap-2 items-center">
@@ -144,6 +144,36 @@ export default function Indicacoes() {
           {isGestor && <Button variant="outline" size="sm" onClick={exportarCsv}><Download className="w-4 h-4 mr-1" />Planilha</Button>}
         </div>
       </div>
+
+      <details className="glass-card p-4 group" open>
+        <summary className="font-semibold flex items-center gap-2 cursor-pointer list-none">
+          <Megaphone className="w-4 h-4 text-primary" />Como encontrar clientes para indicar
+          <ChevronDown className="w-4 h-4 ml-auto transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="mt-3 space-y-3 text-sm leading-relaxed">
+          <p>Cada indicação que vira contrato vale comissão para você. E, além disso, você ajuda alguém a ter acesso a um direito que muitas vezes nem sabe que tem. Bora, vencedor(a)!</p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div><p className="font-semibold">1. Status do WhatsApp</p><p className="text-muted-foreground">Compartilhe os vídeos da Dra. Raynne (@raynnelopes.adv) no seu status pelo menos 3 vezes por semana. Escreva junto: "Trabalho com isso. Se você ou alguém da família precisa, me chama."</p></div>
+            <div><p className="font-semibold">2. Instagram</p><p className="text-muted-foreground">Reposte os Reels da Dra. Raynne nos stories e no feed. Diga que você trabalha num escritório especializado em INSS e que pode ajudar a pessoa a ver se ela tem direito.</p></div>
+            <div><p className="font-semibold">3. TikTok</p><p className="text-muted-foreground">Grave vídeos curtos falando do seu trabalho: "Você sabia que quem sofreu acidente e ficou com sequela pode ter direito ao auxílio-acidente?" Também vale repostar os vídeos da Dra. Raynne. Use #INSS, #BPC, #aposentadoria e #direitoprevidenciario.</p></div>
+            <div><p className="font-semibold">4. Na rua e no bairro</p><p className="text-muted-foreground">Converse em postos de saúde, farmácias, igrejas, associações e com vizinhos. Quem mais precisa costuma estar perto de você: gestantes, pessoas afastadas do trabalho, idosos, pessoas com deficiência, famílias que perderam alguém.</p></div>
+          </div>
+          <div>
+            <p className="font-semibold">5. Quem pode ter direito (fique atento)</p>
+            <ul className="list-disc pl-5 text-muted-foreground space-y-0.5">
+              <li>Gestante ou mãe com bebê de até 5 anos → salário-maternidade</li>
+              <li>Quem está doente e sem poder trabalhar → auxílio-doença</li>
+              <li>Quem sofreu acidente e ficou com sequela → auxílio-acidente</li>
+              <li>Idoso de 65 anos ou mais, ou pessoa com deficiência, de família de baixa renda → BPC/LOAS</li>
+              <li>Quem tem muitos anos de contribuição ou idade avançada → aposentadoria</li>
+              <li>Quem tem doença grave e não consegue mais trabalhar de jeito nenhum → aposentadoria por incapacidade</li>
+              <li>Família de quem faleceu e contribuía para o INSS → pensão por morte</li>
+            </ul>
+          </div>
+          <div><p className="font-semibold">6. Como lançar</p><p className="text-muted-foreground">Pegue o nome e o telefone da pessoa e lance aqui na aba <strong>na hora</strong>, antes de passar o contato para o escritório. A data do lançamento é o que garante que a indicação é sua.</p></div>
+          <p className="rounded-md bg-primary/10 p-3"><strong>Importante:</strong> não prometa resultado nem valor de benefício. Diga apenas que a advogada vai analisar o caso, sem compromisso. Quem orienta juridicamente é sempre a Dra. Raynne.</p>
+        </div>
+      </details>
 
       <section className="glass-card p-4">
         <h2 className="font-semibold mb-3 flex items-center gap-2"><Gift className="w-4 h-4 text-primary" />Lançar indicação</h2>

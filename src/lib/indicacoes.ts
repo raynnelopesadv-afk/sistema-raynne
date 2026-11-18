@@ -2,13 +2,14 @@
 // Conta para a comissão do mês a indicação que virou contrato (status "fechado"),
 // pelo mês do fechamento. Valores definidos pela Dra. Raynne.
 
-export type ProdutoIndicacao = 'auxilio_acidente' | 'bpc' | 'aposentadoria' | 'salario_maternidade' | 'auxilio_doenca' | 'outro';
+export type ProdutoIndicacao = 'auxilio_acidente' | 'bpc' | 'aposentadoria' | 'pensao_morte' | 'salario_maternidade' | 'auxilio_doenca' | 'outro';
 export type StatusIndicacao = 'indicado' | 'fechado' | 'nao_fechou';
 
 export const PRODUTOS_INDICACAO: { valor: ProdutoIndicacao; label: string; comissao: number }[] = [
   { valor: 'auxilio_acidente', label: 'Auxílio-acidente', comissao: 45 },
   { valor: 'bpc', label: 'BPC/LOAS', comissao: 45 },
   { valor: 'aposentadoria', label: 'Aposentadoria', comissao: 45 },
+  { valor: 'pensao_morte', label: 'Pensão por morte', comissao: 45 },
   { valor: 'salario_maternidade', label: 'Salário-maternidade', comissao: 40 },
   { valor: 'auxilio_doenca', label: 'Auxílio-doença', comissao: 40 },
   { valor: 'outro', label: 'Outro (valor pela gestão)', comissao: 0 },

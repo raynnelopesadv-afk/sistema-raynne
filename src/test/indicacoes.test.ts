@@ -12,6 +12,7 @@ describe('comissão por indicação', () => {
     expect(valorPadrao('auxilio_acidente')).toBe(45);
     expect(valorPadrao('bpc')).toBe(45);
     expect(valorPadrao('aposentadoria')).toBe(45);
+    expect(valorPadrao('pensao_morte')).toBe(45);
     expect(valorPadrao('salario_maternidade')).toBe(40);
     expect(valorPadrao('auxilio_doenca')).toBe(40);
   });
