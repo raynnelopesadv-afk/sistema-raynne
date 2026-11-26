@@ -1,0 +1,71 @@
+{
+  "hoje": "2026-11-26",
+  "amanha": "2026-11-27",
+  "diasUteisMes": 21,
+  "diasUteisPassados": 19,
+  "diasUteisRestantes": 2,
+  "equipe": {
+    "hoje": 3,
+    "metaDia": 3,
+    "mes": 102,
+    "metaMes": 63,
+    "falta": 0,
+    "porDiaNecessario": 0,
+    "percentual": 162,
+    "semVendedor": 18,
+    "lancadosMes": 69,
+    "lancadosHoje": 2
+  },
+  "zapsign": {
+    "pendentes": 106,
+    "assinadosHoje": 3,
+    "assinadosMes": 102
+  },
+  "vendedores": [
+    {
+      "id": "493f62a5-85d2-427a-9093-8c277dc24756",
+      "nome": "Comercial 01",
+      "hoje": 0,
+      "ontem": 0,
+      "ultimos5": 0,
+      "mes": 9,
+      "meta": 21,
+      "falta": 12,
+      "porDia": 6,
+      "ritmo": 47,
+      "diasSemFechar": 8,
+      "desistencias": 0,
+      "situacao": "vermelho"
+    },
+    {
+      "id": "1063a7f6-020d-4316-814d-0f4929ab59df",
+      "nome": "Comercial 02",
+      "hoje": 1,
+      "ontem": 1,
+      "ultimos5": 3,
+      "mes": 14,
+      "meta": 21,
+      "falta": 7,
+      "porDia": 4,
+      "ritmo": 74,
+      "diasSemFechar": 0,
+      "desistencias": 0,
+      "situacao": "amarelo"
+    },
+    {
+      "id": "6ca96d4f-b71c-4caf-aff8-ab8e5037b95f",
+      "nome": "Dra. Anielle",
+      "hoje": 1,
+      "ontem": 4,
+      "ultimos5": 6,
+      "mes": 14,
+      "meta": 21,
+      "falta": 7,
+      "porDia": 4,
+      "ritmo": 74,
+      "diasSemFechar": 0,
+      "desistencias": 0,
+      "situacao": "amarelo"
+    }
+  ]
+}
